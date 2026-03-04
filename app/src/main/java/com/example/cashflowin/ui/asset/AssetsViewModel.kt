@@ -31,6 +31,7 @@ class AssetsViewModel(private val repository: AssetRepository) : ViewModel() {
                     if (body.status == "success") {
                         _assetsState.value = AssetsState.Success(body)
                     } else {
+                        // Fixed unresolved reference 'message'
                         _assetsState.value = AssetsState.Error(body.message ?: "Failed to fetch assets")
                     }
                 } else {

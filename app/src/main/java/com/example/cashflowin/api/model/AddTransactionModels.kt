@@ -1,16 +1,7 @@
 package com.example.cashflowin.api.model
 
-data class AssetResponse(
-    val status: String,
-    val data: List<AssetInfo>
-)
-
-data class AssetInfo(
-    val id: Int,
-    val name: String,
-    val type: String? = null,
-    val amount: String? = null
-)
+// Removed duplicate AssetInfo and AssetResponse. 
+// They are now centrally managed in AssetModels.kt
 
 data class TransactionRequest(
     val amount: String,

@@ -7,7 +7,8 @@ data class CategoryRequest(
 
 data class CategoryResponse(
     val status: String,
-    val data: List<CategoryInfo>
+    val data: List<CategoryInfo>,
+    val message: String? = null
 )
 
 data class CategoryInfo(
