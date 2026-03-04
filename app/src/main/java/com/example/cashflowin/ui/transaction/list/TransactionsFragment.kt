@@ -97,7 +97,7 @@ class TransactionsFragment : Fragment() {
                     2 -> "expense"
                     else -> null
                 }
-                fetchTransactions()
+                applyFilters()
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
@@ -111,9 +111,9 @@ class TransactionsFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 searchJob?.cancel()
                 searchJob = lifecycleScope.launch {
-                    delay(500)
+                    delay(300)
                     currentSearch = if (s.isNullOrBlank()) null else s.toString()
-                    fetchTransactions()
+                    applyFilters()
                 }
             }
             override fun afterTextChanged(s: Editable?) {}
@@ -138,18 +138,17 @@ class TransactionsFragment : Fragment() {
                 endDate = sdf.format(Date(selection.second))
                 
                 binding.tvActiveDateFilter.text = "Showing: $startDate to $endDate"
-                fetchTransactions()
+                applyFilters()
             }
             
             datePicker.show(childFragmentManager, "DATE_RANGE_PICKER")
         }
         
-        // Clear filter on long click
         binding.btnDateFilter.setOnLongClickListener {
             startDate = null
             endDate = null
             binding.tvActiveDateFilter.text = "Showing: All dates"
-            fetchTransactions()
+            applyFilters()
             true
         }
     }
@@ -164,7 +163,7 @@ class TransactionsFragment : Fragment() {
                 }
                 is TransactionsState.Success -> {
                     binding.progressBar.visibility = View.GONE
-                    val list = state.response.data?.data ?: emptyList()
+                    val list = state.transactions
                     
                     if (list.isEmpty()) {
                         binding.tvEmptyState.visibility = View.VISIBLE
@@ -188,6 +187,16 @@ class TransactionsFragment : Fragment() {
 
     private fun fetchTransactions() {
         viewModel.loadTransactions(
+            type = currentFilterType,
+            search = currentSearch,
+            startDate = startDate,
+            endDate = endDate
+        )
+    }
+
+    private fun applyFilters() {
+        // If we already have the full list loaded, we can filter locally for instant feedback
+        viewModel.filterTransactionsLocally(
             type = currentFilterType,
             search = currentSearch,
             startDate = startDate,
