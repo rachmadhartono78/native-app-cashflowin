@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.example.cashflowin.MainActivity
 import com.example.cashflowin.R
-import com.example.cashflowin.api.ApiClient
+import com.example.cashflowin.utils.TokenManager
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -24,12 +24,14 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var btnRegister: Button
     private lateinit var tvLogin: TextView
     private lateinit var progressBar: ProgressBar
+    private lateinit var tokenManager: TokenManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
         authViewModel = ViewModelProvider(this).get(AuthViewModel::class.java)
+        tokenManager = TokenManager(this)
 
         etName = findViewById(R.id.etName)
         etEmail = findViewById(R.id.etEmail)
@@ -75,7 +77,10 @@ class RegisterActivity : AppCompatActivity() {
                     btnRegister.isEnabled = true
                     
                     // Save token and email
-                    ApiClient.setToken(state.response.token, this)
+                    state.response.token?.let {
+                        tokenManager.saveToken(it)
+                    }
+
                     val sharedPref = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
                     with(sharedPref.edit()) {
                         putString("user_email", state.response.user?.email ?: "")

@@ -13,5 +13,7 @@ data class CategoryResponse(
 data class CategoryInfo(
     val id: Int,
     val name: String,
-    val type: String
+    val type: String? = null,
+    val color: String? = null,
+    val icon: String? = null
 )

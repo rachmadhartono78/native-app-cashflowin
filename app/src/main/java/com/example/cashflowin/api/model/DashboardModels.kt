@@ -23,19 +23,7 @@ data class TransactionItem(
     val description: String?,
     val date: String,
     val category: CategoryInfo?,
-    val asset: AssetInfo?
-)
-
-data class CategoryInfo(
-    val id: Int,
-    val name: String,
-    val color: String,
-    val icon: String
-)
-
-data class AssetInfo(
-    val id: Int,
-    val name: String,
-    val type: String? = null,
-    val amount: String? = null
+    val asset: AssetInfo?,
+    val category_id: Int? = null,
+    val asset_id: Int? = null
 )

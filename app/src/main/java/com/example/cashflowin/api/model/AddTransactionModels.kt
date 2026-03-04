@@ -1,13 +1,15 @@
 package com.example.cashflowin.api.model
 
-data class CategoryResponse(
-    val status: String,
-    val data: List<CategoryInfo>
-)
-
 data class AssetResponse(
     val status: String,
     val data: List<AssetInfo>
+)
+
+data class AssetInfo(
+    val id: Int,
+    val name: String,
+    val type: String? = null,
+    val amount: String? = null
 )
 
 data class TransactionRequest(
