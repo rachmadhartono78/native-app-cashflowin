@@ -11,6 +11,7 @@ import com.example.cashflowin.api.ApiClient
 import com.example.cashflowin.api.AssetRepository
 import com.example.cashflowin.api.model.AssetInfo
 import com.example.cashflowin.databinding.ActivityTransferAssetBinding
+import com.example.cashflowin.utils.CurrencyTextWatcher
 import com.example.cashflowin.utils.TokenManager
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -56,6 +57,8 @@ class TransferAssetActivity : AppCompatActivity() {
         binding.toolbar.setNavigationOnClickListener {
             finish()
         }
+
+        binding.etTransferAmount.addTextChangedListener(CurrencyTextWatcher(binding.etTransferAmount))
         
         binding.etTransferDate.setOnClickListener {
             DatePickerDialog(
@@ -81,7 +84,8 @@ class TransferAssetActivity : AppCompatActivity() {
         }
 
         binding.btnSubmitTransfer.setOnClickListener {
-            val amount = binding.etTransferAmount.text.toString().trim()
+            val amountFormatted = binding.etTransferAmount.text.toString().trim()
+            val amount = CurrencyTextWatcher.getUnformattedValue(amountFormatted).toString()
             val date = binding.etTransferDate.text.toString().trim()
             val description = binding.etTransferDescription.text.toString().trim()
 
@@ -95,7 +99,7 @@ class TransferAssetActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            if (amount.isEmpty() || amount == "0") {
+            if (amountFormatted.isEmpty() || amount == "0.0") {
                 Toast.makeText(this, "Please enter a valid amount", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }

@@ -91,6 +91,7 @@
         android:layout_margin="24dp"
         android:text="Save Category"
         android:textSize="16sp"
+        android:backgroundTint="@color/primaryColor"
         app:cornerRadius="12dp"
         app:layout_constraintBottom_toBottomOf="parent" />
 

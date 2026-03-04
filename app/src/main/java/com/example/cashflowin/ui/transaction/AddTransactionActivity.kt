@@ -13,6 +13,7 @@ import com.example.cashflowin.api.model.AssetInfo
 import com.example.cashflowin.api.model.CategoryInfo
 import com.example.cashflowin.api.model.TransactionRequest
 import com.example.cashflowin.databinding.ActivityAddTransactionBinding
+import com.example.cashflowin.utils.CurrencyTextWatcher
 import com.example.cashflowin.utils.TokenManager
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -221,13 +222,16 @@ class AddTransactionActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
+        binding.etAmount.addTextChangedListener(CurrencyTextWatcher(binding.etAmount))
+
         binding.btnSave.setOnClickListener {
             saveTransaction()
         }
     }
 
     private fun saveTransaction() {
-        val amountStr = binding.etAmount.text.toString().trim()
+        val amountFormatted = binding.etAmount.text.toString().trim()
+        val amountStr = CurrencyTextWatcher.getUnformattedValue(amountFormatted).toString()
         val dateStr = binding.etDate.text.toString().trim()
         val descStr = binding.etDescription.text.toString().trim()
         
@@ -236,7 +240,7 @@ class AddTransactionActivity : AppCompatActivity() {
         val selectedCategoryPos = binding.spinnerCategory.selectedItemPosition
         val selectedAssetPos = binding.spinnerAsset.selectedItemPosition
 
-        if (amountStr.isEmpty()) {
+        if (amountFormatted.isEmpty()) {
             binding.etAmount.error = "Amount is required"
             return
         }

@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.cashflowin.api.model.TransactionItem
 import com.example.cashflowin.databinding.ItemTransactionBinding
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
 import java.util.Locale
 
 class TransactionAdapter(
@@ -34,7 +35,16 @@ class TransactionAdapter(
     inner class TransactionViewHolder(private val binding: ItemTransactionBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(transaction: TransactionItem) {
             binding.tvCategoryName.text = transaction.category?.name ?: transaction.description ?: "Unknown"
-            binding.tvDate.text = transaction.date
+            
+            // Format Date to more readable style
+            try {
+                val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+                val outputFormat = SimpleDateFormat("dd MMM yyyy", Locale("id", "ID"))
+                val date = inputFormat.parse(transaction.date)
+                binding.tvDate.text = if (date != null) outputFormat.format(date) else transaction.date
+            } catch (e: Exception) {
+                binding.tvDate.text = transaction.date
+            }
             
             val amountValue = transaction.amount.toDoubleOrNull() ?: 0.0
             val format = NumberFormat.getCurrencyInstance(Locale("id", "ID"))

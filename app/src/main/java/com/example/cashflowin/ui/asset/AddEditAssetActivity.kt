@@ -13,6 +13,7 @@ import com.example.cashflowin.R
 import com.example.cashflowin.api.ApiClient
 import com.example.cashflowin.api.AssetRepository
 import com.example.cashflowin.databinding.ActivityAddEditAssetBinding
+import com.example.cashflowin.utils.CurrencyTextWatcher
 
 class AddEditAssetActivity : AppCompatActivity() {
 
@@ -75,17 +76,19 @@ class AddEditAssetActivity : AppCompatActivity() {
             finish()
         }
 
+        binding.etAssetAmount.addTextChangedListener(CurrencyTextWatcher(binding.etAssetAmount))
+
         binding.btnSaveAsset.setOnClickListener {
             val name = binding.etAssetName.text.toString().trim()
             val type = binding.spinnerAssetType.text.toString().trim()
-            val amountStr = binding.etAssetAmount.text.toString().trim()
+            val amountFormatted = binding.etAssetAmount.text.toString().trim()
 
             if (name.isEmpty() || type.isEmpty()) {
                 Toast.makeText(this, "Please fill name and type", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            val amount = amountStr.toDoubleOrNull() ?: 0.0
+            val amount = CurrencyTextWatcher.getUnformattedValue(amountFormatted)
 
             if (isEditMode) {
                 viewModel.updateAsset(assetId, name, amount, type)

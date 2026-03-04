@@ -3,7 +3,8 @@ package com.example.cashflowin.utils
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
-import java.text.NumberFormat
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 import java.util.Locale
 
 class CurrencyTextWatcher(private val editText: EditText) : TextWatcher {
@@ -14,15 +15,24 @@ class CurrencyTextWatcher(private val editText: EditText) : TextWatcher {
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
     override fun afterTextChanged(s: Editable?) {
-        if (s.toString() != current) {
+        val stringText = s.toString()
+        if (stringText != current) {
             editText.removeTextChangedListener(this)
 
-            val cleanString = s.toString().replace("[Rp,.\\s]".toRegex(), "")
+            // Remove all non-digit characters
+            val cleanString = stringText.replace("[^\\d]".toRegex(), "")
 
             if (cleanString.isNotEmpty()) {
                 try {
                     val parsed = cleanString.toDouble()
-                    val formatted = NumberFormat.getCurrencyInstance(Locale("id", "ID")).format(parsed)
+                    
+                    val symbols = DecimalFormatSymbols(Locale("id", "ID"))
+                    symbols.groupingSeparator = '.'
+                    symbols.monetaryDecimalSeparator = ','
+                    
+                    // No decimals for IDR usually
+                    val formatter = DecimalFormat("Rp #,###", symbols)
+                    val formatted = formatter.format(parsed)
 
                     current = formatted
                     editText.setText(formatted)
@@ -41,7 +51,7 @@ class CurrencyTextWatcher(private val editText: EditText) : TextWatcher {
 
     companion object {
         fun getUnformattedValue(text: String): Double {
-            val cleanString = text.replace("[Rp,.\\s]".toRegex(), "")
+            val cleanString = text.replace("[^\\d]".toRegex(), "")
             return cleanString.toDoubleOrNull() ?: 0.0
         }
     }

@@ -78,18 +78,20 @@ class CategoriesFragment : Fragment() {
                 is CategoriesState.Idle -> {}
                 is CategoriesState.Loading -> {
                     binding.progressBar.visibility = View.VISIBLE
-                    binding.tvEmptyState.visibility = View.GONE
+                    binding.emptyStateLayout.visibility = View.GONE
                 }
                 is CategoriesState.Success -> {
                     binding.progressBar.visibility = View.GONE
                     val list = state.response.data
                     
                     if (list.isEmpty()) {
-                        binding.tvEmptyState.visibility = View.VISIBLE
+                        binding.emptyStateLayout.visibility = View.VISIBLE
                         categoryAdapter.submitList(emptyList())
                     } else {
-                        binding.tvEmptyState.visibility = View.GONE
-                        categoryAdapter.submitList(list)
+                        binding.emptyStateLayout.visibility = View.GONE
+                        // Sort by type to group them (Income first, then Expense)
+                        val sortedList = list.sortedByDescending { it.type }
+                        categoryAdapter.submitList(sortedList)
                     }
                 }
                 is CategoriesState.Error -> {
