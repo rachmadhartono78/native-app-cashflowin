@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Primary Green Theme -->
-    <color name="primaryColor">#2E7D32</color>
-    <color name="primaryLightColor">#60ad5e</color>
-    <color name="primaryDarkColor">#005005</color>
-    <color name="secondaryColor">#4caf50</color>
-    <color name="secondaryLightColor">#80e27e</color>
-    <color name="secondaryDarkColor">#087f23</color>
+    <!-- Professional Purple/Dark Theme -->
+    <color name="primaryColor">#4A148C</color> <!-- Deep Purple 900 -->
+    <color name="primaryLightColor">#7C43BD</color>
+    <color name="primaryDarkColor">#12005E</color>
+    <color name="secondaryColor">#00B8D4</color> <!-- Cyan A700 for accent -->
+    <color name="secondaryLightColor">#62EBFD</color>
+    <color name="secondaryDarkColor">#0088A3</color>
     <color name="primaryTextColor">#ffffff</color>
-    <color name="secondaryTextColor">#000000</color>
+    <color name="secondaryTextColor">#ffffff</color>
     
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="background_light">#F5F5F5</color>
+    <color name="background_light">#F8F9FA</color>
 </resources>
