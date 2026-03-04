@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.cashflowin.api.ApiClient
+import com.example.cashflowin.api.AssetRepository
 import com.example.cashflowin.api.model.AssetRequest
 import kotlinx.coroutines.launch
 
@@ -12,27 +12,24 @@ sealed class AssetSubmitState {
     object Idle : AssetSubmitState()
     object Loading : AssetSubmitState()
     object Success : AssetSubmitState()
-    object UpdateSuccess : AssetSubmitState()
-    object DeleteSuccess : AssetSubmitState()
     data class Error(val message: String) : AssetSubmitState()
 }
 
-class AddEditAssetViewModel : ViewModel() {
+class AddEditAssetViewModel(private val repository: AssetRepository) : ViewModel() {
+
     private val _submitState = MutableLiveData<AssetSubmitState>(AssetSubmitState.Idle)
     val submitState: LiveData<AssetSubmitState> = _submitState
 
-    fun saveAsset(token: String, name: String, type: String, amount: String) {
+    fun addAsset(name: String, balance: Double, type: String = "Cash") {
         _submitState.value = AssetSubmitState.Loading
         viewModelScope.launch {
             try {
-                val bearerToken = "Bearer $token"
-                val request = AssetRequest(name, type, amount.ifBlank { "0" })
-                val response = ApiClient.instance.addAsset(bearerToken, request)
-                
+                val request = AssetRequest(name, type, balance.toString())
+                val response = repository.addAsset(request)
                 if (response.isSuccessful) {
                     _submitState.value = AssetSubmitState.Success
                 } else {
-                    _submitState.value = AssetSubmitState.Error("Failed to save asset. Code: ${response.code()}")
+                    _submitState.value = AssetSubmitState.Error("Failed to add asset: ${response.code()}")
                 }
             } catch (e: Exception) {
                 _submitState.value = AssetSubmitState.Error(e.message ?: "Network error")
@@ -40,19 +37,16 @@ class AddEditAssetViewModel : ViewModel() {
         }
     }
 
-    fun updateAsset(token: String, id: Int, name: String, type: String) {
+    fun updateAsset(id: Int, name: String, balance: Double, type: String = "Cash") {
         _submitState.value = AssetSubmitState.Loading
         viewModelScope.launch {
             try {
-                val bearerToken = "Bearer $token"
-                // API expects amount field due to validation rule even if it isn't updated, let's pass a dummy or ensure it matches API req.
-                val request = AssetRequest(name, type, "0") 
-                val response = ApiClient.instance.updateAsset(bearerToken, id, request)
-                
+                val request = AssetRequest(name, type, balance.toString())
+                val response = repository.updateAsset(id, request)
                 if (response.isSuccessful) {
-                    _submitState.value = AssetSubmitState.UpdateSuccess
+                    _submitState.value = AssetSubmitState.Success
                 } else {
-                    _submitState.value = AssetSubmitState.Error("Failed to update asset. Code: ${response.code()}")
+                    _submitState.value = AssetSubmitState.Error("Failed to update asset: ${response.code()}")
                 }
             } catch (e: Exception) {
                 _submitState.value = AssetSubmitState.Error(e.message ?: "Network error")
@@ -60,17 +54,15 @@ class AddEditAssetViewModel : ViewModel() {
         }
     }
 
-    fun deleteAsset(token: String, id: Int) {
+    fun deleteAsset(id: Int) {
         _submitState.value = AssetSubmitState.Loading
         viewModelScope.launch {
             try {
-                val bearerToken = "Bearer $token"
-                val response = ApiClient.instance.deleteAsset(bearerToken, id)
-                
+                val response = repository.deleteAsset(id)
                 if (response.isSuccessful) {
-                    _submitState.value = AssetSubmitState.DeleteSuccess
+                    _submitState.value = AssetSubmitState.Success
                 } else {
-                    _submitState.value = AssetSubmitState.Error("Failed to delete asset. Code: ${response.code()}")
+                    _submitState.value = AssetSubmitState.Error("Failed to delete asset: ${response.code()}")
                 }
             } catch (e: Exception) {
                 _submitState.value = AssetSubmitState.Error(e.message ?: "Network error")

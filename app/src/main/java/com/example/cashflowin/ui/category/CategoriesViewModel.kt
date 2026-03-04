@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.cashflowin.api.ApiClient
+import com.example.cashflowin.api.CategoryRepository
 import com.example.cashflowin.api.model.CategoryResponse
 import kotlinx.coroutines.launch
 
@@ -15,16 +15,15 @@ sealed class CategoriesState {
     data class Error(val message: String) : CategoriesState()
 }
 
-class CategoriesViewModel : ViewModel() {
+class CategoriesViewModel(private val repository: CategoryRepository) : ViewModel() {
     private val _categoriesState = MutableLiveData<CategoriesState>(CategoriesState.Idle)
     val categoriesState: LiveData<CategoriesState> = _categoriesState
 
-    fun loadCategories(token: String) {
+    fun loadCategories() {
         _categoriesState.value = CategoriesState.Loading
         viewModelScope.launch {
             try {
-                val bearerToken = "Bearer $token"
-                val response = ApiClient.instance.getCategories(bearerToken)
+                val response = repository.getCategories()
                 
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()!!

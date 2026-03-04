@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.cashflowin.api.ApiClient
+import com.example.cashflowin.api.TransactionRepository
 import com.example.cashflowin.api.model.TransactionListResponse
 import kotlinx.coroutines.launch
 
@@ -15,16 +15,15 @@ sealed class TransactionsState {
     data class Error(val message: String) : TransactionsState()
 }
 
-class TransactionsViewModel : ViewModel() {
+class TransactionsViewModel(private val repository: TransactionRepository) : ViewModel() {
     private val _transactionsState = MutableLiveData<TransactionsState>(TransactionsState.Idle)
     val transactionsState: LiveData<TransactionsState> = _transactionsState
 
-    fun loadTransactions(token: String, type: String? = null) {
+    fun loadTransactions(type: String? = null) {
         _transactionsState.value = TransactionsState.Loading
         viewModelScope.launch {
             try {
-                val bearerToken = "Bearer $token"
-                val response = ApiClient.instance.getTransactions(bearerToken, type)
+                val response = repository.getTransactions(type)
                 
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()!!

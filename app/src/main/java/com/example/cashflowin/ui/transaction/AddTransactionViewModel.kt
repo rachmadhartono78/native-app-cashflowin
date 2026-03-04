@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.cashflowin.api.ApiClient
+import com.example.cashflowin.api.TransactionRepository
 import com.example.cashflowin.api.model.AssetInfo
 import com.example.cashflowin.api.model.CategoryInfo
 import com.example.cashflowin.api.model.TransactionRequest
@@ -25,7 +25,7 @@ sealed class SubmitState {
     data class Error(val message: String) : SubmitState()
 }
 
-class AddTransactionViewModel : ViewModel() {
+class AddTransactionViewModel(private val repository: TransactionRepository) : ViewModel() {
 
     private val _categoriesState = MutableLiveData<DropdownState<CategoryInfo>>()
     val categoriesState: LiveData<DropdownState<CategoryInfo>> = _categoriesState
@@ -36,14 +36,12 @@ class AddTransactionViewModel : ViewModel() {
     private val _submitState = MutableLiveData<SubmitState>(SubmitState.Idle)
     val submitState: LiveData<SubmitState> = _submitState
 
-    fun loadDropdownData(token: String) {
-        val bearerToken = "Bearer $token"
-        
+    fun loadDropdownData() {
         // Load Categories
         _categoriesState.value = DropdownState.Loading
         viewModelScope.launch {
             try {
-                val response = ApiClient.instance.getCategories(bearerToken)
+                val response = repository.getCategories()
                 if (response.isSuccessful && response.body() != null) {
                     _categoriesState.value = DropdownState.Success(response.body()!!.data)
                 } else {
@@ -58,7 +56,7 @@ class AddTransactionViewModel : ViewModel() {
         _assetsState.value = DropdownState.Loading
         viewModelScope.launch {
             try {
-                val response = ApiClient.instance.getAssets(bearerToken)
+                val response = repository.getAssets()
                 if (response.isSuccessful && response.body() != null) {
                     _assetsState.value = DropdownState.Success(response.body()!!.data)
                 } else {
@@ -70,12 +68,11 @@ class AddTransactionViewModel : ViewModel() {
         }
     }
 
-    fun submitTransaction(token: String, request: TransactionRequest) {
+    fun submitTransaction(request: TransactionRequest) {
         _submitState.value = SubmitState.Loading
         viewModelScope.launch {
             try {
-                val bearerToken = "Bearer $token"
-                val response = ApiClient.instance.addTransaction(bearerToken, request)
+                val response = repository.addTransaction(request)
                 if (response.isSuccessful) {
                     _submitState.value = SubmitState.Success
                 } else {
@@ -87,12 +84,11 @@ class AddTransactionViewModel : ViewModel() {
         }
     }
 
-    fun updateTransaction(token: String, id: Int, request: TransactionRequest) {
+    fun updateTransaction(id: Int, request: TransactionRequest) {
         _submitState.value = SubmitState.Loading
         viewModelScope.launch {
             try {
-                val bearerToken = "Bearer $token"
-                val response = ApiClient.instance.updateTransaction(bearerToken, id, request)
+                val response = repository.updateTransaction(id, request)
                 if (response.isSuccessful) {
                     _submitState.value = SubmitState.UpdateSuccess
                 } else {
@@ -104,12 +100,11 @@ class AddTransactionViewModel : ViewModel() {
         }
     }
 
-    fun deleteTransaction(token: String, id: Int) {
+    fun deleteTransaction(id: Int) {
         _submitState.value = SubmitState.Loading
         viewModelScope.launch {
             try {
-                val bearerToken = "Bearer $token"
-                val response = ApiClient.instance.deleteTransaction(bearerToken, id)
+                val response = repository.deleteTransaction(id)
                 if (response.isSuccessful) {
                     _submitState.value = SubmitState.DeleteSuccess
                 } else {

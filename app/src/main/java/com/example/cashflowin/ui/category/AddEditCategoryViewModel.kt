@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.cashflowin.api.ApiClient
+import com.example.cashflowin.api.CategoryRepository
 import com.example.cashflowin.api.model.CategoryRequest
 import kotlinx.coroutines.launch
 
@@ -17,17 +17,16 @@ sealed class CategorySubmitState {
     data class Error(val message: String) : CategorySubmitState()
 }
 
-class AddEditCategoryViewModel : ViewModel() {
+class AddEditCategoryViewModel(private val repository: CategoryRepository) : ViewModel() {
     private val _submitState = MutableLiveData<CategorySubmitState>(CategorySubmitState.Idle)
     val submitState: LiveData<CategorySubmitState> = _submitState
 
-    fun saveCategory(token: String, name: String, type: String) {
+    fun saveCategory(name: String, type: String) {
         _submitState.value = CategorySubmitState.Loading
         viewModelScope.launch {
             try {
-                val bearerToken = "Bearer $token"
                 val request = CategoryRequest(name, type)
-                val response = ApiClient.instance.addCategory(bearerToken, request)
+                val response = repository.addCategory(request)
                 
                 if (response.isSuccessful) {
                     _submitState.value = CategorySubmitState.Success
@@ -40,13 +39,12 @@ class AddEditCategoryViewModel : ViewModel() {
         }
     }
 
-    fun updateCategory(token: String, id: Int, name: String, type: String) {
+    fun updateCategory(id: Int, name: String, type: String) {
         _submitState.value = CategorySubmitState.Loading
         viewModelScope.launch {
             try {
-                val bearerToken = "Bearer $token"
                 val request = CategoryRequest(name, type) 
-                val response = ApiClient.instance.updateCategory(bearerToken, id, request)
+                val response = repository.updateCategory(id, request)
                 
                 if (response.isSuccessful) {
                     _submitState.value = CategorySubmitState.UpdateSuccess
@@ -59,12 +57,11 @@ class AddEditCategoryViewModel : ViewModel() {
         }
     }
 
-    fun deleteCategory(token: String, id: Int) {
+    fun deleteCategory(id: Int) {
         _submitState.value = CategorySubmitState.Loading
         viewModelScope.launch {
             try {
-                val bearerToken = "Bearer $token"
-                val response = ApiClient.instance.deleteCategory(bearerToken, id)
+                val response = repository.deleteCategory(id)
                 
                 if (response.isSuccessful) {
                     _submitState.value = CategorySubmitState.DeleteSuccess

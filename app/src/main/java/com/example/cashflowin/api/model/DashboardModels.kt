@@ -2,7 +2,8 @@ package com.example.cashflowin.api.model
 
 data class DashboardResponse(
     val status: String,
-    val data: DashboardData?
+    val data: DashboardData?,
+    val message: String? = null
 )
 
 data class DashboardData(
