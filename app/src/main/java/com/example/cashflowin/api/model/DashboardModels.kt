@@ -1,5 +1,7 @@
 package com.example.cashflowin.api.model
 
+import com.google.gson.annotations.SerializedName
+
 data class DashboardResponse(
     val status: String,
     val data: DashboardData?,
@@ -23,6 +25,8 @@ data class TransactionItem(
     val type: String, // 'income' or 'expense'
     val description: String?,
     val date: String,
+    @SerializedName("created_at")
+    val createdAt: String? = null,
     val category: CategoryInfo?,
     val asset: AssetInfo?,
     val category_id: Int? = null,

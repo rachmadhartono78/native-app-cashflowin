@@ -9,6 +9,7 @@ import com.example.cashflowin.databinding.ItemTransactionBinding
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.TimeZone
 
 class TransactionAdapter(
     private val onItemClick: ((TransactionItem) -> Unit)? = null
@@ -36,15 +37,41 @@ class TransactionAdapter(
         fun bind(transaction: TransactionItem) {
             binding.tvCategoryName.text = transaction.category?.name ?: transaction.description ?: "Unknown"
             
-            // Format Date to more readable style
-            try {
+            // Format Date and Time
+            val dateStr = try {
                 val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
                 val outputFormat = SimpleDateFormat("dd MMM yyyy", Locale("id", "ID"))
                 val date = inputFormat.parse(transaction.date)
-                binding.tvDate.text = if (date != null) outputFormat.format(date) else transaction.date
+                if (date != null) outputFormat.format(date) else transaction.date
             } catch (e: Exception) {
-                binding.tvDate.text = transaction.date
+                transaction.date
             }
+
+            val timeStr = try {
+                if (transaction.createdAt != null) {
+                    // Typical API timestamp: 2023-10-27T14:30:00.000000Z
+                    val isoFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", Locale.US).apply {
+                        timeZone = TimeZone.getTimeZone("UTC")
+                    }
+                    val timeDate = isoFormat.parse(transaction.createdAt)
+                    val outputTimeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).apply {
+                        timeZone = TimeZone.getDefault()
+                    }
+                    if (timeDate != null) " • ${outputTimeFormat.format(timeDate)}" else ""
+                } else ""
+            } catch (e: Exception) {
+                // Fallback for different format yyyy-MM-dd HH:mm:ss
+                try {
+                    val fallbackFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
+                    val timeDate = fallbackFormat.parse(transaction.createdAt ?: "")
+                    val outputTimeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
+                    if (timeDate != null) " • ${outputTimeFormat.format(timeDate)}" else ""
+                } catch (e2: Exception) {
+                    ""
+                }
+            }
+
+            binding.tvDate.text = "$dateStr$timeStr"
             
             val amountValue = transaction.amount.toDoubleOrNull() ?: 0.0
             val format = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
