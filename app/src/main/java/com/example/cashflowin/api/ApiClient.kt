@@ -4,11 +4,11 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import com.example.cashflowin.BuildConfig
 
 object ApiClient {
-    // Endpoint untuk server production
-    private const val BASE_URL = "https://cashflowin.kelingstudio.web.id/api/"
-    // private const val BASE_URL = "http://10.0.2.2:8000/api/" // Uncomment untuk local testing dengan Emulator
+    // Endpoint for server obtained from BuildConfig
+    private val BASE_URL = BuildConfig.BASE_URL
 
     val instance: ApiService by lazy {
         val logging = HttpLoggingInterceptor()

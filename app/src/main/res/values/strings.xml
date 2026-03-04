@@ -22,4 +22,12 @@
     <string name="image_view_item_transform_content_description">Represents an image view in the
         item
     </string>
+
+    <!-- Error Messages -->
+    <string name="error_network">Network error occurred. Please check your connection.</string>
+    <string name="error_unauthorized">Session expired. Please login again.</string>
+    <string name="error_server">Server error: %1$d</string>
+    <string name="error_fetch_data">Failed to fetch data</string>
+    <string name="error_logout_failed">Logout Failed: %1$s</string>
+    <string name="success_logout">Logged out successfully</string>
 </resources>
