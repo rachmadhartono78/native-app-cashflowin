@@ -2,18 +2,23 @@ package com.example.cashflowin.ui.auth
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Patterns
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.cashflowin.MainActivity
+import com.example.cashflowin.api.ApiClient
+import com.example.cashflowin.api.AuthRepository
 import com.example.cashflowin.databinding.ActivityLoginBinding
 import com.example.cashflowin.utils.TokenManager
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
-    private val viewModel: AuthViewModel by viewModels()
+    private val viewModel: AuthViewModel by viewModels {
+        AuthViewModelFactory(AuthRepository(ApiClient.getApiService(this)))
+    }
     private lateinit var tokenManager: TokenManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,7 +28,6 @@ class LoginActivity : AppCompatActivity() {
 
         tokenManager = TokenManager(this)
 
-        // If already logged in
         if (tokenManager.getToken() != null) {
             navigateToMain()
         }
@@ -37,48 +41,72 @@ class LoginActivity : AppCompatActivity() {
             val email = binding.etEmail.text.toString().trim()
             val password = binding.etPassword.text.toString().trim()
 
-            if (email.isNotEmpty() && password.isNotEmpty()) {
+            if (validateInput(email, password)) {
                 viewModel.login(email, password)
-            } else {
-                Toast.makeText(this, "Please enter email and password", Toast.LENGTH_SHORT).show()
             }
         }
 
         binding.tvRegister.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
-            finish()
         }
+    }
+
+    private fun validateInput(email: String, password: String): Boolean {
+        var isValid = true
+
+        if (email.isEmpty()) {
+            binding.tilEmail.error = "Email cannot be empty"
+            isValid = false
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            binding.tilEmail.error = "Invalid email format"
+            isValid = false
+        } else {
+            binding.tilEmail.error = null
+        }
+
+        if (password.isEmpty()) {
+            binding.tilPassword.error = "Password cannot be empty"
+            isValid = false
+        } else if (password.length < 6) {
+            binding.tilPassword.error = "Password must be at least 6 characters"
+            isValid = false
+        } else {
+            binding.tilPassword.error = null
+        }
+
+        return isValid
     }
 
     private fun setupObservers() {
         viewModel.authState.observe(this) { state ->
             when (state) {
                 is AuthState.Idle -> {
-                    binding.progressBar.visibility = View.GONE
-                    binding.btnLogin.isEnabled = true
+                    setLoading(false)
                 }
                 is AuthState.Loading -> {
-                    binding.progressBar.visibility = View.VISIBLE
-                    binding.btnLogin.isEnabled = false
+                    setLoading(true)
                 }
                 is AuthState.Success -> {
-                    binding.progressBar.visibility = View.GONE
-                    binding.btnLogin.isEnabled = true
-                    
+                    setLoading(false)
                     state.response.token?.let {
                         tokenManager.saveToken(it)
                     }
-                    
-                    Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Welcome back!", Toast.LENGTH_SHORT).show()
                     navigateToMain()
                 }
                 is AuthState.Error -> {
-                    binding.progressBar.visibility = View.GONE
-                    binding.btnLogin.isEnabled = true
-                    Toast.makeText(this, state.message, Toast.LENGTH_SHORT).show()
+                    setLoading(false)
+                    Toast.makeText(this, state.message, Toast.LENGTH_LONG).show()
                 }
             }
         }
+    }
+
+    private fun setLoading(isLoading: Boolean) {
+        binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+        binding.btnLogin.isEnabled = !isLoading
+        binding.tilEmail.isEnabled = !isLoading
+        binding.tilPassword.isEnabled = !isLoading
     }
 
     private fun navigateToMain() {

@@ -4,9 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.cashflowin.api.ApiClient
+import com.example.cashflowin.api.AuthRepository
 import com.example.cashflowin.api.model.LoginRequest
 import com.example.cashflowin.api.model.LoginResponse
+import com.example.cashflowin.api.model.RegisterRequest
 import kotlinx.coroutines.launch
 
 sealed class AuthState {
@@ -16,7 +17,7 @@ sealed class AuthState {
     data class Error(val message: String) : AuthState()
 }
 
-class AuthViewModel : ViewModel() {
+class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
     private val _authState = MutableLiveData<AuthState>(AuthState.Idle)
     val authState: LiveData<AuthState> = _authState
 
@@ -25,7 +26,7 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val request = LoginRequest(email = email, password = password)
-                val response = ApiClient.instance.login(request)
+                val response = repository.login(request)
                 
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()!!
@@ -47,13 +48,13 @@ class AuthViewModel : ViewModel() {
         _authState.value = AuthState.Loading
         viewModelScope.launch {
             try {
-                val request = com.example.cashflowin.api.model.RegisterRequest(
+                val request = RegisterRequest(
                     name = name,
                     email = email,
                     password = password,
                     device_name = deviceName
                 )
-                val response = ApiClient.instance.register(request)
+                val response = repository.register(request)
                 
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()!!
