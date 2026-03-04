@@ -76,9 +76,6 @@ interface ApiService {
         @Query("year") year: String
     ): Response<ResponseBody>
 
-    @GET("assets")
-    suspend fun getAssets(@Header("Authorization") token: String): Response<AssetResponse>
-
     @POST("logout")
     suspend fun logout(@Header("Authorization") token: String): Response<com.google.gson.JsonObject>
 
@@ -105,6 +102,8 @@ interface ApiService {
     suspend fun deleteTransaction(
         @Header("Authorization") token: String,
         @retrofit2.http.Path("id") id: Int
+    ): Response<com.google.gson.JsonObject>
+
     @retrofit2.http.POST("assets/transfer")
     suspend fun transferAsset(
         @Header("Authorization") token: String,

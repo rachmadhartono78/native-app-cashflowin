@@ -49,7 +49,6 @@ class LoginActivity : AppCompatActivity() {
             finish()
         }
     }
-    }
 
     private fun setupObservers() {
         viewModel.authState.observe(this) { state ->

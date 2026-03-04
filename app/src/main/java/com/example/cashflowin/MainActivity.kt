@@ -20,12 +20,14 @@ import java.io.File
 import java.io.FileOutputStream
 import android.os.Environment
 import android.graphics.Color
-import com.example.cashflowin.api.model.DashboardSummary
+import androidx.core.graphics.toColorInt
+import com.example.cashflowin.api.model.Summary
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import okhttp3.ResponseBody
 
+@Suppress("DEPRECATION")
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
@@ -85,8 +87,8 @@ class MainActivity : AppCompatActivity() {
             val finalFileName = fileName.replace(".pdf", "_${timestamp}.pdf").replace(".csv", "_${timestamp}.csv")
             val file = File(downloadsDir, finalFileName)
             
-            var inputStream = body.byteStream()
-            var outputStream = FileOutputStream(file)
+            val inputStream = body.byteStream()
+            val outputStream = FileOutputStream(file)
             
             val buffer = ByteArray(4096)
             var bytesRead: Int
@@ -131,14 +133,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         transactionAdapter = TransactionAdapter { transaction ->
-            val intent = android.content.Intent(this, com.example.cashflowin.ui.transaction.AddTransactionActivity::class.java).apply {
+            val intent = Intent(this, com.example.cashflowin.ui.transaction.AddTransactionActivity::class.java).apply {
                 putExtra("EXTRA_ID", transaction.id)
                 putExtra("EXTRA_AMOUNT", transaction.amount)
                 putExtra("EXTRA_TYPE", transaction.type)
                 putExtra("EXTRA_DESC", transaction.description)
                 putExtra("EXTRA_DATE", transaction.date)
-                putExtra("EXTRA_CATEGORY_ID", transaction.category_id)
-                putExtra("EXTRA_ASSET_ID", transaction.asset_id)
+                putExtra("EXTRA_CATEGORY_ID", transaction.category?.id)
+                putExtra("EXTRA_ASSET_ID", transaction.asset?.id)
             }
             startActivity(intent)
         }
@@ -195,14 +197,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupPieChart(summary: DashboardSummary) {
+    private fun setupPieChart(summary: Summary) {
         val pieChart = binding.pieChart ?: return
 
         val entries = ArrayList<PieEntry>()
-        if (summary.total_income_month > 0f) {
+        if (summary.total_income_month > 0.0) {
             entries.add(PieEntry(summary.total_income_month.toFloat(), "Income"))
         }
-        if (summary.total_expense_month > 0f) {
+        if (summary.total_expense_month > 0.0) {
             entries.add(PieEntry(summary.total_expense_month.toFloat(), "Expense"))
         }
 
@@ -214,8 +216,8 @@ class MainActivity : AppCompatActivity() {
 
         val dataSet = PieDataSet(entries, "")
         val colors = ArrayList<Int>()
-        colors.add(Color.parseColor("#10B981")) // Green for income
-        colors.add(Color.parseColor("#EF4444")) // Red for expense
+        colors.add("#10B981".toColorInt()) // Green for income
+        colors.add("#EF4444".toColorInt()) // Red for expense
         dataSet.colors = colors
         dataSet.valueTextSize = 14f
         dataSet.valueTextColor = Color.WHITE
