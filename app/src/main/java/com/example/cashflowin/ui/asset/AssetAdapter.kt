@@ -31,12 +31,12 @@ class AssetAdapter(
             binding.tvAssetName.text = assetInfo.name
             binding.tvAssetType.text = assetInfo.type ?: "Asset"
             
-            val amountStr = assetInfo.amount ?: "0"
+            val balance = assetInfo.balance
             val format = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
             try {
-                binding.tvAssetAmount.text = format.format(amountStr.toDouble())
+                binding.tvAssetAmount.text = format.format(balance)
             } catch (e: Exception) {
-                binding.tvAssetAmount.text = "Rp $amountStr"
+                binding.tvAssetAmount.text = "Rp $balance"
             }
 
             binding.root.setOnClickListener {

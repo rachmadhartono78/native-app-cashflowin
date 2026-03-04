@@ -22,7 +22,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:background="@drawable/bg_circle_icon"
-            android:backgroundTint="#EFF6FF"
+            android:backgroundTint="#F3E5F5"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -32,8 +32,8 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_gravity="center"
-                android:src="@drawable/ic_gallery_black_24dp"
-                app:tint="#3B82F6" />
+                android:src="@drawable/ic_wallet_foreground"
+                app:tint="@color/primaryColor" />
         </FrameLayout>
 
         <!-- Asset Info -->

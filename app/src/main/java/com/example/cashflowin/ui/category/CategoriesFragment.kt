@@ -9,6 +9,8 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.cashflowin.api.ApiClient
+import com.example.cashflowin.api.CategoryRepository
 import com.example.cashflowin.databinding.FragmentCategoriesBinding
 import com.example.cashflowin.utils.TokenManager
 
@@ -17,7 +19,11 @@ class CategoriesFragment : Fragment() {
     private var _binding: FragmentCategoriesBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: CategoriesViewModel by viewModels()
+    private val viewModel: CategoriesViewModel by viewModels {
+        val apiService = ApiClient.getApiService(requireContext())
+        val repository = CategoryRepository(apiService)
+        CategoryViewModelFactory(repository)
+    }
     private lateinit var categoryAdapter: CategoryAdapter
     private lateinit var tokenManager: TokenManager
 
@@ -99,12 +105,7 @@ class CategoriesFragment : Fragment() {
     }
 
     private fun fetchCategories() {
-        val token = tokenManager.getToken()
-        if (token != null) {
-            viewModel.loadCategories(token)
-        } else {
-            Toast.makeText(requireContext(), "User not logged in", Toast.LENGTH_SHORT).show()
-        }
+        viewModel.loadCategories()
     }
 
     override fun onDestroyView() {

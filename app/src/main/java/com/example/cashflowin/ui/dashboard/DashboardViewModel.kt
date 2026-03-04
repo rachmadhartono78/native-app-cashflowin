@@ -34,10 +34,9 @@ class DashboardViewModel(
                 val response = repository.getDashboardSummary()
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()!!
-                    if (body.status == "success") {
+                    if (body.status.equals("success", ignoreCase = true)) {
                         _dashboardState.value = DashboardState.Success(body)
                     } else {
-                        // Fixed the unresolved reference 'message'
                         _dashboardState.value = DashboardState.Error(body.message ?: "Failed to fetch data")
                     }
                 } else if (response.code() == 401) {

@@ -9,6 +9,8 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.cashflowin.api.ApiClient
+import com.example.cashflowin.api.AssetRepository
 import com.example.cashflowin.databinding.FragmentAssetsBinding
 import com.example.cashflowin.utils.TokenManager
 
@@ -17,7 +19,11 @@ class AssetsFragment : Fragment() {
     private var _binding: FragmentAssetsBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: AssetsViewModel by viewModels()
+    private val viewModel: AssetsViewModel by viewModels {
+        val apiService = ApiClient.getApiService(requireContext())
+        val repository = AssetRepository(apiService)
+        AssetViewModelFactory(repository)
+    }
     private lateinit var assetAdapter: AssetAdapter
     private lateinit var tokenManager: TokenManager
 
@@ -51,7 +57,7 @@ class AssetsFragment : Fragment() {
                 putExtra("EXTRA_ASSET_ID", asset.id)
                 putExtra("EXTRA_ASSET_NAME", asset.name)
                 putExtra("EXTRA_ASSET_TYPE", asset.type)
-                putExtra("EXTRA_ASSET_AMOUNT", asset.amount)
+                putExtra("EXTRA_ASSET_AMOUNT", asset.balance.toString())
             }
             startActivity(intent)
         }
@@ -77,17 +83,17 @@ class AssetsFragment : Fragment() {
                 is AssetsState.Idle -> {}
                 is AssetsState.Loading -> {
                     binding.progressBar.visibility = View.VISIBLE
-                    binding.tvEmptyState.visibility = View.GONE
+                    binding.emptyStateLayout.visibility = View.GONE
                 }
                 is AssetsState.Success -> {
                     binding.progressBar.visibility = View.GONE
                     val list = state.response.data
                     
                     if (list.isEmpty()) {
-                        binding.tvEmptyState.visibility = View.VISIBLE
+                        binding.emptyStateLayout.visibility = View.VISIBLE
                         assetAdapter.submitList(emptyList())
                     } else {
-                        binding.tvEmptyState.visibility = View.GONE
+                        binding.emptyStateLayout.visibility = View.GONE
                         assetAdapter.submitList(list)
                     }
                 }
@@ -104,12 +110,7 @@ class AssetsFragment : Fragment() {
     }
 
     private fun fetchAssets() {
-        val token = tokenManager.getToken()
-        if (token != null) {
-            viewModel.loadAssets(token)
-        } else {
-            Toast.makeText(requireContext(), "User not logged in", Toast.LENGTH_SHORT).show()
-        }
+        viewModel.loadAssets()
     }
 
     override fun onDestroyView() {

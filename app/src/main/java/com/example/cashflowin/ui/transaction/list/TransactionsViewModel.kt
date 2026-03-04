@@ -27,7 +27,7 @@ class TransactionsViewModel(private val repository: TransactionRepository) : Vie
                 
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()!!
-                    if (body.status == "success") {
+                    if (body.status.equals("success", ignoreCase = true)) {
                         _transactionsState.value = TransactionsState.Success(body)
                     } else {
                         _transactionsState.value = TransactionsState.Error("Failed to fetch transactions")

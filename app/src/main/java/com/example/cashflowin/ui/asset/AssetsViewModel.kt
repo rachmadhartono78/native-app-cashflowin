@@ -28,12 +28,14 @@ class AssetsViewModel(private val repository: AssetRepository) : ViewModel() {
                 
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()!!
-                    if (body.status == "success") {
+                    // Accept both "success" and "Success" status
+                    if (body.status.equals("success", ignoreCase = true)) {
                         _assetsState.value = AssetsState.Success(body)
                     } else {
-                        // Fixed unresolved reference 'message'
                         _assetsState.value = AssetsState.Error(body.message ?: "Failed to fetch assets")
                     }
+                } else if (response.code() == 401) {
+                    _assetsState.value = AssetsState.Error("UNAUTHORIZED")
                 } else {
                     _assetsState.value = AssetsState.Error("Error: ${response.code()}")
                 }

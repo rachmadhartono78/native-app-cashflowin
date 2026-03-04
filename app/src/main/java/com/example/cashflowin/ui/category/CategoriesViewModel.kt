@@ -27,10 +27,10 @@ class CategoriesViewModel(private val repository: CategoryRepository) : ViewMode
                 
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()!!
-                    if (body.status == "success") {
+                    if (body.status.equals("success", ignoreCase = true)) {
                         _categoriesState.value = CategoriesState.Success(body)
                     } else {
-                        _categoriesState.value = CategoriesState.Error("Failed to fetch categories")
+                        _categoriesState.value = CategoriesState.Error(body.message ?: "Failed to fetch categories")
                     }
                 } else if (response.code() == 401) {
                     _categoriesState.value = CategoriesState.Error("UNAUTHORIZED")

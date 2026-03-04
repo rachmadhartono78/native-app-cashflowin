@@ -10,13 +10,19 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.cashflowin.R
+import com.example.cashflowin.api.ApiClient
+import com.example.cashflowin.api.CategoryRepository
 import com.example.cashflowin.databinding.ActivityAddEditCategoryBinding
 import com.example.cashflowin.utils.TokenManager
 
 class AddEditCategoryActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAddEditCategoryBinding
-    private val viewModel: AddEditCategoryViewModel by viewModels()
+    private val viewModel: AddEditCategoryViewModel by viewModels {
+        val apiService = ApiClient.getApiService(this)
+        val repository = CategoryRepository(apiService)
+        CategoryViewModelFactory(repository)
+    }
     private lateinit var tokenManager: TokenManager
 
     private var isEditMode = false
@@ -80,15 +86,10 @@ class AddEditCategoryActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            val token = tokenManager.getToken()
-            if (token != null) {
-                if (isEditMode) {
-                    viewModel.updateCategory(token, categoryId, name, type)
-                } else {
-                    viewModel.saveCategory(token, name, type)
-                }
+            if (isEditMode) {
+                viewModel.updateCategory(categoryId, name, type)
             } else {
-                Toast.makeText(this, "Session Expired", Toast.LENGTH_SHORT).show()
+                viewModel.saveCategory(name, type)
             }
         }
     }
@@ -147,10 +148,7 @@ class AddEditCategoryActivity : AppCompatActivity() {
             .setTitle("Delete Category")
             .setMessage("Are you sure you want to delete this category?")
             .setPositiveButton("Delete") { _, _ ->
-                val token = tokenManager.getToken()
-                if (token != null) {
-                    viewModel.deleteCategory(token, categoryId)
-                }
+                viewModel.deleteCategory(categoryId)
             }
             .setNegativeButton("Cancel", null)
             .show()

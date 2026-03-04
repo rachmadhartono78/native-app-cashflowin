@@ -7,6 +7,8 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.example.cashflowin.api.ApiClient
+import com.example.cashflowin.api.TransactionRepository
 import com.example.cashflowin.api.model.AssetInfo
 import com.example.cashflowin.api.model.CategoryInfo
 import com.example.cashflowin.api.model.TransactionRequest
@@ -19,7 +21,11 @@ import java.util.Locale
 class AddTransactionActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAddTransactionBinding
-    private val viewModel: AddTransactionViewModel by viewModels()
+    private val viewModel: AddTransactionViewModel by viewModels {
+        val apiService = ApiClient.getApiService(this)
+        val repository = TransactionRepository(apiService)
+        TransactionViewModelFactory(repository)
+    }
     private lateinit var tokenManager: TokenManager
 
     private var categoriesList: List<CategoryInfo> = emptyList()
@@ -54,13 +60,7 @@ class AddTransactionActivity : AppCompatActivity() {
             updateDateInView()
         }
 
-        val token = tokenManager.getToken()
-        if (token != null) {
-            viewModel.loadDropdownData(token)
-        } else {
-            Toast.makeText(this, "Session expired", Toast.LENGTH_SHORT).show()
-            finish()
-        }
+        viewModel.loadDropdownData()
     }
 
     private fun setupToolbar() {
@@ -258,13 +258,10 @@ class AddTransactionActivity : AppCompatActivity() {
             date = dateStr
         )
 
-        val token = tokenManager.getToken()
-        if (token != null) {
-            if (isEditMode) {
-                viewModel.updateTransaction(token, editTransactionId, request)
-            } else {
-                viewModel.submitTransaction(token, request)
-            }
+        if (isEditMode) {
+            viewModel.updateTransaction(editTransactionId, request)
+        } else {
+            viewModel.submitTransaction(request)
         }
     }
 
@@ -277,13 +274,12 @@ class AddTransactionActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: android.view.MenuItem): Boolean {
         if (item.itemId == com.example.cashflowin.R.id.action_delete) {
-            val token = tokenManager.getToken()
-            if (token != null && editTransactionId != -1) {
+            if (editTransactionId != -1) {
                 androidx.appcompat.app.AlertDialog.Builder(this)
                     .setTitle("Delete Transaction")
                     .setMessage("Are you sure you want to delete this transaction?")
                     .setPositiveButton("Delete") { _, _ ->
-                        viewModel.deleteTransaction(token, editTransactionId)
+                        viewModel.deleteTransaction(editTransactionId)
                     }
                     .setNegativeButton("Cancel", null)
                     .show()

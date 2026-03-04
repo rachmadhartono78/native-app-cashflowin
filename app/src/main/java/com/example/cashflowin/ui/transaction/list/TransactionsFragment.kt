@@ -8,8 +8,11 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.cashflowin.api.ApiClient
+import com.example.cashflowin.api.TransactionRepository
 import com.example.cashflowin.databinding.FragmentTransactionsBinding
 import com.example.cashflowin.ui.dashboard.TransactionAdapter
+import com.example.cashflowin.ui.transaction.TransactionViewModelFactory
 import com.example.cashflowin.utils.TokenManager
 import com.google.android.material.tabs.TabLayout
 
@@ -18,7 +21,11 @@ class TransactionsFragment : Fragment() {
     private var _binding: FragmentTransactionsBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: TransactionsViewModel by viewModels()
+    private val viewModel: TransactionsViewModel by viewModels {
+        val apiService = ApiClient.getApiService(requireContext())
+        val repository = TransactionRepository(apiService)
+        TransactionViewModelFactory(repository)
+    }
     private lateinit var transactionAdapter: TransactionAdapter
     private lateinit var tokenManager: TokenManager
 
@@ -105,7 +112,6 @@ class TransactionsFragment : Fragment() {
                     binding.progressBar.visibility = View.GONE
                     if (state.message == "UNAUTHORIZED") {
                         Toast.makeText(requireContext(), "Session expired.", Toast.LENGTH_SHORT).show()
-                        // Typically handled in MainActivity globally, but we can clear token here too.
                     } else {
                         Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
                     }
@@ -115,12 +121,7 @@ class TransactionsFragment : Fragment() {
     }
 
     private fun fetchTransactions() {
-        val token = tokenManager.getToken()
-        if (token != null) {
-            viewModel.loadTransactions(token, currentFilterType)
-        } else {
-            Toast.makeText(requireContext(), "User not logged in", Toast.LENGTH_SHORT).show()
-        }
+        viewModel.loadTransactions(currentFilterType)
     }
 
     override fun onDestroyView() {

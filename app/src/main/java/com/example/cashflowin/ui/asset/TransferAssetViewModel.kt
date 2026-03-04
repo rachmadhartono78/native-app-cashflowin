@@ -29,10 +29,10 @@ class TransferAssetViewModel(private val repository: AssetRepository) : ViewMode
                 
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()!!
-                    if (body.status == "success") {
+                    if (body.status.equals("success", ignoreCase = true)) {
                         _transferState.value = TransferAssetState.AssetsLoaded(body.data)
                     } else {
-                        _transferState.value = TransferAssetState.Error("Failed to fetch assets")
+                        _transferState.value = TransferAssetState.Error(body.message ?: "Failed to fetch assets")
                     }
                 } else {
                     _transferState.value = TransferAssetState.Error("Server error: ${response.code()}")

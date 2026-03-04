@@ -7,6 +7,8 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.example.cashflowin.api.ApiClient
+import com.example.cashflowin.api.AssetRepository
 import com.example.cashflowin.api.model.AssetInfo
 import com.example.cashflowin.databinding.ActivityTransferAssetBinding
 import com.example.cashflowin.utils.TokenManager
@@ -17,7 +19,11 @@ import java.util.Locale
 class TransferAssetActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityTransferAssetBinding
-    private val viewModel: TransferAssetViewModel by viewModels()
+    private val viewModel: TransferAssetViewModel by viewModels {
+        val apiService = ApiClient.getApiService(this)
+        val repository = AssetRepository(apiService)
+        AssetViewModelFactory(repository)
+    }
     private lateinit var tokenManager: TokenManager
 
     private var availableAssets: List<AssetInfo> = emptyList()
@@ -43,12 +49,7 @@ class TransferAssetActivity : AppCompatActivity() {
         setupListeners()
         setupObservers()
 
-        val token = tokenManager.getToken()
-        if (token != null) {
-            viewModel.loadAssets(token)
-        } else {
-            Toast.makeText(this, "Session Expired", Toast.LENGTH_SHORT).show()
-        }
+        viewModel.loadAssets()
     }
 
     private fun setupListeners() {
@@ -99,10 +100,7 @@ class TransferAssetActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            val token = tokenManager.getToken()
-            if (token != null) {
-                viewModel.submitTransfer(token, selectedSourceId, selectedDestId, amount, date, description)
-            }
+            viewModel.submitTransfer(selectedSourceId, selectedDestId, amount, date, description)
         }
     }
     
