@@ -9,8 +9,14 @@ import retrofit2.Response
 
 class TransactionRepository(private val apiService: ApiService) {
 
-    suspend fun getTransactions(type: String? = null): Response<TransactionListResponse> {
-        return apiService.getTransactions(type)
+    suspend fun getTransactions(
+        type: String? = null,
+        categoryId: Int? = null,
+        search: String? = null,
+        startDate: String? = null,
+        endDate: String? = null
+    ): Response<TransactionListResponse> {
+        return apiService.getTransactions(type, categoryId, search, startDate, endDate)
     }
 
     suspend fun getCategories(): Response<CategoryResponse> {

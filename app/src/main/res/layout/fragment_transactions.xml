@@ -8,6 +8,53 @@
     android:background="@color/white"
     tools:context=".ui.transaction.list.TransactionsFragment">
 
+    <!-- Search and Date Filter Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:gravity="center_vertical">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilSearch"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Search transactions..."
+            app:startIconDrawable="@android:drawable/ic_menu_search">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etSearch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <ImageButton
+            android:id="@+id/btnDateFilter"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Filter by date"
+            android:src="@android:drawable/ic_menu_today"
+            app:tint="?attr/colorPrimary" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvActiveDateFilter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="8dp"
+        android:text="Showing: All dates"
+        android:textSize="12sp"
+        android:textColor="?attr/colorPrimary"
+        android:visibility="visible" />
+
     <!-- Filter Tabs -->
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayoutFilter"
@@ -42,7 +89,7 @@
         android:layout_marginTop="32dp"
         android:visibility="gone" />
 
-    <!-- Empty State Text (optional depending if API returns empty) -->
+    <!-- Empty State Text -->
     <TextView
         android:id="@+id/tvEmptyState"
         android:layout_width="match_parent"

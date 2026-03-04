@@ -19,11 +19,17 @@ class TransactionsViewModel(private val repository: TransactionRepository) : Vie
     private val _transactionsState = MutableLiveData<TransactionsState>(TransactionsState.Idle)
     val transactionsState: LiveData<TransactionsState> = _transactionsState
 
-    fun loadTransactions(type: String? = null) {
+    fun loadTransactions(
+        type: String? = null,
+        categoryId: Int? = null,
+        search: String? = null,
+        startDate: String? = null,
+        endDate: String? = null
+    ) {
         _transactionsState.value = TransactionsState.Loading
         viewModelScope.launch {
             try {
-                val response = repository.getTransactions(type)
+                val response = repository.getTransactions(type, categoryId, search, startDate, endDate)
                 
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()!!

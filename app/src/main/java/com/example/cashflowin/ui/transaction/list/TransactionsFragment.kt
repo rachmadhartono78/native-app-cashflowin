@@ -1,12 +1,16 @@
 package com.example.cashflowin.ui.transaction.list
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.util.Pair
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cashflowin.api.ApiClient
 import com.example.cashflowin.api.TransactionRepository
@@ -14,7 +18,13 @@ import com.example.cashflowin.databinding.FragmentTransactionsBinding
 import com.example.cashflowin.ui.dashboard.TransactionAdapter
 import com.example.cashflowin.ui.transaction.TransactionViewModelFactory
 import com.example.cashflowin.utils.TokenManager
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.tabs.TabLayout
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 
 class TransactionsFragment : Fragment() {
 
@@ -30,6 +40,11 @@ class TransactionsFragment : Fragment() {
     private lateinit var tokenManager: TokenManager
 
     private var currentFilterType: String? = null
+    private var currentSearch: String? = null
+    private var startDate: String? = null
+    private var endDate: String? = null
+    
+    private var searchJob: Job? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,6 +62,8 @@ class TransactionsFragment : Fragment() {
 
         setupRecyclerView()
         setupTabs()
+        setupSearch()
+        setupDatePicker()
         setupObservers()
 
         fetchTransactions()
@@ -88,6 +105,55 @@ class TransactionsFragment : Fragment() {
         })
     }
 
+    private fun setupSearch() {
+        binding.etSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                searchJob?.cancel()
+                searchJob = lifecycleScope.launch {
+                    delay(500)
+                    currentSearch = if (s.isNullOrBlank()) null else s.toString()
+                    fetchTransactions()
+                }
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
+    }
+
+    private fun setupDatePicker() {
+        binding.btnDateFilter.setOnClickListener {
+            val datePicker = MaterialDatePicker.Builder.dateRangePicker()
+                .setTitleText("Select date range")
+                .setSelection(
+                    Pair(
+                        MaterialDatePicker.todayInUtcMilliseconds(),
+                        MaterialDatePicker.todayInUtcMilliseconds()
+                    )
+                )
+                .build()
+
+            datePicker.addOnPositiveButtonClickListener { selection ->
+                val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                startDate = sdf.format(Date(selection.first))
+                endDate = sdf.format(Date(selection.second))
+                
+                binding.tvActiveDateFilter.text = "Showing: $startDate to $endDate"
+                fetchTransactions()
+            }
+            
+            datePicker.show(childFragmentManager, "DATE_RANGE_PICKER")
+        }
+        
+        // Clear filter on long click
+        binding.btnDateFilter.setOnLongClickListener {
+            startDate = null
+            endDate = null
+            binding.tvActiveDateFilter.text = "Showing: All dates"
+            fetchTransactions()
+            true
+        }
+    }
+
     private fun setupObservers() {
         viewModel.transactionsState.observe(viewLifecycleOwner) { state ->
             when (state) {
@@ -121,7 +187,12 @@ class TransactionsFragment : Fragment() {
     }
 
     private fun fetchTransactions() {
-        viewModel.loadTransactions(currentFilterType)
+        viewModel.loadTransactions(
+            type = currentFilterType,
+            search = currentSearch,
+            startDate = startDate,
+            endDate = endDate
+        )
     }
 
     override fun onDestroyView() {

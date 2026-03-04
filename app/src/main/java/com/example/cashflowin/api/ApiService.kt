@@ -71,7 +71,11 @@ interface ApiService {
 
     @GET("transactions")
     suspend fun getTransactions(
-        @Query("type") type: String? = null
+        @Query("type") type: String? = null,
+        @Query("category_id") categoryId: Int? = null,
+        @Query("search") search: String? = null,
+        @Query("start_date") startDate: String? = null,
+        @Query("end_date") endDate: String? = null
     ): Response<TransactionListResponse>
 
     @POST("transactions")
