@@ -34,19 +34,20 @@ class BudgetAdapter(private var budgets: List<Budget>) :
 
         fun bind(budget: Budget) {
             val format = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
+            val spent = budget.spent ?: 0.0
             
             binding.tvCategoryName.text = budget.category?.name ?: "Unknown Category"
             binding.tvBudgetAmount.text = format.format(budget.amount)
-            binding.tvSpentAmount.text = "Terpakai: ${format.format(budget.spent)}"
+            binding.tvSpentAmount.text = "Terpakai: ${format.format(spent)}"
             
-            val remaining = budget.amount - budget.spent
+            val remaining = budget.amount - spent
             binding.tvRemainingBudget.text = "Sisa: ${format.format(remaining)}"
             
-            val progress = if (budget.amount > 0) (budget.spent / budget.amount * 100).toInt() else 0
+            val progress = if (budget.amount > 0) (spent / budget.amount * 100).toInt() else 0
             binding.progressBudget.progress = progress
             
             // Change color if over budget
-            if (budget.spent > budget.amount) {
+            if (spent > budget.amount) {
                 binding.progressBudget.setIndicatorColor(Color.parseColor("#EF4444")) // Red
                 binding.tvRemainingBudget.setTextColor(Color.parseColor("#EF4444"))
             } else {
