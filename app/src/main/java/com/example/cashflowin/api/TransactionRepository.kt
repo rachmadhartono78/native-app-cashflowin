@@ -20,8 +20,8 @@ class TransactionRepository(private val apiService: ApiService) {
         return apiService.getTransactions(page, type, categoryId, search, startDate, endDate)
     }
 
-    suspend fun getCategories(): Response<CategoryResponse> {
-        return apiService.getCategories()
+    suspend fun getCategories(type: String? = null): Response<CategoryResponse> {
+        return apiService.getCategories(type)
     }
 
     suspend fun getAssets(): Response<AssetResponse> {

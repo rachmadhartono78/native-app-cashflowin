@@ -6,8 +6,8 @@ import retrofit2.Response
 
 class CategoryRepository(private val apiService: ApiService) {
 
-    suspend fun getCategories(): Response<CategoryResponse> {
-        return apiService.getCategories()
+    suspend fun getCategories(type: String? = null): Response<CategoryResponse> {
+        return apiService.getCategories(type)
     }
 
     suspend fun addCategory(request: CategoryRequest): Response<Any> {

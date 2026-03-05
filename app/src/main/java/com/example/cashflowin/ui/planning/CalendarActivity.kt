@@ -65,8 +65,8 @@ class CalendarActivity : AppCompatActivity() {
                 
                 binding.progressBar.visibility = View.GONE
                 
-                if (response.isSuccessful && response.body() != null) {
-                    val allTransactions = response.body()!!.data.data
+                if (response.isSuccessful) {
+                    val allTransactions = response.body()?.data?.data ?: emptyList()
                     
                     // Filter matching the specific selected day
                     val filtered = allTransactions.filter { it.date == dateStr }

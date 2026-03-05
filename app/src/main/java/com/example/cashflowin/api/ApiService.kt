@@ -37,7 +37,7 @@ interface ApiService {
     suspend fun getAssets(): Response<AssetResponse>
 
     @GET("categories")
-    suspend fun getCategories(): Response<CategoryResponse>
+    suspend fun getCategories(@Query("type") type: String? = null): Response<CategoryResponse>
 
     @POST("categories")
     suspend fun addCategory(@Body request: CategoryRequest): Response<Any>

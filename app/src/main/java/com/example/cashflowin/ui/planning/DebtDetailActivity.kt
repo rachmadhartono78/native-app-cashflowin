@@ -8,6 +8,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.cashflowin.api.ApiClient
 import com.example.cashflowin.api.model.Debt
 import com.example.cashflowin.databinding.ActivityDebtDetailBinding
+import com.example.cashflowin.utils.CurrencyTextWatcher
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
