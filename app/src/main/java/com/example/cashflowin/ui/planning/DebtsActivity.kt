@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cashflowin.api.ApiClient
 import com.example.cashflowin.databinding.ActivityDebtsBinding
 import kotlinx.coroutines.launch
@@ -16,6 +17,7 @@ class DebtsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDebtsBinding
     private val format = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
+    private lateinit var debtsAdapter: DebtsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,8 +28,20 @@ class DebtsActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding.toolbar.setNavigationOnClickListener { finish() }
 
+        setupRecyclerView()
         setupListeners()
-        fetchDebts()
+    }
+
+    private fun setupRecyclerView() {
+        debtsAdapter = DebtsAdapter(emptyList()) { debt ->
+            val intent = Intent(this, DebtDetailActivity::class.java)
+            intent.putExtra("EXTRA_DEBT_ID", debt.id)
+            startActivity(intent)
+        }
+        binding.rvDebts.apply {
+            layoutManager = LinearLayoutManager(this@DebtsActivity)
+            adapter = debtsAdapter
+        }
     }
 
     private fun setupListeners() {
@@ -38,7 +52,7 @@ class DebtsActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        fetchDebts() // Refresh when returning
+        fetchDebts()
     }
 
     private fun fetchDebts() {
@@ -59,21 +73,14 @@ class DebtsActivity : AppCompatActivity() {
                     binding.tvTotalReceivable.text = format.format(data.total_receivable_balance)
                     
                     binding.rvDebts.visibility = View.VISIBLE
-                    
-                    // TODO: Setup Adapter for `data.debts` and set click listener to go to DebtDetailActivity
-                    // val adapter = DebtsAdapter(data.debts) { debt ->
-                    //     val intent = Intent(this@DebtsActivity, DebtDetailActivity::class.java)
-                    //     intent.putExtra("EXTRA_DEBT_ID", debt.id)
-                    //     startActivity(intent)
-                    // }
-                    // binding.rvDebts.adapter = adapter
+                    debtsAdapter.updateData(data.debts)
                     
                 } else {
-                    showError("Failed to fetch debts")
+                    showError("Gagal mengambil data hutang")
                 }
             } catch (e: Exception) {
                 binding.progressBar.visibility = View.GONE
-                showError("Network error: ${e.message}")
+                showError("Kesalahan jaringan: ${e.message}")
             }
         }
     }

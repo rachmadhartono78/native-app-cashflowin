@@ -1,7 +1,7 @@
 package com.example.cashflowin.ui.planning
 
+import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.cashflowin.databinding.ActivityCalculatorBinding
 
@@ -18,16 +18,14 @@ class CalculatorActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding.toolbar.setNavigationOnClickListener { finish() }
 
-        setupListeners()
-    }
-
-    private fun setupListeners() {
         binding.cardEmergencyFund.setOnClickListener {
-            startActivity(android.content.Intent(this, EmergencyFundActivity::class.java))
+            // Navigate to Emergency Fund Calculator Activity if exists
+            // startActivity(Intent(this, EmergencyFundActivity::class.java))
         }
-        
+
         binding.cardRetirement.setOnClickListener {
-            startActivity(android.content.Intent(this, RetirementFundActivity::class.java))
+            // Navigate to Retirement Fund Calculator Activity if exists
+            // startActivity(Intent(this, RetirementFundActivity::class.java))
         }
     }
 }

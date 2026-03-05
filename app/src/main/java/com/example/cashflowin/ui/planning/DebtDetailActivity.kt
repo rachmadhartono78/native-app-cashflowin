@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cashflowin.api.ApiClient
 import com.example.cashflowin.api.model.Debt
 import com.example.cashflowin.databinding.ActivityDebtDetailBinding
@@ -18,6 +19,7 @@ class DebtDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDebtDetailBinding
     private val format = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
     private var debtId: Int = -1
+    private lateinit var paymentAdapter: PaymentAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +32,7 @@ class DebtDetailActivity : AppCompatActivity() {
 
         debtId = intent.getIntExtra("EXTRA_DEBT_ID", -1)
 
+        setupRecyclerView()
         setupListeners()
     }
 
@@ -38,8 +41,16 @@ class DebtDetailActivity : AppCompatActivity() {
         if (debtId != -1) {
             fetchDebtDetails()
         } else {
-            Toast.makeText(this, "Invalid Debt ID", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "ID Catatan tidak valid", Toast.LENGTH_SHORT).show()
             finish()
+        }
+    }
+
+    private fun setupRecyclerView() {
+        paymentAdapter = PaymentAdapter(emptyList())
+        binding.rvPayments.apply {
+            layoutManager = LinearLayoutManager(this@DebtDetailActivity)
+            adapter = paymentAdapter
         }
     }
 
@@ -48,10 +59,8 @@ class DebtDetailActivity : AppCompatActivity() {
             val intent = android.content.Intent(this, AddPaymentActivity::class.java)
             intent.putExtra("EXTRA_DEBT_ID", debtId)
             
-            // Pass the remaining amount to ensure proper validation
-            val remaining = binding.tvRemainingAmount.text.toString().let {
-                CurrencyTextWatcher.getUnformattedValue(it).toDoubleOrNull() ?: 0.0
-            }
+            val remainingText = binding.tvRemainingAmount.text.toString()
+            val remaining = CurrencyTextWatcher.getUnformattedValue(remainingText)
             intent.putExtra("EXTRA_REMAINING_AMOUNT", remaining)
             
             startActivity(intent)
@@ -78,14 +87,13 @@ class DebtDetailActivity : AppCompatActivity() {
                         binding.fabAddPayment.show()
                     }
                 } else {
-                    Toast.makeText(this@DebtDetailActivity, "Failed to load details", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@DebtDetailActivity, "Gagal memuat detail", Toast.LENGTH_SHORT).show()
                     finish()
                 }
 
             } catch (e: Exception) {
                 binding.progressBar.visibility = View.GONE
-                Toast.makeText(this@DebtDetailActivity, "Network error: ${e.message}", Toast.LENGTH_SHORT).show()
-                finish()
+                Toast.makeText(this@DebtDetailActivity, "Kesalahan jaringan: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -93,7 +101,7 @@ class DebtDetailActivity : AppCompatActivity() {
     private fun bindData(debt: Debt) {
         binding.tvPersonName.text = debt.person_name
         
-        val typeStr = if (debt.type == "debt") "Hutang Saya" else "Dihutangi"
+        val typeStr = if (debt.type == "debt") "Hutang Saya" else "Piutang (Dihutangi)"
         val statusStr = if (debt.status == "pending") "Belum Lunas" else "Lunas"
         binding.tvTypeAndStatus.text = "$typeStr • $statusStr"
         
@@ -115,13 +123,14 @@ class DebtDetailActivity : AppCompatActivity() {
             binding.tvDescription.visibility = View.GONE
         }
         
-        if (debt.payments.isNullOrEmpty()) {
+        val payments = debt.payments
+        if (payments.isNullOrEmpty()) {
             binding.tvNoPayments.visibility = View.VISIBLE
             binding.rvPayments.visibility = View.GONE
         } else {
             binding.tvNoPayments.visibility = View.GONE
             binding.rvPayments.visibility = View.VISIBLE
-            // TODO: Set up Payment Adapter
+            paymentAdapter.updateData(payments)
         }
     }
 }
