@@ -91,6 +91,9 @@ class LoginActivity : AppCompatActivity() {
                     state.response.token?.let {
                         tokenManager.saveToken(it)
                     }
+                    state.response.user?.let {
+                        tokenManager.saveUser(it.name, it.email)
+                    }
                     Toast.makeText(this, "Welcome back!", Toast.LENGTH_SHORT).show()
                     navigateToMain()
                 }

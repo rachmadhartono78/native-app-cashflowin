@@ -34,6 +34,11 @@ class SettingsFragment : Fragment() {
     }
 
     private fun setupListeners() {
+        binding.btnEditProfile.setOnClickListener {
+            val intent = Intent(requireContext(), EditProfileActivity::class.java)
+            startActivity(intent)
+        }
+
         binding.btnLogout.setOnClickListener {
             showLogoutConfirmation()
         }

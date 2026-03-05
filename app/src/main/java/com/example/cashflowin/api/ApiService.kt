@@ -105,4 +105,64 @@ interface ApiService {
 
     @DELETE("assets/{id}")
     suspend fun deleteAsset(@Path("id") id: Int): Response<com.google.gson.JsonObject>
+
+    @PUT("profile")
+    suspend fun updateProfile(@Body request: com.example.cashflowin.api.model.UpdateProfileRequest): Response<com.example.cashflowin.api.model.UpdateProfileResponse>
+
+    @PUT("password")
+    suspend fun updatePassword(@Body request: com.example.cashflowin.api.model.UpdatePasswordRequest): Response<com.google.gson.JsonObject>
+
+    // Budgets
+    @GET("budgets")
+    suspend fun getBudgets(@Query("month") month: Int? = null, @Query("year") year: Int? = null): Response<com.example.cashflowin.api.model.BudgetResponse>
+
+    @POST("budgets")
+    suspend fun addBudget(@Body request: com.example.cashflowin.api.model.BudgetRequest): Response<com.google.gson.JsonObject>
+
+    @POST("budgets/clone")
+    suspend fun cloneBudgets(@Body request: com.example.cashflowin.api.model.CloneBudgetRequest): Response<com.google.gson.JsonObject>
+
+    @DELETE("budgets/{id}")
+    suspend fun deleteBudget(@Path("id") id: Int): Response<com.google.gson.JsonObject>
+
+    // Goals
+    @GET("goals")
+    suspend fun getGoals(): Response<com.example.cashflowin.api.model.GoalListResponse>
+
+    @GET("goals/{id}")
+    suspend fun getGoalDetails(@Path("id") id: Int): Response<com.example.cashflowin.api.model.GoalDetailResponse>
+
+    @POST("goals")
+    suspend fun addGoal(@Body request: com.example.cashflowin.api.model.GoalRequest): Response<com.google.gson.JsonObject>
+
+    @PUT("goals/{id}")
+    suspend fun updateGoal(@Path("id") id: Int, @Body request: com.example.cashflowin.api.model.GoalRequest): Response<com.google.gson.JsonObject>
+
+    @PUT("goals/{id}")
+    suspend fun addGoalTransaction(@Path("id") id: Int, @Body request: com.example.cashflowin.api.model.GoalTransactionRequest): Response<com.google.gson.JsonObject>
+
+    @DELETE("goals/{id}")
+    suspend fun deleteGoal(@Path("id") id: Int): Response<com.google.gson.JsonObject>
+
+    // Debts
+    @GET("debts")
+    suspend fun getDebts(): Response<com.example.cashflowin.api.model.DebtListResponse>
+
+    @POST("debts")
+    suspend fun addDebt(@Body request: com.example.cashflowin.api.model.DebtRequest): Response<com.google.gson.JsonObject>
+
+    @GET("debts/{id}")
+    suspend fun getDebtDetails(@Path("id") id: Int): Response<com.example.cashflowin.api.model.DebtDetailResponse>
+
+    @PUT("debts/{id}")
+    suspend fun updateDebt(@Path("id") id: Int, @Body request: com.example.cashflowin.api.model.DebtRequest): Response<com.google.gson.JsonObject>
+
+    @DELETE("debts/{id}")
+    suspend fun deleteDebt(@Path("id") id: Int): Response<com.google.gson.JsonObject>
+
+    @POST("debts/{id}/payments")
+    suspend fun addDebtPayment(@Path("id") id: Int, @Body request: com.example.cashflowin.api.model.DebtPaymentRequest): Response<com.google.gson.JsonObject>
+
+    @DELETE("debts/{id}/payments/{paymentId}")
+    suspend fun deleteDebtPayment(@Path("id") id: Int, @Path("paymentId") paymentId: Int): Response<com.google.gson.JsonObject>
 }

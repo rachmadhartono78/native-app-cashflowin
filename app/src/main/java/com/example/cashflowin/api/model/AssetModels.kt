@@ -1,5 +1,7 @@
 package com.example.cashflowin.api.model
 
+import com.google.gson.annotations.SerializedName
+
 data class AssetResponse(
     val status: String,
     val data: List<AssetInfo>,
@@ -10,6 +12,7 @@ data class AssetInfo(
     val id: Int,
     val name: String,
     val type: String,
+    @SerializedName("amount")
     val balance: Double
 )
 

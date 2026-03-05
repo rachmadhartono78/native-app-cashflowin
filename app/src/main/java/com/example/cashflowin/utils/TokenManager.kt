@@ -14,7 +14,21 @@ class TokenManager(context: Context) {
         return prefs.getString("USER_TOKEN", null)
     }
 
+    fun saveUser(name: String, email: String) {
+        prefs.edit()
+            .putString("USER_NAME", name)
+            .putString("USER_EMAIL", email)
+            .apply()
+    }
+
+    fun getUserName(): String? = prefs.getString("USER_NAME", null)
+    fun getUserEmail(): String? = prefs.getString("USER_EMAIL", null)
+
     fun clearToken() {
-        prefs.edit().remove("USER_TOKEN").apply()
+        prefs.edit()
+            .remove("USER_TOKEN")
+            .remove("USER_NAME")
+            .remove("USER_EMAIL")
+            .apply()
     }
 }

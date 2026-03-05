@@ -84,6 +84,26 @@ class DashboardFragment : Fragment() {
                 saveFileToDownloads(responseBody, "Laporan_Keuangan.csv")
             }
         }
+
+        binding.btnBudgets.setOnClickListener {
+            startActivity(Intent(requireContext(), com.example.cashflowin.ui.planning.BudgetsActivity::class.java))
+        }
+
+        binding.btnGoals.setOnClickListener {
+            startActivity(Intent(requireContext(), com.example.cashflowin.ui.planning.GoalsActivity::class.java))
+        }
+
+        binding.btnDebts.setOnClickListener {
+            startActivity(Intent(requireContext(), com.example.cashflowin.ui.planning.DebtsActivity::class.java))
+        }
+
+        binding.btnCalendar.setOnClickListener {
+            startActivity(Intent(requireContext(), com.example.cashflowin.ui.planning.CalendarActivity::class.java))
+        }
+
+        binding.btnCalculator.setOnClickListener {
+            startActivity(Intent(requireContext(), com.example.cashflowin.ui.planning.CalculatorActivity::class.java))
+        }
     }
 
     private fun saveFileToDownloads(body: ResponseBody, fileName: String): Pair<Boolean, String> {

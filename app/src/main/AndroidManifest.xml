@@ -56,6 +56,65 @@
             android:name=".ui.category.AddEditCategoryActivity"
             android:exported="false"
             android:theme="@style/Theme.Cashflowin.NoActionBar" />
+
+        <activity
+            android:name=".ui.settings.EditProfileActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Cashflowin.NoActionBar" />
+        <activity
+            android:name=".ui.planning.BudgetsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Cashflowin.NoActionBar" />
+
+        <activity
+            android:name=".ui.planning.GoalsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Cashflowin.NoActionBar" />
+
+        <activity
+            android:name=".ui.planning.AddBudgetActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Cashflowin.NoActionBar" />
+
+        <activity
+            android:name=".ui.planning.AddGoalActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Cashflowin.NoActionBar" />
+
+        <activity
+            android:name=".ui.planning.DebtsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Cashflowin.NoActionBar" />
+
+        <activity
+            android:name=".ui.planning.AddDebtActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Cashflowin.NoActionBar" />
+
+        <activity
+            android:name=".ui.planning.DebtDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Cashflowin.NoActionBar" />
+
+        <activity
+            android:name=".ui.planning.AddPaymentActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Cashflowin.NoActionBar" />
+
+        <activity
+            android:name=".ui.planning.CalendarActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Cashflowin.NoActionBar" />
+
+        <activity
+            android:name=".ui.planning.EmergencyFundActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Cashflowin.NoActionBar" />
+
+        <activity
+            android:name=".ui.planning.RetirementFundActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Cashflowin.NoActionBar" />
     </application>
 
 </manifest>
