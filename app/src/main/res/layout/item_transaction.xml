@@ -7,49 +7,69 @@
     android:layout_marginStart="8dp"
     android:layout_marginEnd="8dp"
     app:cardCornerRadius="16dp"
-    app:cardElevation="2dp"
-    app:strokeWidth="0dp">
+    app:cardElevation="1dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="#F1F5F9">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="20dp">
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/tvCategoryName"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="Category"
-            android:textColor="?attr/colorOnSurface"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@+id/tvAmount"
+        <View
+            android:id="@+id/viewIndicator"
+            android:layout_width="4dp"
+            android:layout_height="0dp"
+            android:background="#10B981"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/tvDate"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:text="2023-10-27"
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="14sp"
-            app:layout_constraintEnd_toStartOf="@+id/tvAmount"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvCategoryName" />
-
-        <TextView
-            android:id="@+id/tvAmount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Rp 100.000"
-            android:textColor="?attr/colorPrimary"
-            android:textSize="18sp"
-            android:textStyle="bold"
+            android:padding="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toEndOf="@id/viewIndicator"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/tvCategoryName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Category"
+                android:textColor="#1E293B"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/tvAmount"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="27 Oct 2023"
+                android:textColor="#64748B"
+                android:textSize="13sp"
+                app:layout_constraintEnd_toStartOf="@+id/tvAmount"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvCategoryName" />
+
+            <TextView
+                android:id="@+id/tvAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+ Rp 100.000"
+                android:textColor="#10B981"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

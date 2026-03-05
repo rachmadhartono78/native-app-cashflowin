@@ -41,6 +41,9 @@ class DashboardFragment : Fragment() {
         )
     }
     private lateinit var transactionAdapter: TransactionAdapter
+    
+    private var isBalanceVisible = true
+    private var currentSummary: Summary? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -104,6 +107,19 @@ class DashboardFragment : Fragment() {
         binding.btnCalculator.setOnClickListener {
             startActivity(Intent(requireContext(), com.example.cashflowin.ui.planning.CalculatorActivity::class.java))
         }
+
+        binding.btnHideBalance.setOnClickListener {
+            isBalanceVisible = !isBalanceVisible
+            currentSummary?.let { updateUI(it) }
+            
+            // Toggle icon
+            val iconRes = if (isBalanceVisible) {
+                android.R.drawable.ic_menu_view
+            } else {
+                android.R.drawable.ic_menu_close_clear_cancel // Or a better hidden eye icon if available
+            }
+            binding.btnHideBalance.setImageResource(iconRes)
+        }
     }
 
     private fun saveFileToDownloads(body: ResponseBody, fileName: String): Pair<Boolean, String> {
@@ -166,6 +182,7 @@ class DashboardFragment : Fragment() {
                     val summary = state.response.data?.summary
                     val transactions = state.response.data?.recent_transactions ?: emptyList()
 
+                    currentSummary = summary
                     summary?.let { updateUI(it) }
                     transactionAdapter.submitList(transactions)
                     
@@ -197,9 +214,16 @@ class DashboardFragment : Fragment() {
 
     private fun updateUI(summary: Summary) {
         val format = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
-        binding.tvTotalBalance.text = format.format(summary.balance)
-        binding.tvIncome.text = format.format(summary.total_income_month)
-        binding.tvExpense.text = format.format(summary.total_expense_month)
+        
+        if (isBalanceVisible) {
+            binding.tvTotalBalance.text = format.format(summary.balance)
+            binding.tvIncome.text = format.format(summary.total_income_month)
+            binding.tvExpense.text = format.format(summary.total_expense_month)
+        } else {
+            binding.tvTotalBalance.text = "Rp ********"
+            binding.tvIncome.text = "Rp ********"
+            binding.tvExpense.text = "Rp ********"
+        }
         
         setupPieChart(summary)
     }

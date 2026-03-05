@@ -1,9 +1,10 @@
 package com.example.cashflowin.ui.dashboard
 
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.example.cashflowin.R
 import com.example.cashflowin.api.model.TransactionItem
 import com.example.cashflowin.databinding.ItemTransactionBinding
 import java.text.NumberFormat
@@ -16,6 +17,17 @@ class TransactionAdapter(
 ) : RecyclerView.Adapter<TransactionAdapter.TransactionViewHolder>() {
 
     private var transactions: List<TransactionItem> = listOf()
+
+    // Formatter dipindahkan ke luar agar lebih efisien
+    private val currencyFormat = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
+    private val inputDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+    private val outputDateFormat = SimpleDateFormat("dd MMM yyyy", Locale("id", "ID"))
+    private val isoFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", Locale.US).apply {
+        timeZone = TimeZone.getTimeZone("UTC")
+    }
+    private val outputTimeFormat = SimpleDateFormat("HH:mm", Locale.getDefault()).apply {
+        timeZone = TimeZone.getDefault()
+    }
 
     fun submitList(list: List<TransactionItem>) {
         transactions = list
@@ -35,55 +47,41 @@ class TransactionAdapter(
 
     inner class TransactionViewHolder(private val binding: ItemTransactionBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(transaction: TransactionItem) {
+            val context = binding.root.context
             binding.tvCategoryName.text = transaction.category?.name ?: transaction.description ?: "Unknown"
             
             // Format Date and Time
             val dateStr = try {
-                val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-                val outputFormat = SimpleDateFormat("dd MMM yyyy", Locale("id", "ID"))
-                val date = inputFormat.parse(transaction.date)
-                if (date != null) outputFormat.format(date) else transaction.date
+                val date = inputDateFormat.parse(transaction.date)
+                if (date != null) outputDateFormat.format(date) else transaction.date
             } catch (e: Exception) {
                 transaction.date
             }
 
             val timeStr = try {
                 if (transaction.createdAt != null) {
-                    // Typical API timestamp: 2023-10-27T14:30:00.000000Z
-                    val isoFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", Locale.US).apply {
-                        timeZone = TimeZone.getTimeZone("UTC")
-                    }
                     val timeDate = isoFormat.parse(transaction.createdAt)
-                    val outputTimeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).apply {
-                        timeZone = TimeZone.getDefault()
-                    }
                     if (timeDate != null) " • ${outputTimeFormat.format(timeDate)}" else ""
                 } else ""
             } catch (e: Exception) {
-                // Fallback for different format yyyy-MM-dd HH:mm:ss
-                try {
-                    val fallbackFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
-                    val timeDate = fallbackFormat.parse(transaction.createdAt ?: "")
-                    val outputTimeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
-                    if (timeDate != null) " • ${outputTimeFormat.format(timeDate)}" else ""
-                } catch (e2: Exception) {
-                    ""
-                }
+                ""
             }
 
             binding.tvDate.text = "$dateStr$timeStr"
             
-            val amountValue = transaction.amount.toDoubleOrNull() ?: 0.0
-            val format = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
-            val formattedAmount = format.format(amountValue)
+            val amountValue = (transaction.amount.toDoubleOrNull() ?: 0.0)
+            var formattedAmount = currencyFormat.format(amountValue)
 
-            binding.tvAmount.text = formattedAmount
-            
             if (transaction.type == "income") {
-                binding.tvAmount.setTextColor(Color.parseColor("#10B981")) // Green
+                formattedAmount = "+ $formattedAmount"
+                binding.tvAmount.setTextColor(ContextCompat.getColor(context, R.color.income))
+                binding.viewIndicator.setBackgroundColor(ContextCompat.getColor(context, R.color.income))
             } else {
-                binding.tvAmount.setTextColor(Color.parseColor("#EF4444")) // Red
+                formattedAmount = "- $formattedAmount"
+                binding.tvAmount.setTextColor(ContextCompat.getColor(context, R.color.expense))
+                binding.viewIndicator.setBackgroundColor(ContextCompat.getColor(context, R.color.expense))
             }
+            binding.tvAmount.text = formattedAmount
 
             binding.root.setOnClickListener {
                 onItemClick?.invoke(transaction)
