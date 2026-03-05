@@ -39,6 +39,11 @@ class SettingsFragment : Fragment() {
             startActivity(intent)
         }
 
+        binding.btnResetMonthly.setOnClickListener {
+            val intent = Intent(requireContext(), ResetMonthlyTransactionsActivity::class.java)
+            startActivity(intent)
+        }
+
         binding.btnLogout.setOnClickListener {
             showLogoutConfirmation()
         }

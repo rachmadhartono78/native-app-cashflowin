@@ -39,4 +39,8 @@ class TransactionRepository(private val apiService: ApiService) {
     suspend fun deleteTransaction(id: Int): Response<JsonObject> {
         return apiService.deleteTransaction(id)
     }
+
+    suspend fun resetMonthlyTransactions(request: com.example.cashflowin.api.model.ResetMonthlyTransactionRequest): Response<com.example.cashflowin.api.model.ResetMonthlyTransactionResponse> {
+        return apiService.resetMonthlyTransactions(request)
+    }
 }

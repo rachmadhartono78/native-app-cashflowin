@@ -120,6 +120,11 @@
             android:name=".ui.planning.RetirementFundActivity"
             android:exported="false"
             android:theme="@style/Theme.Cashflowin.NoActionBar" />
+
+        <activity
+            android:name=".ui.settings.ResetMonthlyTransactionsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Cashflowin.NoActionBar" />
     </application>
 
 </manifest>

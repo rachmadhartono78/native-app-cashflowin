@@ -91,6 +91,10 @@ interface ApiService {
     @DELETE("transactions/{id}")
     suspend fun deleteTransaction(@Path("id") id: Int): Response<com.google.gson.JsonObject>
 
+    @POST("transactions/reset-monthly")
+    suspend fun resetMonthlyTransactions(@Body request: com.example.cashflowin.api.model.ResetMonthlyTransactionRequest): Response<com.example.cashflowin.api.model.ResetMonthlyTransactionResponse>
+
+
     @POST("assets/transfer")
     suspend fun transferAsset(@Body request: TransferAssetRequest): Response<com.google.gson.JsonObject>
 
