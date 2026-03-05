@@ -71,6 +71,7 @@ interface ApiService {
 
     @GET("transactions")
     suspend fun getTransactions(
+        @Query("page") page: Int? = null,
         @Query("type") type: String? = null,
         @Query("category_id") categoryId: Int? = null,
         @Query("search") search: String? = null,

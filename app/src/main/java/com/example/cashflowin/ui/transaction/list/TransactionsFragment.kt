@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.cashflowin.api.ApiClient
 import com.example.cashflowin.api.TransactionRepository
 import com.example.cashflowin.databinding.FragmentTransactionsBinding
@@ -82,9 +83,30 @@ class TransactionsFragment : Fragment() {
             }
             startActivity(intent)
         }
+        
+        val layoutManager = LinearLayoutManager(requireContext())
         binding.rvTransactions.apply {
-            layoutManager = LinearLayoutManager(requireContext())
+            this.layoutManager = layoutManager
             adapter = transactionAdapter
+            
+            // Implementation of Infinite Scroll Listener
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+                    
+                    if (dy > 0) { // Check for scroll down
+                        val visibleItemCount = layoutManager.childCount
+                        val totalItemCount = layoutManager.itemCount
+                        
+                        // Standard way to check if we reached the bottom
+                        val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+                        
+                        if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount) {
+                            viewModel.loadNextPage()
+                        }
+                    }
+                }
+            })
         }
     }
 
@@ -97,7 +119,7 @@ class TransactionsFragment : Fragment() {
                     2 -> "expense"
                     else -> null
                 }
-                applyFilters()
+                fetchTransactions() // Refresh data with new filter
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
@@ -111,9 +133,9 @@ class TransactionsFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 searchJob?.cancel()
                 searchJob = lifecycleScope.launch {
-                    delay(300)
+                    delay(500)
                     currentSearch = if (s.isNullOrBlank()) null else s.toString()
-                    applyFilters()
+                    fetchTransactions() // Trigger refresh with search
                 }
             }
             override fun afterTextChanged(s: Editable?) {}
@@ -138,7 +160,7 @@ class TransactionsFragment : Fragment() {
                 endDate = sdf.format(Date(selection.second))
                 
                 binding.tvActiveDateFilter.text = "Showing: $startDate to $endDate"
-                applyFilters()
+                fetchTransactions()
             }
             
             datePicker.show(childFragmentManager, "DATE_RANGE_PICKER")
@@ -148,7 +170,7 @@ class TransactionsFragment : Fragment() {
             startDate = null
             endDate = null
             binding.tvActiveDateFilter.text = "Showing: All dates"
-            applyFilters()
+            fetchTransactions()
             true
         }
     }
@@ -159,22 +181,27 @@ class TransactionsFragment : Fragment() {
                 is TransactionsState.Idle -> {}
                 is TransactionsState.Loading -> {
                     binding.progressBar.visibility = View.VISIBLE
+                    binding.pbLoadMore.visibility = View.GONE
                     binding.tvEmptyState.visibility = View.GONE
+                }
+                is TransactionsState.LoadingMore -> {
+                    binding.pbLoadMore.visibility = View.VISIBLE
                 }
                 is TransactionsState.Success -> {
                     binding.progressBar.visibility = View.GONE
-                    val list = state.transactions
+                    binding.pbLoadMore.visibility = View.GONE
                     
+                    val list = state.transactions
                     if (list.isEmpty()) {
                         binding.tvEmptyState.visibility = View.VISIBLE
-                        transactionAdapter.submitList(emptyList())
                     } else {
                         binding.tvEmptyState.visibility = View.GONE
-                        transactionAdapter.submitList(list)
                     }
+                    transactionAdapter.submitList(list)
                 }
                 is TransactionsState.Error -> {
                     binding.progressBar.visibility = View.GONE
+                    binding.pbLoadMore.visibility = View.GONE
                     if (state.message == "UNAUTHORIZED") {
                         Toast.makeText(requireContext(), "Session expired.", Toast.LENGTH_SHORT).show()
                     } else {
@@ -190,17 +217,8 @@ class TransactionsFragment : Fragment() {
             type = currentFilterType,
             search = currentSearch,
             startDate = startDate,
-            endDate = endDate
-        )
-    }
-
-    private fun applyFilters() {
-        // If we already have the full list loaded, we can filter locally for instant feedback
-        viewModel.filterTransactionsLocally(
-            type = currentFilterType,
-            search = currentSearch,
-            startDate = startDate,
-            endDate = endDate
+            endDate = endDate,
+            isRefresh = true
         )
     }
 

@@ -6,13 +6,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cashflowin.api.TransactionRepository
 import com.example.cashflowin.api.model.TransactionItem
-import com.example.cashflowin.api.model.TransactionListResponse
 import kotlinx.coroutines.launch
 
 sealed class TransactionsState {
     object Idle : TransactionsState()
     object Loading : TransactionsState()
-    data class Success(val transactions: List<TransactionItem>) : TransactionsState()
+    object LoadingMore : TransactionsState()
+    data class Success(val transactions: List<TransactionItem>, val isEndOfPage: Boolean = false) : TransactionsState()
     data class Error(val message: String) : TransactionsState()
 }
 
@@ -20,27 +20,71 @@ class TransactionsViewModel(private val repository: TransactionRepository) : Vie
     private val _transactionsState = MutableLiveData<TransactionsState>(TransactionsState.Idle)
     val transactionsState: LiveData<TransactionsState> = _transactionsState
 
-    private var fullTransactionList: List<TransactionItem> = emptyList()
+    private var currentTransactions = mutableListOf<TransactionItem>()
+    private var currentPage = 1
+    private var lastPage = 1
+    private var isFetching = false
+
+    private var currentType: String? = null
+    private var currentCategoryId: Int? = null
+    private var currentSearch: String? = null
+    private var currentStartDate: String? = null
+    private var currentEndDate: String? = null
 
     fun loadTransactions(
         type: String? = null,
         categoryId: Int? = null,
         search: String? = null,
         startDate: String? = null,
-        endDate: String? = null
+        endDate: String? = null,
+        isRefresh: Boolean = true
     ) {
-        _transactionsState.value = TransactionsState.Loading
+        if (isFetching) return
+        
+        if (isRefresh) {
+            currentPage = 1
+            currentTransactions.clear()
+            _transactionsState.value = TransactionsState.Loading
+            
+            // Save filters for next page calls
+            currentType = type
+            currentCategoryId = categoryId
+            currentSearch = search
+            currentStartDate = startDate
+            currentEndDate = endDate
+        } else {
+            if (currentPage >= lastPage) return
+            _transactionsState.value = TransactionsState.LoadingMore
+        }
+
+        isFetching = true
         viewModelScope.launch {
             try {
-                // We still call the API with parameters in case the backend is updated later
-                val response = repository.getTransactions(type, categoryId, search, startDate, endDate)
+                val response = repository.getTransactions(
+                    page = if (isRefresh) 1 else currentPage + 1,
+                    type = currentType,
+                    categoryId = currentCategoryId,
+                    search = currentSearch,
+                    startDate = currentStartDate,
+                    endDate = currentEndDate
+                )
                 
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()!!
                     if (body.status.equals("success", ignoreCase = true)) {
-                        fullTransactionList = body.data?.data ?: emptyList()
-                        // Apply smart local filtering on top of API result
-                        filterTransactionsLocally(type, search, startDate, endDate)
+                        val paginatedData = body.data
+                        if (paginatedData != null) {
+                            currentPage = paginatedData.current_page
+                            lastPage = paginatedData.last_page
+                            
+                            val newData = paginatedData.data
+                            currentTransactions.addAll(newData)
+                            
+                            _transactionsState.value = TransactionsState.Success(
+                                transactions = ArrayList(currentTransactions),
+                                isEndOfPage = currentPage >= lastPage
+                            )
+                        }
                     } else {
                         _transactionsState.value = TransactionsState.Error("Failed to fetch transactions")
                     }
@@ -51,41 +95,15 @@ class TransactionsViewModel(private val repository: TransactionRepository) : Vie
                 }
             } catch (e: Exception) {
                 _transactionsState.value = TransactionsState.Error(e.message ?: "Network error occurred")
+            } finally {
+                isFetching = false
             }
         }
     }
 
-    /**
-     * Smart Local Filtering: Filters the current list in memory.
-     * This ensures the search works even if the backend hasn't implemented it yet.
-     */
-    fun filterTransactionsLocally(
-        type: String? = null,
-        search: String? = null,
-        startDate: String? = null,
-        endDate: String? = null
-    ) {
-        var filteredList = fullTransactionList
-
-        // Filter by Type (Income/Expense)
-        if (type != null) {
-            filteredList = filteredList.filter { it.type.equals(type, ignoreCase = true) }
+    fun loadNextPage() {
+        if (!isFetching && currentPage < lastPage) {
+            loadTransactions(isRefresh = false)
         }
-
-        // Filter by Search Query (Description or Category Name)
-        if (!search.isNullOrBlank()) {
-            val query = search.lowercase()
-            filteredList = filteredList.filter { 
-                it.description?.lowercase()?.contains(query) == true || 
-                it.category?.name?.lowercase()?.contains(query) == true 
-            }
-        }
-
-        // Filter by Date Range
-        if (startDate != null && endDate != null) {
-            filteredList = filteredList.filter { it.date in startDate..endDate }
-        }
-
-        _transactionsState.value = TransactionsState.Success(filteredList)
     }
 }
