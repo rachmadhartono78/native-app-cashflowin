@@ -12,6 +12,12 @@
         tools:layout="@layout/fragment_dashboard" />
 
     <fragment
+        android:id="@+id/nav_planning"
+        android:name="com.example.cashflowin.ui.planning.PlanningFragment"
+        android:label="Planning"
+        tools:layout="@layout/fragment_planning" />
+
+    <fragment
         android:id="@+id/nav_assets"
         android:name="com.example.cashflowin.ui.asset.AssetsFragment"
         android:label="@string/menu_assets"

@@ -107,6 +107,11 @@
             android:theme="@style/Theme.Cashflowin.NoActionBar" />
 
         <activity
+            android:name=".ui.planning.CalculatorActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Cashflowin.NoActionBar" />
+
+        <activity
             android:name=".ui.planning.EmergencyFundActivity"
             android:exported="false"
             android:theme="@style/Theme.Cashflowin.NoActionBar" />
