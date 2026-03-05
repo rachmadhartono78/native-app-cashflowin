@@ -36,4 +36,10 @@
     <!-- Extra Colors -->
     <color name="light_blue">#E3F2FD</color>
     <color name="divider">#E2E8F0</color> <!-- Slate 200 -->
+
+    <!-- Additional Semantic Colors -->
+    <color name="textPrimaryDark">#1E293B</color>
+    <color name="textLightBlue">#E0E7FF</color>
+    <color name="iconBlue">#3B82F6</color>
+    <color name="iconPurple">#8B5CF6</color>
 </resources>

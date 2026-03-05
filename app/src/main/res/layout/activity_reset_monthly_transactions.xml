@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/backgroundColor"
-        app:navigationIcon="@drawable/ic_arrow_back"
+        app:navigationIcon="@android:drawable/ic_menu_revert"
         app:title="Reset Transactions"
         app:titleTextAppearance="@style/TextAppearance.Material3.TitleLarge" />
 
@@ -24,7 +24,7 @@
         android:layout_gravity="center"
         android:layout_marginTop="24dp"
         android:layout_marginBottom="16dp"
-        android:src="@drawable/ic_warning"
+        android:src="@android:drawable/ic_dialog_alert"
         app:tint="@color/expense" />
 
     <TextView

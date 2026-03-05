@@ -15,7 +15,7 @@ import java.util.Calendar
 
 class ResetMonthlyTransactionsActivity : AppCompatActivity() {
 
-    private lateinit binding: ActivityResetMonthlyTransactionsBinding
+    private lateinit var binding: ActivityResetMonthlyTransactionsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

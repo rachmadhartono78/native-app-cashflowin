@@ -41,8 +41,8 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="Total Balance"
-                            android:textColor="#E0E7FF"
-                            android:textSize="14sp" />
+                            android:textColor="@color/textLightBlue"
+                            android:textSize="@dimen/text_sm" />
 
                         <ImageView
                             android:id="@+id/btnHideBalance"
@@ -50,7 +50,7 @@
                             android:layout_height="24dp"
                             android:src="@android:drawable/ic_menu_view"
                             android:contentDescription="Hide/Show Balance"
-                            app:tint="#E0E7FF"
+                            app:tint="@color/textLightBlue"
                             android:clickable="true"
                             android:focusable="true"
                             android:background="?attr/selectableItemBackgroundBorderless"/>
@@ -99,8 +99,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Income"
-                            android:textColor="#6B7280"
-                            android:textSize="12sp" />
+                            android:textColor="@color/textSecondary"
+                            android:textSize="@dimen/text_xs" />
 
                         <TextView
                             android:id="@+id/tvIncome"
@@ -108,12 +108,12 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
                             android:text="Rp 0"
-                            android:textColor="#10B981"
-                            android:textSize="16sp"
+                            android:textColor="@color/income"
+                            android:textSize="@dimen/text_md"
                             android:textStyle="bold"
                             app:autoSizeTextType="uniform"
                             app:autoSizeMinTextSize="10sp"
-                            app:autoSizeMaxTextSize="16sp"
+                            app:autoSizeMaxTextSize="@dimen/text_md"
                             app:autoSizeStepGranularity="1sp"
                             android:maxLines="1" />
                     </LinearLayout>
@@ -137,8 +137,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Expense"
-                            android:textColor="#6B7280"
-                            android:textSize="12sp" />
+                            android:textColor="@color/textSecondary"
+                            android:textSize="@dimen/text_xs" />
 
                         <TextView
                             android:id="@+id/tvExpense"
@@ -146,12 +146,12 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
                             android:text="Rp 0"
-                            android:textColor="#EF4444"
-                            android:textSize="16sp"
+                            android:textColor="@color/expense"
+                            android:textSize="@dimen/text_md"
                             android:textStyle="bold"
                             app:autoSizeTextType="uniform"
                             app:autoSizeMinTextSize="10sp"
-                            app:autoSizeMaxTextSize="16sp"
+                            app:autoSizeMaxTextSize="@dimen/text_md"
                             app:autoSizeStepGranularity="1sp"
                             android:maxLines="1" />
                     </LinearLayout>
@@ -177,7 +177,7 @@
                         android:layout_height="wrap_content"
                         android:text="Planning &amp; Goals"
                         android:textColor="?attr/colorOnSurface"
-                        android:textSize="18sp"
+                        android:textSize="@dimen/text_lg"
                         android:textStyle="bold" />
 
                     <GridLayout
@@ -197,21 +197,21 @@
                             android:focusable="true"
                             android:gravity="center"
                             android:orientation="vertical"
-                            android:padding="8dp">
+                            android:padding="@dimen/menu_icon_padding"> <!-- Ensures 48dp min touch target -->
 
                             <ImageView
-                                android:layout_width="28dp"
-                                android:layout_height="28dp"
+                                android:layout_width="@dimen/menu_icon_size"
+                                android:layout_height="@dimen/menu_icon_size"
                                 android:src="@android:drawable/ic_menu_agenda"
-                                app:tint="#3B82F6" />
+                                app:tint="@color/iconBlue" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
                                 android:text="Budgets"
-                                android:textColor="#1E293B"
-                                android:textSize="11sp" />
+                                android:textColor="@color/textPrimaryDark"
+                                android:textSize="@dimen/text_xs" />
                         </LinearLayout>
 
                         <!-- Goals -->
@@ -225,21 +225,21 @@
                             android:focusable="true"
                             android:gravity="center"
                             android:orientation="vertical"
-                            android:padding="8dp">
+                            android:padding="@dimen/menu_icon_padding">
 
                             <ImageView
-                                android:layout_width="28dp"
-                                android:layout_height="28dp"
+                                android:layout_width="@dimen/menu_icon_size"
+                                android:layout_height="@dimen/menu_icon_size"
                                 android:src="@android:drawable/ic_menu_myplaces"
-                                app:tint="#10B981" />
+                                app:tint="@color/income" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
                                 android:text="Goals"
-                                android:textColor="#1E293B"
-                                android:textSize="11sp" />
+                                android:textColor="@color/textPrimaryDark"
+                                android:textSize="@dimen/text_xs" />
                         </LinearLayout>
 
                         <!-- Debts -->
@@ -253,21 +253,21 @@
                             android:focusable="true"
                             android:gravity="center"
                             android:orientation="vertical"
-                            android:padding="8dp">
+                            android:padding="@dimen/menu_icon_padding">
 
                             <ImageView
-                                android:layout_width="28dp"
-                                android:layout_height="28dp"
+                                android:layout_width="@dimen/menu_icon_size"
+                                android:layout_height="@dimen/menu_icon_size"
                                 android:src="@android:drawable/ic_menu_recent_history"
-                                app:tint="#EF4444" />
+                                app:tint="@color/expense" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
                                 android:text="Debts"
-                                android:textColor="#1E293B"
-                                android:textSize="11sp" />
+                                android:textColor="@color/textPrimaryDark"
+                                android:textSize="@dimen/text_xs" />
                         </LinearLayout>
 
                         <!-- Calendar -->
@@ -281,21 +281,21 @@
                             android:focusable="true"
                             android:gravity="center"
                             android:orientation="vertical"
-                            android:padding="8dp">
+                            android:padding="@dimen/menu_icon_padding">
 
                             <ImageView
-                                android:layout_width="28dp"
-                                android:layout_height="28dp"
+                                android:layout_width="@dimen/menu_icon_size"
+                                android:layout_height="@dimen/menu_icon_size"
                                 android:src="@android:drawable/ic_menu_today"
-                                app:tint="#F59E0B" />
+                                app:tint="@color/warning" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
                                 android:text="Calendar"
-                                android:textColor="#1E293B"
-                                android:textSize="11sp" />
+                                android:textColor="@color/textPrimaryDark"
+                                android:textSize="@dimen/text_xs" />
                         </LinearLayout>
 
                         <!-- More/Calculators -->
@@ -309,21 +309,21 @@
                             android:focusable="true"
                             android:gravity="center"
                             android:orientation="vertical"
-                            android:padding="8dp">
+                            android:padding="@dimen/menu_icon_padding">
 
                             <ImageView
-                                android:layout_width="28dp"
-                                android:layout_height="28dp"
+                                android:layout_width="@dimen/menu_icon_size"
+                                android:layout_height="@dimen/menu_icon_size"
                                 android:src="@android:drawable/ic_menu_edit"
-                                app:tint="#8B5CF6" />
+                                app:tint="@color/iconPurple" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
                                 android:text="Calcs"
-                                android:textColor="#1E293B"
-                                android:textSize="11sp" />
+                                android:textColor="@color/textPrimaryDark"
+                                android:textSize="@dimen/text_xs" />
                         </LinearLayout>
 
                     </GridLayout>
