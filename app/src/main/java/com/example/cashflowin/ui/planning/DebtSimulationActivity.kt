@@ -40,7 +40,7 @@ class DebtSimulationActivity : AppCompatActivity() {
                     val cleanString = s.toString().replace("[Rp,. ]".toRegex(), "")
                     if (cleanString.isNotEmpty()) {
                         val parsed = cleanString.toDouble()
-                        val formatted = NumberFormat.getNumberInstance(Locale("id", "ID")).format(parsed)
+                        val formatted = NumberFormat.getNumberInstance(Locale.forLanguageTag("id-ID")).format(parsed)
 
                         currentAmount = formatted
                         binding.etLoanAmount.setText(formatted)
@@ -109,7 +109,7 @@ class DebtSimulationActivity : AppCompatActivity() {
     }
 
     private fun displayResult(monthly: Double, interest: Double, total: Double) {
-        val format = NumberFormat.getCurrencyInstance(Locale("id", "ID")).apply {
+        val format = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID")).apply {
             maximumFractionDigits = 0
         }
 

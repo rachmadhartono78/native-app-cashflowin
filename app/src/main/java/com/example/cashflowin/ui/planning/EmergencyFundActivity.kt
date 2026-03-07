@@ -11,7 +11,7 @@ import java.util.Locale
 class EmergencyFundActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityEmergencyFundBinding
-    private val format = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
+    private val format = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID"))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

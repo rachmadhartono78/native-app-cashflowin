@@ -76,7 +76,7 @@ class SettingsFragment : Fragment() {
                 is DashboardState.Success -> {
                     val summary = state.response.data?.summary
                     summary?.let {
-                        val format = NumberFormat.getCurrencyInstance(Locale("id", "ID")).apply {
+                        val format = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID")).apply {
                             maximumFractionDigits = 0
                         }
                         // Update total assets card in settings
