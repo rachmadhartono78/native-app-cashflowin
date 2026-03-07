@@ -24,7 +24,7 @@ class ReportActivity : AppCompatActivity() {
     private lateinit var tokenManager: TokenManager
 
     private val months = listOf(
-        "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+        "Semua Bulan (Tahunan)", "Januari", "Februari", "Maret", "April", "Mei", "Juni",
         "Juli", "Agustus", "September", "Oktober", "November", "Desember"
     )
 
@@ -59,29 +59,34 @@ class ReportActivity : AppCompatActivity() {
 
         // Set current month and year as default
         val currentMonth = Calendar.getInstance().get(Calendar.MONTH)
-        binding.spinnerMonth.setText(months[currentMonth], false)
+        // +1 because index 0 is "Semua Bulan"
+        binding.spinnerMonth.setText(months[currentMonth + 1], false)
         binding.spinnerYear.setText(currentYear.toString(), false)
     }
 
     private fun setupListeners() {
         binding.btnDownload.setOnClickListener {
             val monthName = binding.spinnerMonth.text.toString()
-            val monthIndex = months.indexOf(monthName) + 1
+            val monthIndex = months.indexOf(monthName)
             val year = binding.spinnerYear.text.toString()
             val format = if (binding.rbPdf.isChecked) "pdf" else "csv"
 
-            if (monthIndex == 0 || year.isEmpty()) {
+            if (monthIndex == -1 || year.isEmpty()) {
                 Toast.makeText(this, "Mohon pilih bulan dan tahun", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            downloadReport(monthIndex.toString(), year, format)
+            // If index is 0 ("Semua Bulan"), send "all"
+            val monthValue = if (monthIndex == 0) "all" else monthIndex.toString()
+            downloadReport(monthValue, year, format)
         }
     }
 
     private fun downloadReport(month: String, year: String, format: String) {
         val baseUrl = ApiClient.BASE_URL
         val endpoint = if (format == "pdf") "reports/export/pdf" else "reports/export/csv"
+        
+        // If it's annual, we can use month=all as mentioned in laporan.md
         val url = "${baseUrl}${endpoint}?month=$month&year=$year"
         val token = tokenManager.getToken()
 
@@ -94,7 +99,8 @@ class ReportActivity : AppCompatActivity() {
         binding.btnDownload.isEnabled = false
 
         try {
-            val fileName = "Laporan_Keuangan_${month}_${year}.${format}"
+            val label = if (month == "all") "Tahunan_${year}" else "Bulan_${month}_${year}"
+            val fileName = "Laporan_Keuangan_${label}.${format}"
             
             val request = DownloadManager.Request(Uri.parse(url))
                 .setTitle("Mengunduh Laporan")
