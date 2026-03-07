@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark Mode Colors -->
+    <color name="primary_green">#00C86B</color>
+    <color name="primary_green_light">#1A2E25</color>
+    <color name="primary_green_dark">#00894A</color>
+
+    <color name="bg_gray">#0F172A</color>
+    <color name="background_light">#0F172A</color>
+    <color name="text_main">#F8FAFC</color>
+    <color name="text_secondary">#94A3B8</color>
+    <color name="border_light">#1E293B</color>
+
+    <!-- Material 3 Mappings for Dark Mode -->
+    <color name="md_theme_primary">#00C86B</color>
+    <color name="md_theme_onPrimary">#00391C</color>
+    <color name="md_theme_primaryContainer">#00522B</color>
+    <color name="md_theme_onPrimaryContainer">#E6F6EF</color>
+    <color name="md_theme_background">#0F172A</color>
+    <color name="md_theme_surface">#0F172A</color>
+    <color name="md_theme_onSurface">#F8FAFC</color>
+    <color name="md_theme_surfaceVariant">#1E293B</color>
+    <color name="md_theme_onSurfaceVariant">#94A3B8</color>
+    <color name="md_theme_outline">#334155</color>
+    <color name="md_theme_secondary">#94A3B8</color>
+    <color name="md_theme_onSecondary">#0F172A</color>
+    <color name="md_theme_secondaryContainer">#1E293B</color>
+    <color name="md_theme_onSecondaryContainer">#F8FAFC</color>
+
+    <!-- Status Colors -->
+    <color name="income">#00C86B</color>
+    <color name="expense">#FB7185</color>
+    <color name="white">#0F172A</color> <!-- In dark mode, card backgrounds often use surface color -->
+    <color name="black">#FFFFFF</color>
+</resources>

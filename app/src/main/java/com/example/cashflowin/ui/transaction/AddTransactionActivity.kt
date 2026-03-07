@@ -1,6 +1,7 @@
 package com.example.cashflowin.ui.transaction
 
 import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
@@ -15,6 +16,8 @@ import com.example.cashflowin.api.model.TransactionRequest
 import com.example.cashflowin.databinding.ActivityAddTransactionBinding
 import com.example.cashflowin.utils.CurrencyTextWatcher
 import com.example.cashflowin.utils.TokenManager
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -52,13 +55,15 @@ class AddTransactionActivity : AppCompatActivity() {
         tokenManager = TokenManager(this)
 
         setupToolbar()
-        setupDatePicker()
+        setupDateTimePicker()
         setupObservers()
         setupListeners()
         checkEditMode()
 
+        // Jika bukan mode edit, pastikan jam & tanggal adalah waktu SEKARANG yang paling baru
         if (!isEditMode) {
-            updateDateInView()
+            calendar.time = java.util.Date() // Ambil waktu detik ini juga
+            updateDateTimeInView()
         }
 
         viewModel.loadDropdownData()
@@ -67,20 +72,32 @@ class AddTransactionActivity : AppCompatActivity() {
     private fun setupToolbar() {
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        binding.toolbar.setNavigationOnClickListener { onBackPressed() }
+        binding.toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
     }
 
-    private fun setupDatePicker() {
-        val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
-            calendar.set(Calendar.YEAR, year)
-            calendar.set(Calendar.MONTH, monthOfYear)
-            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-            updateDateInView()
-        }
-
+    private fun setupDateTimePicker() {
         binding.etDate.setOnClickListener {
             DatePickerDialog(
-                this, dateSetListener,
+                this,
+                { _, year, monthOfYear, dayOfMonth ->
+                    calendar.set(Calendar.YEAR, year)
+                    calendar.set(Calendar.MONTH, monthOfYear)
+                    calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                    
+                    // After picking date, pick time
+                    TimePickerDialog(
+                        this,
+                        { _, hourOfDay, minute ->
+                            calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+                            calendar.set(Calendar.MINUTE, minute)
+                            calendar.set(Calendar.SECOND, 0)
+                            updateDateTimeInView()
+                        },
+                        calendar.get(Calendar.HOUR_OF_DAY),
+                        calendar.get(Calendar.MINUTE),
+                        true
+                    ).show()
+                },
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
@@ -88,8 +105,8 @@ class AddTransactionActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateDateInView() {
-        val myFormat = "yyyy-MM-dd"
+    private fun updateDateTimeInView() {
+        val myFormat = "yyyy-MM-dd HH:mm:ss"
         val sdf = SimpleDateFormat(myFormat, Locale.US)
         binding.etDate.setText(sdf.format(calendar.time))
     }
@@ -108,14 +125,68 @@ class AddTransactionActivity : AppCompatActivity() {
             initialCategoryId = intent.getIntExtra("EXTRA_CATEGORY_ID", -1)
             initialAssetId = intent.getIntExtra("EXTRA_ASSET_ID", -1)
 
-            binding.etAmount.setText(initialAmount)
-            binding.etDescription.setText(initialDesc)
-            if (initialDate != null) {
-                binding.etDate.setText(initialDate)
+            // Format nominal saat edit mode
+            if (initialAmount != null) {
                 try {
-                    val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-                    sdf.parse(initialDate!!)?.let { calendar.time = it }
-                } catch (e: Exception) {}
+                    val amountLong = initialAmount!!.toDouble().toLong()
+                    val symbols = DecimalFormatSymbols(Locale.forLanguageTag("id-ID"))
+                    symbols.groupingSeparator = '.'
+                    val formatter = DecimalFormat("#,###", symbols)
+                    binding.etAmount.setText(formatter.format(amountLong))
+                } catch (e: Exception) {
+                    binding.etAmount.setText(initialAmount)
+                }
+            }
+
+            binding.etDescription.setText(initialDesc)
+            
+            // Format Tanggal dan Waktu saat edit mode
+            if (initialDate != null) {
+                try {
+                    // Coba berbagai format kemungkinan dari API/Intent
+                    val inputFormats = arrayOf(
+                        "yyyy-MM-dd HH:mm:ss", 
+                        "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", 
+                        "yyyy-MM-dd'T'HH:mm:ss",
+                        "yyyy-MM-dd"
+                    )
+                    
+                    var parsedDate: java.util.Date? = null
+                    var usedFormat: String? = null
+                    
+                    for (format in inputFormats) {
+                        try {
+                            val sdf = SimpleDateFormat(format, Locale.US)
+                            // Jika format ISO Z, pastikan handle timezone UTC
+                            if (format.contains("'Z'")) sdf.timeZone = java.util.TimeZone.getTimeZone("UTC")
+                            
+                            parsedDate = sdf.parse(initialDate!!)
+                            if (parsedDate != null) {
+                                usedFormat = format
+                                break
+                            }
+                        } catch (e: Exception) {}
+                    }
+                    
+                    if (parsedDate != null) {
+                        val oldTime = Calendar.getInstance().apply { time = parsedDate }
+                        
+                        // Jika formatnya hanya tanggal (tanpa jam), pertahankan jam saat ini
+                        // agar tidak berubah jadi 00:00:00
+                        if (usedFormat == "yyyy-MM-dd") {
+                            val now = Calendar.getInstance()
+                            calendar.set(oldTime.get(Calendar.YEAR), oldTime.get(Calendar.MONTH), oldTime.get(Calendar.DAY_OF_MONTH),
+                                         now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), now.get(Calendar.SECOND))
+                        } else {
+                            calendar.time = parsedDate
+                        }
+                        updateDateTimeInView()
+                    } else {
+                        binding.etDate.setText(initialDate)
+                    }
+                } catch (e: Exception) {
+                    binding.etDate.setText(initialDate)
+                }
             }
 
             if (initialType == "income") {

@@ -19,7 +19,7 @@ class CurrencyTextWatcher(private val editText: EditText) : TextWatcher {
         if (stringText != current) {
             editText.removeTextChangedListener(this)
 
-            // Remove all non-digit characters
+            // Menghapus semua karakter non-digit
             val cleanString = stringText.replace("[^\\d]".toRegex(), "")
 
             if (cleanString.isNotEmpty()) {
@@ -28,10 +28,9 @@ class CurrencyTextWatcher(private val editText: EditText) : TextWatcher {
                     
                     val symbols = DecimalFormatSymbols(Locale("id", "ID"))
                     symbols.groupingSeparator = '.'
-                    symbols.monetaryDecimalSeparator = ','
                     
-                    // No decimals for IDR usually
-                    val formatter = DecimalFormat("Rp #,###", symbols)
+                    // Format hanya angka dengan pemisah ribuan (tanpa Rp karena sudah ada di layout)
+                    val formatter = DecimalFormat("#,###", symbols)
                     val formatted = formatter.format(parsed)
 
                     current = formatted
@@ -50,9 +49,9 @@ class CurrencyTextWatcher(private val editText: EditText) : TextWatcher {
     }
 
     companion object {
-        fun getUnformattedValue(text: String): Double {
+        fun getUnformattedValue(text: String): Long {
             val cleanString = text.replace("[^\\d]".toRegex(), "")
-            return cleanString.toDoubleOrNull() ?: 0.0
+            return cleanString.toLongOrNull() ?: 0L
         }
     }
 }

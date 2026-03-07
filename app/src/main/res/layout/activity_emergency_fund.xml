@@ -4,19 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_light"
+    android:background="#F8FAFC"
     tools:context=".ui.planning.EmergencyFundActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:elevation="0dp">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:titleTextColor="@color/white"
+            android:background="#FFFFFF"
+            app:titleTextColor="#1E293B"
             app:title="Kalkulator Dana Darurat"
             app:navigationIcon="?attr/homeAsUpIndicator" />
     </com.google.android.material.appbar.AppBarLayout>
@@ -32,70 +33,95 @@
             android:orientation="vertical"
             android:padding="24dp">
 
-            <com.google.android.material.textfield.TextInputLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Pengeluaran Bulanan (Rp)">
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="#E2E8F0">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etMonthlyExpense"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="numberDecimal" />
-            </com.google.android.material.textfield.TextInputLayout>
-            
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Status Pernikahan"
-                android:textColor="#334155" />
+                    android:orientation="vertical"
+                    android:padding="20dp">
 
-            <RadioGroup
-                android:id="@+id/rgStatus"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:orientation="vertical">
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Pengeluaran Bulanan (Rp)"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
-                <RadioButton
-                    android:id="@+id/rbSingle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Lajang (6x Pengeluaran Bulanan)"
-                    android:checked="true" />
-
-                <RadioButton
-                    android:id="@+id/rbMarriedNoKids"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Menikah Tanpa Anak (9x Pengeluaran Bulanan)" />
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etMonthlyExpense"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="numberDecimal"
+                            android:fontFamily="sans-serif-medium" />
+                    </com.google.android.material.textfield.TextInputLayout>
                     
-                <RadioButton
-                    android:id="@+id/rbMarriedKids"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Menikah Dengan Anak (12x Pengeluaran Bulanan)" />
-            </RadioGroup>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="Status Pernikahan"
+                        android:textColor="#1E293B"
+                        android:fontFamily="sans-serif-black"
+                        android:textSize="14sp" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCalculate"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginTop="24dp"
-                android:text="Hitung"
-                android:textSize="16sp"
-                app:cornerRadius="8dp" />
+                    <RadioGroup
+                        android:id="@+id/rgStatus"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:orientation="vertical">
+
+                        <RadioButton
+                            android:id="@+id/rbSingle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Lajang (6x Pengeluaran Bulanan)"
+                            android:fontFamily="sans-serif-medium"
+                            android:checked="true" />
+
+                        <RadioButton
+                            android:id="@+id/rbMarriedNoKids"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-medium"
+                            android:text="Menikah Tanpa Anak (9x Pengeluaran Bulanan)" />
+
+                        <RadioButton
+                            android:id="@+id/rbMarriedKids"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-medium"
+                            android:text="Menikah Dengan Anak (12x Pengeluaran Bulanan)" />
+                    </RadioGroup>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnCalculate"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:layout_marginTop="24dp"
+                        android:text="Hitung"
+                        android:textSize="16sp"
+                        android:fontFamily="sans-serif-black"
+                        app:cornerRadius="12dp" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardResult"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
                 android:visibility="gone"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="#ECFDF5">
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="?attr/colorPrimary">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -108,7 +134,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Dana Darurat Ideal Anda"
-                        android:textColor="#065F46"
+                        android:textColor="#E0E7FF"
+                        android:fontFamily="sans-serif-medium"
                         android:textSize="14sp" />
 
                     <TextView
@@ -117,9 +144,9 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:text="Rp 0"
-                        android:textColor="#047857"
-                        android:textSize="24sp"
-                        android:textStyle="bold" />
+                        android:textColor="@color/white"
+                        android:textSize="28sp"
+                        android:fontFamily="sans-serif-black" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

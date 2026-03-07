@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.cashflowin.api.ApiClient
@@ -57,6 +58,10 @@ class SettingsFragment : Fragment() {
 
     private fun setupUI() {
         binding.tvProfileName.text = tokenManager.getUserName() ?: "User"
+        
+        // Sync dark mode switch state
+        val isDarkMode = AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES
+        binding.switchDarkMode.isChecked = isDarkMode
     }
 
     private fun setupObservers() {
@@ -104,12 +109,25 @@ class SettingsFragment : Fragment() {
             startActivity(intent)
         }
 
+        binding.btnReport.setOnClickListener {
+            val intent = Intent(requireContext(), ReportActivity::class.java)
+            startActivity(intent)
+        }
+
         binding.btnPrivacyPolicy.setOnClickListener {
             showPrivacyPolicy()
         }
 
         binding.btnLogout.setOnClickListener {
             showLogoutConfirmation()
+        }
+
+        binding.switchDarkMode.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
         }
     }
 

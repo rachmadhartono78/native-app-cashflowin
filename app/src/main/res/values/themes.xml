@@ -38,7 +38,7 @@
         <item name="android:colorBackground">@color/md_theme_background</item>
     </style>
 
-    <style name="Theme.Cashflowin.NoActionBar">
+    <style name="Theme.Cashflowin.NoActionBar" parent="Theme.Cashflowin">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
@@ -50,5 +50,11 @@
     <style name="Widget.Material3.Circular" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
+    </style>
+
+    <!-- Custom style for CalendarView to match Material 3 -->
+    <style name="Widget.Material3.CalendarView" parent="Theme.Material3.DayNight">
+        <item name="android:colorAccent">?attr/colorPrimary</item>
+        <item name="android:colorControlActivated">?attr/colorPrimary</item>
     </style>
 </resources>

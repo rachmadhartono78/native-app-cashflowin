@@ -4,18 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="@color/background_light">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:elevation="0dp"
-        android:background="#FFFFFF">
+        android:background="@color/white">
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayoutFilter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/white"
             app:tabIndicatorColor="@color/primary_green"
             app:tabSelectedTextColor="@color/primary_green"
             app:tabTextColor="@color/text_secondary"
@@ -46,6 +47,8 @@
                 android:layout_height="48dp"
                 android:background="@drawable/bg_edittext"
                 android:hint="Cari transaksi..."
+                android:textColor="@color/text_main"
+                android:textColorHint="@color/text_secondary"
                 android:paddingHorizontal="16dp"
                 android:textSize="14sp" />
 
@@ -92,6 +95,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:text="No transactions found"
+                android:textColor="@color/text_secondary"
                 android:visibility="gone" />
 
             <ProgressBar

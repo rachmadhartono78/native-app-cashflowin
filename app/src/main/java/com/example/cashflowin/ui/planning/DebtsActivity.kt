@@ -16,7 +16,10 @@ import java.util.Locale
 class DebtsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDebtsBinding
-    private val format = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
+    // Format tanpa desimal agar ringkas
+    private val format = NumberFormat.getCurrencyInstance(Locale("id", "ID")).apply {
+        maximumFractionDigits = 0
+    }
     private lateinit var debtsAdapter: DebtsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {

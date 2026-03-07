@@ -25,7 +25,8 @@ import com.example.cashflowin.api.AssetRepository
 import com.example.cashflowin.databinding.ActivityAddEditAssetBinding
 import com.example.cashflowin.utils.CurrencyTextWatcher
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import java.text.NumberFormat
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 import java.util.Locale
 
 class AddEditAssetActivity : AppCompatActivity() {
@@ -65,10 +66,12 @@ class AddEditAssetActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowHomeEnabled(true)
 
         setupSpinners()
-        checkIntentAndSetMode()
         setupListeners()
         setupObservers()
         
+        checkIntentAndSetMode()
+        
+        // Final preview update after everything is initialized
         updatePreview()
     }
 
@@ -85,10 +88,14 @@ class AddEditAssetActivity : AppCompatActivity() {
             binding.tvAssetNamePreview.text = binding.etAssetName.text.toString().ifEmpty { "Nama Aset" }
             binding.tvAssetTypePreview.text = binding.spinnerAssetType.text.toString().ifEmpty { "Tipe Aset" }
             
-            val amountFormatted = binding.etAssetAmount.text.toString()
-            if (amountFormatted.isNotEmpty()) {
-                binding.tvAssetAmountPreview.text = "Rp $amountFormatted"
-            }
+            // Ambil nilai bersih (tanpa titik/formatting) lalu format ulang untuk preview
+            val rawAmount = CurrencyTextWatcher.getUnformattedValue(binding.etAssetAmount.text.toString())
+            val symbols = DecimalFormatSymbols(Locale.forLanguageTag("id-ID"))
+            symbols.groupingSeparator = '.'
+            val formatter = DecimalFormat("#,###", symbols)
+            val formatted = if (rawAmount > 0) formatter.format(rawAmount) else "0"
+            
+            binding.tvAssetAmountPreview.text = "Rp $formatted"
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -109,19 +116,35 @@ class AddEditAssetActivity : AppCompatActivity() {
             
             val name = intent.getStringExtra("EXTRA_ASSET_NAME") ?: ""
             val type = intent.getStringExtra("EXTRA_ASSET_TYPE") ?: ""
-            val amount = intent.getStringExtra("EXTRA_ASSET_AMOUNT") ?: "0"
+            val amountStr = intent.getStringExtra("EXTRA_ASSET_AMOUNT") ?: "0"
             selectedColor = intent.getStringExtra("EXTRA_ASSET_COLOR") ?: "#00AA5B"
             selectedIcon = intent.getStringExtra("EXTRA_ASSET_ICON") ?: "ic_menu_gallery"
 
             binding.etAssetName.setText(name)
             binding.spinnerAssetType.setText(type, false)
-            binding.etAssetAmount.setText(amount)
+            
+            // Format nominal saat edit mode dengan lebih aman
+            try {
+                // Bersihkan string dari karakter non-digit kecuali titik/koma desimal jika ada
+                val cleanAmount = amountStr.replace(Regex("[^0-9.]"), "")
+                val rawLong = cleanAmount.toDoubleOrNull()?.toLong() ?: 0L
+                
+                val symbols = DecimalFormatSymbols(Locale.forLanguageTag("id-ID"))
+                symbols.groupingSeparator = '.'
+                val formatter = DecimalFormat("#,###", symbols)
+                binding.etAssetAmount.setText(formatter.format(rawLong))
+            } catch (e: Exception) {
+                binding.etAssetAmount.setText(amountStr)
+            }
 
             binding.etAssetAmount.isEnabled = false
             binding.layoutAmount.isEnabled = false
             binding.tvBalanceHelper.visibility = View.VISIBLE
             
             invalidateOptionsMenu()
+            
+            // Update preview immediately after setting data
+            updatePreview()
         }
     }
 
@@ -132,15 +155,15 @@ class AddEditAssetActivity : AppCompatActivity() {
 
         binding.etAssetName.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) { updatePreview() }
-            override fun afterTextChanged(s: Editable?) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) { updatePreview() }
         })
 
         binding.etAssetAmount.addTextChangedListener(CurrencyTextWatcher(binding.etAssetAmount))
         binding.etAssetAmount.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) { updatePreview() }
-            override fun afterTextChanged(s: Editable?) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) { updatePreview() }
         })
 
         binding.btnSaveAsset.setOnClickListener {
@@ -153,7 +176,7 @@ class AddEditAssetActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            val amount = CurrencyTextWatcher.getUnformattedValue(amountFormatted)
+            val amount = CurrencyTextWatcher.getUnformattedValue(amountFormatted).toDouble()
 
             if (isEditMode) {
                 viewModel.updateAsset(assetId, name, amount, type, selectedColor, selectedIcon)

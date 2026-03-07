@@ -9,7 +9,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiClient {
-    private const val BASE_URL = BuildConfig.BASE_URL
+    const val BASE_URL = BuildConfig.BASE_URL
 
     @Volatile
     private var apiService: ApiService? = null

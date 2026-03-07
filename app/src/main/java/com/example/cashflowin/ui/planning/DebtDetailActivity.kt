@@ -12,12 +12,16 @@ import com.example.cashflowin.databinding.ActivityDebtDetailBinding
 import com.example.cashflowin.utils.CurrencyTextWatcher
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.TimeZone
 
 class DebtDetailActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDebtDetailBinding
-    private val format = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
+    private val currencyFormat = NumberFormat.getCurrencyInstance(Locale("id", "ID")).apply {
+        maximumFractionDigits = 0
+    }
     private var debtId: Int = -1
     private lateinit var paymentAdapter: PaymentAdapter
 
@@ -106,12 +110,13 @@ class DebtDetailActivity : AppCompatActivity() {
         binding.tvTypeAndStatus.text = "$typeStr • $statusStr"
         
         val remaining = debt.remaining_amount ?: debt.amount
-        binding.tvRemainingAmount.text = format.format(remaining)
-        binding.tvTotalAmount.text = format.format(debt.amount)
+        binding.tvRemainingAmount.text = currencyFormat.format(remaining)
+        binding.tvTotalAmount.text = currencyFormat.format(debt.amount)
         
-        if (debt.due_date != null) {
+        // Format Tanggal Jatuh Tempo
+        if (!debt.due_date.isNullOrEmpty()) {
             binding.tvDueDate.visibility = View.VISIBLE
-            binding.tvDueDate.text = "Jatuh Tempo: ${debt.due_date}"
+            binding.tvDueDate.text = "Jatuh Tempo: ${formatDate(debt.due_date)}"
         } else {
             binding.tvDueDate.visibility = View.GONE
         }
@@ -132,5 +137,30 @@ class DebtDetailActivity : AppCompatActivity() {
             binding.rvPayments.visibility = View.VISIBLE
             paymentAdapter.updateData(payments)
         }
+    }
+
+    private fun formatDate(dateStr: String?): String {
+        if (dateStr.isNullOrEmpty()) return "-"
+        
+        val inputFormats = listOf(
+            SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US),
+            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US),
+            SimpleDateFormat("yyyy-MM-dd", Locale.US)
+        )
+        
+        val outputFormat = SimpleDateFormat("dd MMM yyyy", Locale("id", "ID"))
+        
+        for (format in inputFormats) {
+            try {
+                if (format.toPattern().contains("Z")) {
+                    format.timeZone = TimeZone.getTimeZone("UTC")
+                }
+                val date = format.parse(dateStr)
+                if (date != null) return outputFormat.format(date)
+            } catch (e: Exception) {
+                continue
+            }
+        }
+        return dateStr
     }
 }
