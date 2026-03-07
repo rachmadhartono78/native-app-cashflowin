@@ -4,21 +4,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_light"
+    android:background="@color/white"
     tools:context=".ui.transaction.AddTransactionActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:elevation="0dp"
+        android:background="@color/white">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:titleTextColor="@color/white"
-            app:title="Add Transaction"
-            app:navigationIcon="?attr/homeAsUpIndicator" />
+            app:titleTextColor="@color/text_main"
+            app:title="Tambah Transaksi"
+            app:navigationIcon="?attr/homeAsUpIndicator"
+            app:navigationIconTint="@color/text_main" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -30,119 +32,197 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:padding="20dp">
+
+            <!-- Amount Input Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nominal"
+                android:textColor="@color/text_secondary"
+                android:textSize="13sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp"
+                android:gravity="bottom">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rp"
+                    android:textColor="@color/text_main"
+                    android:textSize="24sp"
+                    android:fontFamily="sans-serif-black"
+                    android:layout_marginBottom="4dp" />
+
+                <EditText
+                    android:id="@+id/etAmount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:inputType="number"
+                    android:hint="0"
+                    android:textColor="@color/text_main"
+                    android:textSize="32sp"
+                    android:fontFamily="sans-serif-black"
+                    android:layout_marginStart="8dp"
+                    android:paddingVertical="0dp" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/border_light"
+                android:layout_marginTop="8dp" />
+
+            <!-- Type Selection -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Tipe Transaksi"
+                android:textColor="@color/text_secondary"
+                android:textSize="13sp" />
 
             <RadioGroup
                 android:id="@+id/rgType"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_height="48dp"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal"
+                android:background="@drawable/bg_edittext"
+                android:padding="4dp">
 
                 <RadioButton
                     android:id="@+id/rbExpense"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:text="Expense"
+                    android:text="Pengeluaran"
                     android:checked="true"
-                    android:buttonTint="#EF4444"
-                    android:textColor="#EF4444" />
+                    android:button="@null"
+                    android:gravity="center"
+                    android:textColor="@color/rb_selector_text"
+                    android:background="@drawable/bg_rb_selector" />
 
                 <RadioButton
                     android:id="@+id/rbIncome"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:text="Income"
-                    android:buttonTint="#10B981"
-                    android:textColor="#10B981" />
+                    android:text="Pemasukan"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:textColor="@color/rb_selector_text"
+                    android:background="@drawable/bg_rb_selector" />
             </RadioGroup>
 
-            <com.google.android.material.textfield.TextInputLayout
+            <!-- Form Fields -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:hint="Amount (Rp)">
+                android:orientation="vertical"
+                android:layout_marginTop="24dp">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etAmount"
-                    android:layout_width="match_parent"
+                <!-- Category -->
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:inputType="numberDecimal" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:text="Kategori"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Category"
-                android:textSize="12sp"
-                android:textColor="#6B7280" />
+                <Spinner
+                    android:id="@+id/spinnerCategory"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_edittext" />
 
-            <Spinner
-                android:id="@+id/spinnerCategory"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginTop="4dp"
-                android:background="@android:drawable/btn_dropdown" />
+                <!-- Asset -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="Sumber Dana / Wallet"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Asset / Wallet"
-                android:textSize="12sp"
-                android:textColor="#6B7280" />
+                <Spinner
+                    android:id="@+id/spinnerAsset"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_edittext" />
 
-            <Spinner
-                android:id="@+id/spinnerAsset"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginTop="4dp"
-                android:background="@android:drawable/btn_dropdown" />
+                <!-- Date -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="Tanggal"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:hint="Date">
-
-                <com.google.android.material.textfield.TextInputEditText
+                <EditText
                     android:id="@+id/etDate"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="52dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_edittext"
+                    android:drawableStart="@android:drawable/ic_menu_my_calendar"
+                    android:drawablePadding="12dp"
+                    android:paddingHorizontal="16dp"
                     android:focusable="false"
-                    android:clickable="true" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:clickable="true"
+                    android:textSize="14sp" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:hint="Description (Optional)">
+                <!-- Description -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="Catatan (Opsional)"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp" />
 
-                <com.google.android.material.textfield.TextInputEditText
+                <EditText
                     android:id="@+id/etDescription"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textCapSentences" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:minHeight="100dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_edittext"
+                    android:padding="16dp"
+                    android:gravity="top"
+                    android:inputType="textCapSentences|textMultiLine"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSave"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:layout_marginTop="32dp"
-                android:text="Save Transaction"
+                android:layout_marginBottom="24dp"
+                android:text="Simpan Transaksi"
+                android:textAllCaps="false"
                 android:textSize="16sp"
-                app:cornerRadius="8dp" />
+                android:fontFamily="sans-serif-medium"
+                app:cornerRadius="12dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:backgroundTint="@color/primary_green" />
 
             <ProgressBar
                 android:id="@+id/progressBar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="16dp"
                 android:visibility="gone" />
 
         </LinearLayout>

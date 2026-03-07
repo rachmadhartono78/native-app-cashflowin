@@ -17,7 +17,8 @@ import java.util.Locale
 class CalendarActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityCalendarBinding
-    private val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+    private val apiDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+    private val displayDateFormat = SimpleDateFormat("dd MMMM yyyy", Locale("id", "ID"))
     private lateinit var transactionAdapter: TransactionAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,7 +36,7 @@ class CalendarActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         transactionAdapter = TransactionAdapter { transaction ->
-            // Optionally handle click
+            // Detail transaksi
         }
         binding.rvTransactions.apply {
             layoutManager = LinearLayoutManager(this@CalendarActivity)
@@ -45,57 +46,77 @@ class CalendarActivity : AppCompatActivity() {
 
     private fun setupCalendar() {
         binding.calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
-            val calendar = Calendar.getInstance()
-            calendar.set(year, month, dayOfMonth)
-            val selectedDate = sdf.format(calendar.time)
-            
+            // Kita buat string tanggal yang dipilih
+            val selectedDate = String.format(Locale.US, "%04d-%02d-%02d", year, month + 1, dayOfMonth)
             fetchTransactionsForDate(selectedDate)
         }
         
-        // Fetch for today initially
-        fetchTransactionsForDate(sdf.format(Calendar.getInstance().time))
+        // Load hari ini saat pertama kali buka
+        val cal = Calendar.getInstance()
+        val today = apiDateFormat.format(cal.time)
+        fetchTransactionsForDate(today)
     }
 
     private fun fetchTransactionsForDate(dateStr: String) {
         binding.progressBar.visibility = View.VISIBLE
         binding.rvTransactions.visibility = View.GONE
+        
+        val displayDate = try {
+            val date = apiDateFormat.parse(dateStr)
+            if (date != null) displayDateFormat.format(date) else dateStr
+        } catch (e: Exception) {
+            dateStr
+        }
 
-        val parts = dateStr.split("-")
-        if (parts.size < 3) return
-        val year = parts[0]
-        val month = parts[1]
+        binding.tvSelectedDate.text = "Mencari transaksi $displayDate..."
 
         lifecycleScope.launch {
             try {
                 val apiService = ApiClient.getApiService(this@CalendarActivity)
                 
-                // Fetch month's transactions
+                // TRICK: Kita ambil range +/- 1 hari dari server untuk mengatasi masalah timezone,
+                // tapi nanti kita filter lagi secara ketat di lokal.
+                val cal = Calendar.getInstance()
+                val date = apiDateFormat.parse(dateStr)
+                cal.time = date!!
+                
+                cal.add(Calendar.DAY_OF_MONTH, -1)
+                val prevDay = apiDateFormat.format(cal.time)
+                
+                cal.add(Calendar.DAY_OF_MONTH, 2)
+                val nextDay = apiDateFormat.format(cal.time)
+
                 val response = apiService.getTransactions(
-                    startDate = "$year-$month-01",
-                    endDate = "$year-$month-31"
+                    startDate = prevDay,
+                    endDate = nextDay
                 )
                 
                 binding.progressBar.visibility = View.GONE
                 
                 if (response.isSuccessful) {
                     val allTransactions = response.body()?.data?.data ?: emptyList()
-                    val filtered = allTransactions.filter { it.date == dateStr }
+                    
+                    // FILTER KETAT: Bandingkan hanya bagian YYYY-MM-DD
+                    val filtered = allTransactions.filter { 
+                        it.date.startsWith(dateStr) 
+                    }
                     
                     binding.tvSelectedDate.text = if (filtered.isEmpty()) {
-                        "Tidak ada transaksi pada $dateStr"
+                        "Tidak ada transaksi pada $displayDate"
                     } else {
-                        "${filtered.size} Transaksi pada $dateStr"
+                        "${filtered.size} Transaksi pada $displayDate"
                     }
                     
                     binding.rvTransactions.visibility = View.VISIBLE
                     transactionAdapter.submitList(filtered)
                     
                 } else {
-                    Toast.makeText(this@CalendarActivity, "Gagal mengambil data", Toast.LENGTH_SHORT).show()
+                    binding.tvSelectedDate.text = "Gagal memuat data"
                 }
             } catch (e: Exception) {
                 binding.progressBar.visibility = View.GONE
-                Toast.makeText(this@CalendarActivity, "Kesalahan jaringan: ${e.message}", Toast.LENGTH_SHORT).show()
+                binding.tvSelectedDate.text = "Kesalahan koneksi"
+                Toast.makeText(this@CalendarActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }

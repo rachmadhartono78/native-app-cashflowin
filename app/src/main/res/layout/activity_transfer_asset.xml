@@ -11,6 +11,7 @@
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:elevation="0dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.Toolbar
@@ -18,13 +19,16 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@android:color/white"
-            app:title="Transfer Asset"
-            app:titleTextColor="#1E293B" />
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:title="Transfer Aset"
+            app:titleTextColor="#1E293B"
+            app:titleCentered="true" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:overScrollMode="never"
         app:layout_constraintBottom_toTopOf="@+id/btnSubmitTransfer"
         app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
 
@@ -34,61 +38,104 @@
             android:orientation="vertical"
             android:padding="24dp">
 
-            <!-- Source Asset -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="From Asset"
-                android:textColor="#64748B"
-                android:textSize="14sp"
-                android:layout_marginBottom="8dp"/>
-
-            <com.google.android.material.textfield.TextInputLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:hintEnabled="false"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/white"
+                app:strokeWidth="1dp"
+                app:strokeColor="#F1F5F9">
 
-                <AutoCompleteTextView
-                    android:id="@+id/spinnerSourceAsset"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="none"
-                    android:hint="Select Source" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:orientation="vertical"
+                    android:padding="20dp">
 
-            <!-- Destination Asset -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="To Asset"
-                android:textColor="#64748B"
-                android:textSize="14sp"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="8dp"/>
-                
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:hintEnabled="false"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+                    <!-- Source Asset -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Dari Aset"
+                        android:textColor="#64748B"
+                        android:textSize="13sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:layout_marginBottom="8dp"/>
 
-                <AutoCompleteTextView
-                    android:id="@+id/spinnerDestAsset"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="none"
-                    android:hint="Select Destination" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:hintEnabled="false"
+                        app:boxStrokeWidth="0dp"
+                        app:boxStrokeWidthFocused="0dp"
+                        app:endIconTint="#64748B"
+                        android:background="@drawable/bg_input_field"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/spinnerSourceAsset"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="none"
+                            android:paddingVertical="12dp"
+                            android:hint="Pilih aset sumber"
+                            android:textSize="15sp"
+                            android:fontFamily="sans-serif-medium" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- Arrow Separator -->
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center"
+                        android:layout_marginVertical="12dp"
+                        android:src="@drawable/ic_arrow_down"
+                        app:tint="@color/primary_green" />
+
+                    <!-- Destination Asset -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Ke Aset"
+                        android:textColor="#64748B"
+                        android:textSize="13sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:layout_marginBottom="8dp"/>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:hintEnabled="false"
+                        app:boxStrokeWidth="0dp"
+                        app:boxStrokeWidthFocused="0dp"
+                        app:endIconTint="#64748B"
+                        android:background="@drawable/bg_input_field"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/spinnerDestAsset"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="none"
+                            android:paddingVertical="12dp"
+                            android:hint="Pilih aset tujuan"
+                            android:textSize="15sp"
+                            android:fontFamily="sans-serif-medium" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
             <!-- Amount Input -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Amount to Transfer"
+                android:text="Nominal Transfer"
                 android:textColor="#64748B"
-                android:textSize="14sp"
-                android:layout_marginTop="16dp"
+                android:textSize="13sp"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginTop="24dp"
                 android:layout_marginBottom="8dp"/>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -96,6 +143,9 @@
                 android:layout_height="wrap_content"
                 app:hintEnabled="false"
                 app:prefixText="Rp "
+                app:prefixTextColor="@color/black"
+                app:prefixTextAppearance="@style/TextAppearance.Material3.TitleLarge"
+                app:boxStrokeColor="@color/primary_green"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -103,73 +153,101 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="0"
-                    android:inputType="numberDecimal" />
+                    android:inputType="numberDecimal"
+                    android:textSize="24sp"
+                    android:fontFamily="sans-serif-black"
+                    android:textColor="@color/black" />
             </com.google.android.material.textfield.TextInputLayout>
             
-            <!-- Date Input -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="8dp"
-                android:text="Date"
-                android:textColor="#64748B"
-                android:textSize="14sp" />
-
-            <com.google.android.material.textfield.TextInputLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:endIconDrawable="@drawable/ic_gallery_black_24dp"
-                app:endIconMode="custom"
-                app:hintEnabled="false"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                android:orientation="horizontal"
+                android:layout_marginTop="24dp"
+                android:weightSum="2">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etTransferDate"
-                    android:layout_width="match_parent"
+                <!-- Date Input -->
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:focusable="false"
-                    android:inputType="none"
-                    android:hint="Select Date" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginEnd="8dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="Tanggal"
+                        android:textColor="#64748B"
+                        android:textSize="13sp"
+                        android:fontFamily="sans-serif-medium" />
 
-            <!-- Description -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="8dp"
-                android:text="Description (Optional)"
-                android:textColor="#64748B"
-                android:textSize="14sp" />
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:endIconDrawable="@drawable/ic_calendar"
+                        app:endIconMode="custom"
+                        app:hintEnabled="false"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:hintEnabled="false"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etTransferDate"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:focusable="false"
+                            android:inputType="none"
+                            android:hint="Pilih Tanggal"
+                            android:textSize="14sp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etTransferDescription"
-                    android:layout_width="match_parent"
+                <!-- Description -->
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:hint="e.g Transfer for emergency fund"
-                    android:inputType="textMultiLine"
-                    android:lines="3"
-                    android:gravity="top|start"/>
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="8dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="Keterangan"
+                        android:textColor="#64748B"
+                        android:textSize="13sp"
+                        android:fontFamily="sans-serif-medium" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:hintEnabled="false"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etTransferDescription"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Opsional"
+                            android:inputType="text"
+                            android:textSize="14sp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnSubmitTransfer"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_margin="24dp"
-        android:text="Submit Transfer"
+        android:text="Konfirmasi Transfer"
         android:textSize="16sp"
-        app:cornerRadius="12dp"
+        android:fontFamily="sans-serif-black"
+        android:textAllCaps="false"
+        app:cornerRadius="16dp"
+        android:backgroundTint="@color/primary_green"
         app:layout_constraintBottom_toBottomOf="parent" />
 
     <ProgressBar
@@ -177,6 +255,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
+        android:indeterminateTint="@color/primary_green"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

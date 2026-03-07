@@ -2,8 +2,8 @@
     <string name="app_name">Cashflowin</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_title">Cashflowin</string>
+    <string name="nav_header_subtitle">Your Financial Partner</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
@@ -13,16 +13,31 @@
     <string name="menu_categories">Categories</string>
     <string name="menu_settings">Settings</string>
 
-    <string name="lorem_ipsum_title">Lorem Ipsum"</string>
-    <string name="lorem_ipsum">Lorem Ipsum is simply placeholder text of the printing and
-        typesetting industry. Lorem Ipsum has been the industry\'s standard placeholder text ever
-        since the 1500s, when an unknown printer took a galley of type and scrambled it to make a
-        type specimen book"
-    </string>
-    <string name="fab_content_description">Represents a view to invoke an action</string>
-    <string name="image_view_item_transform_content_description">Represents an image view in the
-        item
-    </string>
+    <!-- Dashboard Strings -->
+    <string name="greeting_morning">Halo, Selamat Pagi</string>
+    <string name="greeting_afternoon">Halo, Selamat Siang</string>
+    <string name="greeting_evening">Halo, Selamat Sore</string>
+    <string name="greeting_night">Halo, Selamat Malam</string>
+    <string name="total_balance">Total Saldo</string>
+    <string name="income">Pemasukan</string>
+    <string name="expense">Pengeluaran</string>
+    <string name="main_menu">Menu Utama</string>
+    <string name="budget">Anggaran</string>
+    <string name="savings">Tabungan</string>
+    <string name="debt">Hutang</string>
+    <string name="calendar">Kalender</string>
+    <string name="calculate">Hitung</string>
+    <string name="financial_analysis">Analisis Keuangan</string>
+    <string name="recent_transactions">Transaksi Terbaru</string>
+    <string name="view_all">Lihat Semua</string>
+    <string name="record">Catat</string>
+    <string name="balance_hidden">Rp ********</string>
+    <string name="chart_overview">Ringkasan Bulan Ini</string>
+    <string name="no_transactions_month">Belum ada transaksi bulan ini.</string>
+    <string name="export_pdf">PDF Report</string>
+    <string name="export_csv">CSV Report</string>
+    <string name="export_success">Laporan berhasil disimpan di Downloads</string>
+    <string name="export_failed">Gagal mengekspor laporan: %1$s</string>
 
     <!-- Error Messages -->
     <string name="error_network">Network error occurred. Please check your connection.</string>
@@ -31,4 +46,6 @@
     <string name="error_fetch_data">Failed to fetch data</string>
     <string name="error_logout_failed">Logout Failed: %1$s</string>
     <string name="success_logout">Logged out successfully</string>
+
+    <string name="fab_content_description">Floating Action Button</string>
 </resources>

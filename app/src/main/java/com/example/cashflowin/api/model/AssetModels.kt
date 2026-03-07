@@ -13,13 +13,17 @@ data class AssetInfo(
     val name: String,
     val type: String,
     @SerializedName("amount")
-    val balance: Double
+    val balance: Double,
+    val color: String? = null,
+    val icon: String? = null
 )
 
 data class AssetRequest(
     val name: String,
     val type: String,
-    val amount: String
+    val amount: String,
+    val color: String? = null,
+    val icon: String? = null
 )
 
 data class TransferAssetRequest(

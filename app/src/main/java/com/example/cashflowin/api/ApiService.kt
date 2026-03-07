@@ -74,6 +74,7 @@ interface ApiService {
         @Query("page") page: Int? = null,
         @Query("type") type: String? = null,
         @Query("category_id") categoryId: Int? = null,
+        @Query("asset_id") assetId: Int? = null,
         @Query("search") search: String? = null,
         @Query("start_date") startDate: String? = null,
         @Query("end_date") endDate: String? = null

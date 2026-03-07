@@ -1,128 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    tools:context=".ui.transaction.list.TransactionsFragment">
+    android:background="#FFFFFF">
 
-    <LinearLayout
-        android:id="@+id/headerLayout"
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        app:elevation="0dp"
+        android:background="#FFFFFF">
 
-        <!-- Search and Date Filter Header -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="8dp"
-            android:gravity="center_vertical">
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilSearch"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="Search transactions..."
-                app:startIconDrawable="@android:drawable/ic_menu_search">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etSearch"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="text" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <ImageButton
-                android:id="@+id/btnDateFilter"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginStart="8dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Filter by date"
-                android:src="@android:drawable/ic_menu_today"
-                app:tint="?attr/colorPrimary" />
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/tvActiveDateFilter"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:paddingBottom="8dp"
-            android:text="Showing: All dates"
-            android:textSize="12sp"
-            android:textColor="?attr/colorPrimary"
-            android:visibility="visible" />
-
-        <!-- Filter Tabs -->
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayoutFilter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:tabMode="fixed"
-            app:tabGravity="fill">
-            
-            <com.google.android.material.tabs.TabItem
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="All" />
-
-            <com.google.android.material.tabs.TabItem
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Income" />
-
-            <com.google.android.material.tabs.TabItem
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Expense" />
-
+            app:tabIndicatorColor="@color/primary_green"
+            app:tabSelectedTextColor="@color/primary_green"
+            app:tabTextColor="@color/text_secondary"
+            app:tabIndicatorHeight="2dp"
+            app:tabRippleColor="@android:color/transparent">
+            <com.google.android.material.tabs.TabItem android:text="Semua" />
+            <com.google.android.material.tabs.TabItem android:text="Pemasukan" />
+            <com.google.android.material.tabs.TabItem android:text="Pengeluaran" />
         </com.google.android.material.tabs.TabLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <!-- Search and Date Filter -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <EditText
+                android:id="@+id/etSearch"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_edittext"
+                android:hint="Cari transaksi..."
+                android:paddingHorizontal="16dp"
+                android:textSize="14sp" />
+
+            <LinearLayout
+                android:id="@+id/btnDateFilter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="12dp"
+                android:gravity="center_vertical"
+                android:background="?attr/selectableItemBackground"
+                android:padding="8dp">
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@android:drawable/ic_menu_my_calendar"
+                    app:tint="@color/primary_green" />
+                <TextView
+                    android:id="@+id/tvActiveDateFilter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="Showing: All dates"
+                    android:textSize="13sp"
+                    android:textColor="@color/text_secondary" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvTransactions"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingBottom="80dp"
+                tools:listitem="@layout/item_transaction" />
+
+            <TextView
+                android:id="@+id/tvEmptyState"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="No transactions found"
+                android:visibility="gone" />
+
+            <ProgressBar
+                android:id="@+id/pbLoadMore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone" />
+        </RelativeLayout>
+
     </LinearLayout>
 
-    <!-- Loading progress (Initial) -->
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_gravity="center"
         android:visibility="gone" />
 
-    <!-- Empty State Text -->
-    <TextView
-        android:id="@+id/tvEmptyState"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/headerLayout"
-        android:layout_marginTop="32dp"
-        android:textAlignment="center"
-        android:text="No transactions found."
-        android:visibility="gone"
-        android:textSize="16sp" />
-
-    <!-- Transactions RecyclerView -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvTransactions"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/headerLayout"
-        android:clipToPadding="false"
-        android:paddingBottom="80dp" />
-
-    <!-- Load More Progress Bar -->
-    <ProgressBar
-        android:id="@+id/pbLoadMore"
-        style="?android:attr/progressBarStyleSmall"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="16dp"
-        android:visibility="gone" />
-
-</RelativeLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

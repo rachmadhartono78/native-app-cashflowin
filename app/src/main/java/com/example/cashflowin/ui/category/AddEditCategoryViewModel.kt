@@ -21,11 +21,11 @@ class AddEditCategoryViewModel(private val repository: CategoryRepository) : Vie
     private val _submitState = MutableLiveData<CategorySubmitState>(CategorySubmitState.Idle)
     val submitState: LiveData<CategorySubmitState> = _submitState
 
-    fun saveCategory(name: String, type: String) {
+    fun saveCategory(name: String, type: String, color: String? = null, icon: String? = null) {
         _submitState.value = CategorySubmitState.Loading
         viewModelScope.launch {
             try {
-                val request = CategoryRequest(name, type)
+                val request = CategoryRequest(name, type, color, icon)
                 val response = repository.addCategory(request)
                 
                 if (response.isSuccessful) {
@@ -39,11 +39,11 @@ class AddEditCategoryViewModel(private val repository: CategoryRepository) : Vie
         }
     }
 
-    fun updateCategory(id: Int, name: String, type: String) {
+    fun updateCategory(id: Int, name: String, type: String, color: String? = null, icon: String? = null) {
         _submitState.value = CategorySubmitState.Loading
         viewModelScope.launch {
             try {
-                val request = CategoryRequest(name, type) 
+                val request = CategoryRequest(name, type, color, icon)
                 val response = repository.updateCategory(id, request)
                 
                 if (response.isSuccessful) {

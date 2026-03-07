@@ -11,8 +11,11 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cashflowin.api.ApiClient
 import com.example.cashflowin.api.AssetRepository
+import com.example.cashflowin.api.model.AssetInfo
 import com.example.cashflowin.databinding.FragmentAssetsBinding
 import com.example.cashflowin.utils.TokenManager
+import java.text.NumberFormat
+import java.util.Locale
 
 class AssetsFragment : Fragment() {
 
@@ -53,11 +56,13 @@ class AssetsFragment : Fragment() {
 
     private fun setupRecyclerView() {
         assetAdapter = AssetAdapter { asset ->
-            val intent = Intent(requireContext(), AddEditAssetActivity::class.java).apply {
+            val intent = Intent(requireContext(), AssetDetailActivity::class.java).apply {
                 putExtra("EXTRA_ASSET_ID", asset.id)
                 putExtra("EXTRA_ASSET_NAME", asset.name)
                 putExtra("EXTRA_ASSET_TYPE", asset.type)
                 putExtra("EXTRA_ASSET_AMOUNT", asset.balance.toString())
+                putExtra("EXTRA_ASSET_COLOR", asset.color)
+                putExtra("EXTRA_ASSET_ICON", asset.icon)
             }
             startActivity(intent)
         }
@@ -89,6 +94,8 @@ class AssetsFragment : Fragment() {
                     binding.progressBar.visibility = View.GONE
                     val list = state.response.data
                     
+                    updatePortfolioSummary(list)
+                    
                     if (list.isEmpty()) {
                         binding.emptyStateLayout.visibility = View.VISIBLE
                         assetAdapter.submitList(emptyList())
@@ -107,6 +114,35 @@ class AssetsFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun updatePortfolioSummary(assets: List<AssetInfo>) {
+        val totalBalance = assets.sumOf { it.balance }
+        val format = NumberFormat.getCurrencyInstance(Locale("id", "ID")).apply {
+            maximumFractionDigits = 0
+        }
+        
+        binding.tvTotalValue.text = format.format(totalBalance)
+        
+        if (totalBalance > 0) {
+            val bankBalance = assets.filter { it.type.equals("Bank", true) || it.type.equals("Cash", true) }.sumOf { it.balance }
+            val ewalletBalance = assets.filter { it.type.equals("E-Wallet", true) }.sumOf { it.balance }
+            val investasiBalance = assets.filter { it.type.equals("Investasi", true) }.sumOf { it.balance }
+            val lainnyaBalance = assets.filter { it.type.equals("Lainnya", true) }.sumOf { it.balance }
+
+            binding.tvAllocBank.text = "${(bankBalance / totalBalance * 100).toInt()}%"
+            binding.tvAllocEWallet.text = "${(ewalletBalance / totalBalance * 100).toInt()}%"
+            binding.tvAllocInvestasi.text = "${(investasiBalance / totalBalance * 100).toInt()}%"
+            binding.tvAllocLainnya.text = "${(lainnyaBalance / totalBalance * 100).toInt()}%"
+        } else {
+            binding.tvAllocBank.text = "0%"
+            binding.tvAllocEWallet.text = "0%"
+            binding.tvAllocInvestasi.text = "0%"
+            binding.tvAllocLainnya.text = "0%"
+        }
+        
+        binding.tvTotalGain.text = "Total ${assets.size} Aset Aktif"
+        binding.tvTotalGain.setTextColor(resources.getColor(com.example.cashflowin.R.color.text_secondary, null))
     }
 
     private fun fetchAssets() {

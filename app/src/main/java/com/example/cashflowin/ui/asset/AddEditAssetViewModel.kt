@@ -20,11 +20,11 @@ class AddEditAssetViewModel(private val repository: AssetRepository) : ViewModel
     private val _submitState = MutableLiveData<AssetSubmitState>(AssetSubmitState.Idle)
     val submitState: LiveData<AssetSubmitState> = _submitState
 
-    fun addAsset(name: String, balance: Double, type: String = "Cash") {
+    fun addAsset(name: String, balance: Double, type: String = "Cash", color: String? = null, icon: String? = null) {
         _submitState.value = AssetSubmitState.Loading
         viewModelScope.launch {
             try {
-                val request = AssetRequest(name, type, balance.toString())
+                val request = AssetRequest(name, type, balance.toString(), color, icon)
                 val response = repository.addAsset(request)
                 if (response.isSuccessful) {
                     _submitState.value = AssetSubmitState.Success
@@ -37,11 +37,11 @@ class AddEditAssetViewModel(private val repository: AssetRepository) : ViewModel
         }
     }
 
-    fun updateAsset(id: Int, name: String, balance: Double, type: String = "Cash") {
+    fun updateAsset(id: Int, name: String, balance: Double, type: String = "Cash", color: String? = null, icon: String? = null) {
         _submitState.value = AssetSubmitState.Loading
         viewModelScope.launch {
             try {
-                val request = AssetRequest(name, type, balance.toString())
+                val request = AssetRequest(name, type, balance.toString(), color, icon)
                 val response = repository.updateAsset(id, request)
                 if (response.isSuccessful) {
                     _submitState.value = AssetSubmitState.Success

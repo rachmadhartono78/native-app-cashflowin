@@ -2,7 +2,9 @@ package com.example.cashflowin.api.model
 
 data class CategoryRequest(
     val name: String,
-    val type: String
+    val type: String,
+    val color: String? = null,
+    val icon: String? = null
 )
 
 data class CategoryResponse(

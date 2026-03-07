@@ -40,6 +40,24 @@ class CalculatorActivity : AppCompatActivity() {
                 showUnderDevelopmentMessage()
             }
         }
+
+        binding.cardDebt.setOnClickListener {
+            try {
+                val intent = Intent(this, DebtSimulationActivity::class.java)
+                startActivity(intent)
+            } catch (e: Exception) {
+                showUnderDevelopmentMessage()
+            }
+        }
+
+        binding.cardBasic.setOnClickListener {
+            try {
+                val intent = Intent(this, BasicCalculatorActivity::class.java)
+                startActivity(intent)
+            } catch (e: Exception) {
+                showUnderDevelopmentMessage()
+            }
+        }
     }
 
     private fun showUnderDevelopmentMessage() {

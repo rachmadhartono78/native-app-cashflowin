@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewPropertyAnimator
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import kotlin.math.abs
 
@@ -17,51 +18,81 @@ class DraggableFloatingActionButton @JvmOverloads constructor(
     private var downRawY = 0f
     private var dX = 0f
     private var dY = 0f
+    
+    private var isDragging = false
+    private val clickThreshold = 10
 
     init {
         setOnTouchListener(this)
+        // Add a nice elevation and ensure it looks professional
+        elevation = 8f
     }
 
     override fun onTouch(view: View, motionEvent: MotionEvent): Boolean {
         val action = motionEvent.action
-        if (action == MotionEvent.ACTION_DOWN) {
-            downRawX = motionEvent.rawX
-            downRawY = motionEvent.rawY
-            dX = view.x - downRawX
-            dY = view.y - downRawY
-            return true // Consumed
-        } else if (action == MotionEvent.ACTION_MOVE) {
-            val viewWidth = view.width
-            val viewHeight = view.height
-
-            val viewParent = view.parent as View
-            val parentWidth = viewParent.width
-            val parentHeight = viewParent.height
-
-            var newX = motionEvent.rawX + dX
-            newX = 0f.coerceAtLeast(newX.coerceAtMost((parentWidth - viewWidth).toFloat()))
-
-            var newY = motionEvent.rawY + dY
-            newY = 0f.coerceAtLeast(newY.coerceAtMost((parentHeight - viewHeight).toFloat()))
-
-            view.animate()
-                .x(newX)
-                .y(newY)
-                .setDuration(0)
-                .start()
-            return true // Consumed
-        } else if (action == MotionEvent.ACTION_UP) {
-            val upRawX = motionEvent.rawX
-            val upRawY = motionEvent.rawY
-
-            val upDX = upRawX - downRawX
-            val upDY = upRawY - downRawY
-
-            if (abs(upDX) < 10 && abs(upDY) < 10) { // Check if it's a click
-                return performClick()
+        when (action) {
+            MotionEvent.ACTION_DOWN -> {
+                downRawX = motionEvent.rawX
+                downRawY = motionEvent.rawY
+                dX = view.x - downRawX
+                dY = view.y - downRawY
+                isDragging = false
+                return true
             }
-            return true // Consumed
+            MotionEvent.ACTION_MOVE -> {
+                val viewWidth = view.width
+                val viewHeight = view.height
+
+                val viewParent = view.parent as View
+                val parentWidth = viewParent.width
+                val parentHeight = viewParent.height
+
+                var newX = motionEvent.rawX + dX
+                newX = 0f.coerceAtLeast(newX.coerceAtMost((parentWidth - viewWidth).toFloat()))
+
+                var newY = motionEvent.rawY + dY
+                newY = 0f.coerceAtLeast(newY.coerceAtMost((parentHeight - viewHeight).toFloat()))
+
+                if (abs(motionEvent.rawX - downRawX) > clickThreshold || abs(motionEvent.rawY - downRawY) > clickThreshold) {
+                    isDragging = true
+                    view.animate()
+                        .x(newX)
+                        .y(newY)
+                        .setDuration(0)
+                        .start()
+                }
+                return true
+            }
+            MotionEvent.ACTION_UP -> {
+                if (!isDragging) {
+                    return performClick()
+                } else {
+                    // Snap to nearest side for a "Professional" feel
+                    snapToEdge(view)
+                    return true
+                }
+            }
         }
         return super.onTouchEvent(motionEvent)
+    }
+
+    private fun snapToEdge(view: View) {
+        val viewParent = view.parent as View
+        val parentWidth = viewParent.width
+        val viewWidth = view.width
+        
+        val margin = 48f // Margin from the edge after snapping
+        
+        val endX = if (view.x + viewWidth / 2 < parentWidth / 2) {
+            margin // Snap to left
+        } else {
+            parentWidth - viewWidth - margin // Snap to right
+        }
+
+        view.animate()
+            .x(endX)
+            .setDuration(300)
+            .setInterpolator(android.view.animation.DecelerateInterpolator())
+            .start()
     }
 }

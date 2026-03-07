@@ -13,11 +13,20 @@ class TransactionRepository(private val apiService: ApiService) {
         page: Int? = null,
         type: String? = null,
         categoryId: Int? = null,
+        assetId: Int? = null,
         search: String? = null,
         startDate: String? = null,
         endDate: String? = null
     ): Response<TransactionListResponse> {
-        return apiService.getTransactions(page, type, categoryId, search, startDate, endDate)
+        return apiService.getTransactions(
+            page = page,
+            type = type,
+            categoryId = categoryId,
+            assetId = assetId,
+            search = search,
+            startDate = startDate,
+            endDate = endDate
+        )
     }
 
     suspend fun getCategories(type: String? = null): Response<CategoryResponse> {

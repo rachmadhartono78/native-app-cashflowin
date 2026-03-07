@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -43,7 +45,17 @@
             android:theme="@style/Theme.Cashflowin.NoActionBar" />
 
         <activity
+            android:name=".ui.transaction.ScanNotaActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Cashflowin.NoActionBar" />
+
+        <activity
             android:name=".ui.asset.AddEditAssetActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Cashflowin.NoActionBar" />
+
+        <activity
+            android:name=".ui.asset.AssetDetailActivity"
             android:exported="false"
             android:theme="@style/Theme.Cashflowin.NoActionBar" />
 
@@ -118,6 +130,16 @@
 
         <activity
             android:name=".ui.planning.RetirementFundActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Cashflowin.NoActionBar" />
+
+        <activity
+            android:name=".ui.planning.BasicCalculatorActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Cashflowin.NoActionBar" />
+
+        <activity
+            android:name=".ui.planning.DebtSimulationActivity"
             android:exported="false"
             android:theme="@style/Theme.Cashflowin.NoActionBar" />
 

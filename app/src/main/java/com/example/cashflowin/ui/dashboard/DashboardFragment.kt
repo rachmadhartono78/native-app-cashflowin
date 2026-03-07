@@ -1,32 +1,25 @@
 package com.example.cashflowin.ui.dashboard
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
-import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.graphics.toColorInt
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.cashflowin.R
 import com.example.cashflowin.api.ApiClient
 import com.example.cashflowin.api.DashboardRepository
 import com.example.cashflowin.api.model.Summary
 import com.example.cashflowin.databinding.FragmentDashboardBinding
 import com.example.cashflowin.ui.auth.LoginActivity
+import com.example.cashflowin.ui.transaction.ScanNotaActivity
 import com.example.cashflowin.utils.TokenManager
-import com.github.mikephil.charting.data.PieData
-import com.github.mikephil.charting.data.PieDataSet
-import com.github.mikephil.charting.data.PieEntry
-import okhttp3.ResponseBody
-import java.io.File
-import java.io.FileOutputStream
 import java.text.NumberFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 class DashboardFragment : Fragment() {
 
@@ -62,30 +55,45 @@ class DashboardFragment : Fragment() {
             return
         }
 
+        updateGreeting()
         setupRecyclerView()
         setupObservers()
         setupListeners()
     }
 
-    private fun setupListeners() {
-        binding.fabAddTransaction.setOnClickListener {
-            startActivity(Intent(requireContext(), com.example.cashflowin.ui.transaction.AddTransactionActivity::class.java))
-        }
-
+    private fun updateGreeting() {
         val calendar = Calendar.getInstance()
-        val currentMonth = (calendar.get(Calendar.MONTH) + 1).toString()
-        val currentYear = calendar.get(Calendar.YEAR).toString()
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        
+        val greeting = when (hour) {
+            in 0..10 -> getString(R.string.greeting_morning)
+            in 11..14 -> getString(R.string.greeting_afternoon)
+            in 15..18 -> getString(R.string.greeting_evening)
+            else -> getString(R.string.greeting_night)
+        }
+        
+        binding.tvGreeting.text = "$greeting,"
+        
+        val userName = tokenManager.getUserName() ?: "User"
+        binding.tvUserName.text = userName
+    }
 
-        binding.btnExportPdf.setOnClickListener {
-            viewModel.exportReportPdf(currentMonth, currentYear) { responseBody ->
-                saveFileToDownloads(responseBody, "Laporan_Keuangan.pdf")
+    private fun setupListeners() {
+        // Foto profil bisa diklik untuk pindah ke tab Settings
+        binding.btnProfile.setOnClickListener {
+            try {
+                findNavController().navigate(R.id.nav_settings)
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), "Membuka Profil...", Toast.LENGTH_SHORT).show()
             }
         }
 
-        binding.btnExportCsv.setOnClickListener {
-            viewModel.exportReportCsv(currentMonth, currentYear) { responseBody ->
-                saveFileToDownloads(responseBody, "Laporan_Keuangan.csv")
-            }
+        binding.btnCatat.setOnClickListener {
+            openAddTransaction()
+        }
+
+        binding.btnAddTransactionFab.setOnClickListener {
+            openAddTransaction()
         }
 
         binding.btnBudgets.setOnClickListener {
@@ -104,51 +112,54 @@ class DashboardFragment : Fragment() {
             startActivity(Intent(requireContext(), com.example.cashflowin.ui.planning.CalendarActivity::class.java))
         }
 
-        binding.btnCalculator.setOnClickListener {
+        binding.btnFinancialCalculator.setOnClickListener {
             startActivity(Intent(requireContext(), com.example.cashflowin.ui.planning.CalculatorActivity::class.java))
+        }
+
+        binding.btnScanNota.setOnClickListener {
+            startActivity(Intent(requireContext(), ScanNotaActivity::class.java))
+        }
+
+        binding.btnAiSuggestion.setOnClickListener {
+            Toast.makeText(requireContext(), "AI Advisor akan menganalisa keuanganmu...", Toast.LENGTH_LONG).show()
+            // Placeholder untuk fitur AI nantinya
+        }
+
+        binding.btnMore.setOnClickListener {
+            Toast.makeText(requireContext(), "Segera Hadir!", Toast.LENGTH_SHORT).show()
         }
 
         binding.btnHideBalance.setOnClickListener {
             isBalanceVisible = !isBalanceVisible
             currentSummary?.let { updateUI(it) }
             
-            // Toggle icon
             val iconRes = if (isBalanceVisible) {
                 android.R.drawable.ic_menu_view
             } else {
-                android.R.drawable.ic_menu_close_clear_cancel // Or a better hidden eye icon if available
+                android.R.drawable.ic_menu_close_clear_cancel 
             }
             binding.btnHideBalance.setImageResource(iconRes)
         }
+        
+        binding.tvViewAll.setOnClickListener {
+            // Pindah ke tab Transaksi
+            try {
+                findNavController().navigate(R.id.nav_transactions)
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), getString(R.string.view_all), Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
-    private fun saveFileToDownloads(body: ResponseBody, fileName: String): Pair<Boolean, String> {
-        return try {
-            val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-            val timestamp = System.currentTimeMillis()
-            val finalFileName = fileName.replace(".pdf", "_${timestamp}.pdf").replace(".csv", "_${timestamp}.csv")
-            val file = File(downloadsDir, finalFileName)
-            
-            body.byteStream().use { inputStream ->
-                FileOutputStream(file).use { outputStream ->
-                    val buffer = ByteArray(4096)
-                    var bytesRead: Int
-                    while (inputStream.read(buffer).also { bytesRead = it } != -1) {
-                        outputStream.write(buffer, 0, bytesRead)
-                    }
-                    outputStream.flush()
-                }
-            }
-            Pair(true, "Saved: ${file.name}")
-        } catch (e: Exception) {
-            Pair(false, e.message ?: "Unknown IO error")
-        }
+    private fun openAddTransaction() {
+        startActivity(Intent(requireContext(), com.example.cashflowin.ui.transaction.AddTransactionActivity::class.java))
     }
 
     override fun onResume() {
         super.onResume()
         if (tokenManager.getToken() != null) {
             viewModel.loadDashboardData()
+            updateGreeting()
         }
     }
 
@@ -175,7 +186,6 @@ class DashboardFragment : Fragment() {
     private fun setupObservers() {
         viewModel.dashboardState.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is DashboardState.Idle -> setLoading(false)
                 is DashboardState.Loading -> setLoading(true)
                 is DashboardState.Success -> {
                     setLoading(false)
@@ -185,12 +195,6 @@ class DashboardFragment : Fragment() {
                     currentSummary = summary
                     summary?.let { updateUI(it) }
                     transactionAdapter.submitList(transactions)
-                    
-                    binding.rvTransactions.visibility = if (transactions.isEmpty()) View.GONE else View.VISIBLE
-                }
-                is DashboardState.ExportComplete -> {
-                    setLoading(false)
-                    Toast.makeText(requireContext(), "Success: ${state.message}", Toast.LENGTH_LONG).show()
                 }
                 is DashboardState.Error -> {
                     setLoading(false)
@@ -201,61 +205,29 @@ class DashboardFragment : Fragment() {
                         Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
                     }
                 }
-                else -> {}
+                else -> setLoading(false)
             }
         }
     }
 
     private fun setLoading(isLoading: Boolean) {
-        binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-        binding.btnExportPdf.isEnabled = !isLoading
-        binding.btnExportCsv.isEnabled = !isLoading
+        // Simple loading for now
     }
 
     private fun updateUI(summary: Summary) {
-        val format = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
+        val format = NumberFormat.getCurrencyInstance(Locale("id", "ID")).apply {
+            maximumFractionDigits = 0
+        }
         
         if (isBalanceVisible) {
             binding.tvTotalBalance.text = format.format(summary.balance)
             binding.tvIncome.text = format.format(summary.total_income_month)
             binding.tvExpense.text = format.format(summary.total_expense_month)
         } else {
-            binding.tvTotalBalance.text = "Rp ********"
-            binding.tvIncome.text = "Rp ********"
-            binding.tvExpense.text = "Rp ********"
-        }
-        
-        setupPieChart(summary)
-    }
-
-    private fun setupPieChart(summary: Summary) {
-        val entries = ArrayList<PieEntry>()
-        if (summary.total_income_month > 0.0) {
-            entries.add(PieEntry(summary.total_income_month.toFloat(), "Income"))
-        }
-        if (summary.total_expense_month > 0.0) {
-            entries.add(PieEntry(summary.total_expense_month.toFloat(), "Expense"))
-        }
-
-        if (entries.isEmpty()) {
-            binding.pieChart.setNoDataText("No transactions this month.")
-            binding.pieChart.clear()
-            return
-        }
-
-        val dataSet = PieDataSet(entries, "").apply {
-            colors = listOf("#10B981".toColorInt(), "#EF4444".toColorInt())
-            valueTextSize = 12f
-            valueTextColor = Color.WHITE
-        }
-
-        binding.pieChart.apply {
-            data = PieData(dataSet)
-            description.isEnabled = false
-            centerText = "Month Overview"
-            setUsePercentValues(true)
-            animateY(1000)
-            invalidate()
+            val hiddenText = getString(R.string.balance_hidden)
+            binding.tvTotalBalance.text = hiddenText
+            binding.tvIncome.text = hiddenText
+            binding.tvExpense.text = hiddenText
         }
     }
 

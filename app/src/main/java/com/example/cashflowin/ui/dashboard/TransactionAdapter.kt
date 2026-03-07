@@ -1,5 +1,7 @@
 package com.example.cashflowin.ui.dashboard
 
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -18,8 +20,9 @@ class TransactionAdapter(
 
     private var transactions: List<TransactionItem> = listOf()
 
-    // Formatter dipindahkan ke luar agar lebih efisien
-    private val currencyFormat = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
+    private val currencyFormat = NumberFormat.getCurrencyInstance(Locale("id", "ID")).apply {
+        maximumFractionDigits = 0
+    }
     private val inputDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
     private val outputDateFormat = SimpleDateFormat("dd MMM yyyy", Locale("id", "ID"))
     private val isoFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", Locale.US).apply {
@@ -48,9 +51,8 @@ class TransactionAdapter(
     inner class TransactionViewHolder(private val binding: ItemTransactionBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(transaction: TransactionItem) {
             val context = binding.root.context
-            binding.tvCategoryName.text = transaction.category?.name ?: transaction.description ?: "Unknown"
+            binding.tvCategoryName.text = transaction.category?.name ?: transaction.description ?: "Lainnya"
             
-            // Format Date and Time
             val dateStr = try {
                 val date = inputDateFormat.parse(transaction.date)
                 if (date != null) outputDateFormat.format(date) else transaction.date
@@ -70,21 +72,56 @@ class TransactionAdapter(
             binding.tvDate.text = "$dateStr$timeStr"
             
             val amountValue = (transaction.amount.toDoubleOrNull() ?: 0.0)
-            var formattedAmount = currencyFormat.format(amountValue)
+            val formattedAmount = currencyFormat.format(amountValue).replace("Rp", "Rp")
+
+            // Improvisasi: Gunakan warna dan ikon dari kategori jika tersedia
+            val categoryColor = transaction.category?.color
+            val categoryIcon = transaction.category?.icon
+            
+            if (!categoryColor.isNullOrEmpty()) {
+                try {
+                    val color = Color.parseColor(categoryColor)
+                    binding.cardIcon.setCardBackgroundColor(color)
+                    binding.cardIcon.backgroundTintList = ColorStateList.valueOf(color).withAlpha(40)
+                    binding.ivCategoryIcon.imageTintList = ColorStateList.valueOf(color)
+                } catch (e: Exception) {
+                    setDefaultStyle(transaction)
+                }
+            } else {
+                setDefaultStyle(transaction)
+            }
+
+            if (!categoryIcon.isNullOrEmpty()) {
+                val resId = context.resources.getIdentifier(categoryIcon, "drawable", context.packageName)
+                val androidResId = context.resources.getIdentifier(categoryIcon, "drawable", "android")
+                if (resId != 0) {
+                    binding.ivCategoryIcon.setImageResource(resId)
+                } else if (androidResId != 0) {
+                    binding.ivCategoryIcon.setImageResource(androidResId)
+                }
+            }
 
             if (transaction.type == "income") {
-                formattedAmount = "+ $formattedAmount"
+                binding.tvAmount.text = "+$formattedAmount"
                 binding.tvAmount.setTextColor(ContextCompat.getColor(context, R.color.income))
-                binding.viewIndicator.setBackgroundColor(ContextCompat.getColor(context, R.color.income))
             } else {
-                formattedAmount = "- $formattedAmount"
+                binding.tvAmount.text = "-$formattedAmount"
                 binding.tvAmount.setTextColor(ContextCompat.getColor(context, R.color.expense))
-                binding.viewIndicator.setBackgroundColor(ContextCompat.getColor(context, R.color.expense))
             }
-            binding.tvAmount.text = formattedAmount
 
             binding.root.setOnClickListener {
                 onItemClick?.invoke(transaction)
+            }
+        }
+
+        private fun setDefaultStyle(transaction: TransactionItem) {
+            val context = binding.root.context
+            if (transaction.type == "income") {
+                binding.cardIcon.setCardBackgroundColor(ContextCompat.getColor(context, R.color.primary_green_light))
+                binding.ivCategoryIcon.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.primary_green))
+            } else {
+                binding.cardIcon.setCardBackgroundColor(Color.parseColor("#F1F5F9"))
+                binding.ivCategoryIcon.imageTintList = ColorStateList.valueOf(Color.parseColor("#64748B"))
             }
         }
     }

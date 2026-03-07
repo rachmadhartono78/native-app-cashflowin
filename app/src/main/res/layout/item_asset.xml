@@ -1,88 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="16dp"
-    android:layout_marginVertical="6dp"
-    app:cardBackgroundColor="@android:color/white"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="2dp"
-    app:strokeColor="#E2E8F0"
-    app:strokeWidth="1dp">
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="0dp"
+    app:cardBackgroundColor="@color/white"
+    app:strokeWidth="1dp"
+    app:strokeColor="#F1F5F9"
+    android:clickable="true"
+    android:focusable="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:padding="14dp">
 
-        <!-- Asset Icon/Avatar -->
-        <FrameLayout
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/iconContainer"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="@drawable/bg_circle_icon"
-            android:backgroundTint="#F3E5F5"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="#F8FAFC"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
             <ImageView
                 android:id="@+id/ivAssetIcon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
                 android:layout_gravity="center"
-                android:src="@drawable/ic_wallet_foreground"
-                app:tint="@color/primaryColor" />
-        </FrameLayout>
+                android:src="@android:drawable/ic_menu_gallery"
+                app:tint="#64748B" />
+        </com.google.android.material.card.MaterialCardView>
 
-        <!-- Asset Info -->
-        <TextView
-            android:id="@+id/tvAssetName"
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:orientation="vertical"
+            android:layout_marginStart="14dp"
             android:layout_marginEnd="8dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:text="Bank BCA"
-            android:textColor="#1E293B"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/tvAssetType"
-            app:layout_constraintEnd_toStartOf="@+id/tvAssetAmount"
-            app:layout_constraintStart_toEndOf="@+id/iconContainer"
+            app:layout_constraintStart_toEndOf="@id/iconContainer"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="packed" />
-
-        <TextView
-            android:id="@+id/tvAssetType"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="2dp"
-            android:layout_marginEnd="8dp"
-            android:text="Bank"
-            android:textColor="#64748B"
-            android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/tvAssetAmount"
-            app:layout_constraintStart_toEndOf="@+id/iconContainer"
-            app:layout_constraintTop_toBottomOf="@+id/tvAssetName" />
+            app:layout_constraintEnd_toStartOf="@id/amountContainer">
+            <TextView
+                android:id="@+id/tvAssetName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dana Tabungan"
+                android:textColor="#1E293B"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-black" />
+            <TextView
+                android:id="@+id/tvAssetType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cash &amp; Bank"
+                android:textColor="#94A3B8"
+                android:textSize="11sp"
+                android:fontFamily="sans-serif-medium" />
+        </LinearLayout>
 
-        <!-- Balance -->
-        <TextView
-            android:id="@+id/tvAssetAmount"
+        <LinearLayout
+            android:id="@+id/amountContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Rp 1.000.000"
-            android:textColor="#10B981"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:orientation="vertical"
+            android:gravity="end"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+            <TextView
+                android:id="@+id/tvAssetAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rp 0"
+                android:textColor="#1E293B"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-black" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Aset Utama"
+                android:textColor="@color/primary_green"
+                android:textSize="10sp"
+                android:fontFamily="sans-serif-black" />
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </com.google.android.material.card.MaterialCardView>
