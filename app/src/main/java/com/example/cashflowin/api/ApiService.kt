@@ -173,20 +173,23 @@ interface ApiService {
 
     // Recurring Transactions
     @GET("recurring-transactions")
-    suspend fun getRecurringTransactions(): Response<com.example.cashflowin.api.model.RecurringTransactionListResponse>
+    suspend fun getRecurringTransactions(@Query("status") status: String? = null, @Query("type") type: String? = null, @Query("search") search: String? = null): Response<com.example.cashflowin.api.model.RecurringTransactionListResponse>
 
-    @GET("recurring-transactions/{id}")
-    suspend fun getRecurringTransactionDetails(@Path("id") id: Int): Response<com.example.cashflowin.api.model.RecurringTransactionResponse>
+    @GET("recurring-transactions/{recurring}")
+    suspend fun getRecurringTransactionDetails(@Path("recurring") id: Int): Response<com.example.cashflowin.api.model.RecurringTransactionResponse>
 
     @POST("recurring-transactions")
     suspend fun addRecurringTransaction(@Body request: com.example.cashflowin.api.model.RecurringTransactionRequest): Response<com.google.gson.JsonObject>
 
-    @PUT("recurring-transactions/{id}")
-    suspend fun updateRecurringTransaction(@Path("id") id: Int, @Body request: com.example.cashflowin.api.model.RecurringTransactionRequest): Response<com.google.gson.JsonObject>
+    @PUT("recurring-transactions/{recurring}")
+    suspend fun updateRecurringTransaction(@Path("recurring") id: Int, @Body request: com.example.cashflowin.api.model.RecurringTransactionRequest): Response<com.google.gson.JsonObject>
 
-    @DELETE("recurring-transactions/{id}")
-    suspend fun deleteRecurringTransaction(@Path("id") id: Int): Response<com.google.gson.JsonObject>
+    @DELETE("recurring-transactions/{recurring}")
+    suspend fun deleteRecurringTransaction(@Path("recurring") id: Int): Response<com.google.gson.JsonObject>
 
-    @PUT("recurring-transactions/{id}/toggle-active")
-    suspend fun toggleRecurringTransactionActive(@Path("id") id: Int): Response<com.google.gson.JsonObject>
+    @POST("recurring-transactions/{recurring}/pause")
+    suspend fun pauseRecurringTransaction(@Path("recurring") id: Int): Response<com.google.gson.JsonObject>
+
+    @POST("recurring-transactions/{recurring}/resume")
+    suspend fun resumeRecurringTransaction(@Path("recurring") id: Int): Response<com.google.gson.JsonObject>
 }

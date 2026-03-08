@@ -7,6 +7,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.cashflowin.api.ApiClient
 import com.example.cashflowin.api.model.RecurringTransactionRequest
 import com.example.cashflowin.databinding.ActivityAddRecurringTransactionBinding
+import com.example.cashflowin.utils.CurrencyTextWatcher
 import com.google.android.material.datepicker.MaterialDatePicker
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -34,10 +35,13 @@ class AddRecurringTransactionActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
+        // Parsing Angka Otomatis (Rp 1.000.000)
+        binding.etAmount.addTextChangedListener(CurrencyTextWatcher(binding.etAmount))
+
         binding.etStartDate.setOnClickListener {
             showDatePicker { date ->
                 binding.etStartDate.setText(displayDateFormat.format(date))
-                binding.etStartDate.tag = apiDateFormat.format(date) // Store actual API format in tag
+                binding.etStartDate.tag = apiDateFormat.format(date)
             }
         }
 
@@ -60,7 +64,6 @@ class AddRecurringTransactionActivity : AppCompatActivity() {
             .build()
 
         datePicker.addOnPositiveButtonClickListener { selection ->
-            // MaterialDatePicker returns time in UTC, convert to local
             val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
             calendar.timeInMillis = selection
             onDateSelected(calendar.time)
@@ -72,16 +75,26 @@ class AddRecurringTransactionActivity : AppCompatActivity() {
     private fun saveRecurringTransaction() {
         val name = binding.etName.text.toString().trim()
         val description = binding.etDescription.text.toString().trim()
-        val amountStr = binding.etAmount.text.toString().trim()
+        
+        // Ambil nilai asli tanpa titik pemisah ribuan
+        val amountFormatted = binding.etAmount.text.toString().trim()
+        val amountStr = CurrencyTextWatcher.getUnformattedValue(amountFormatted).toString()
+        
         val type = binding.spType.selectedItem.toString().lowercase()
         val frequency = binding.spFrequency.selectedItem.toString().lowercase()
-        
-        // Use tags to get the YYYY-MM-DD format for API
         val startDate = binding.etStartDate.tag?.toString() ?: ""
         val endDate = binding.etEndDate.tag?.toString()
 
-        if (name.isEmpty() || amountStr.isEmpty() || startDate.isEmpty()) {
-            Toast.makeText(this, "Mohon isi semua field yang diperlukan", Toast.LENGTH_SHORT).show()
+        if (name.isEmpty()) {
+            binding.etName.error = "Nama wajib diisi"
+            return
+        }
+        if (amountFormatted.isEmpty() || amountStr == "0") {
+            binding.etAmount.error = "Jumlah wajib diisi"
+            return
+        }
+        if (startDate.isEmpty()) {
+            Toast.makeText(this, "Pilih tanggal mulai", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -107,7 +120,7 @@ class AddRecurringTransactionActivity : AppCompatActivity() {
                     Toast.makeText(this@AddRecurringTransactionActivity, "Berhasil ditambahkan", Toast.LENGTH_SHORT).show()
                     finish()
                 } else {
-                    Toast.makeText(this@AddRecurringTransactionActivity, "Gagal menambahkan", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@AddRecurringTransactionActivity, "Gagal: ${response.code()}", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 Toast.makeText(this@AddRecurringTransactionActivity, "Kesalahan: ${e.message}", Toast.LENGTH_SHORT).show()
