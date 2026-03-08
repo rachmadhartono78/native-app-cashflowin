@@ -35,7 +35,7 @@ class AssetAdapter(private val onAssetClick: (AssetInfo) -> Unit) :
             binding.tvAssetName.text = asset.name
             binding.tvAssetType.text = asset.type
 
-            val format = NumberFormat.getCurrencyInstance(Locale("id", "ID")).apply {
+            val format = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID")).apply {
                 maximumFractionDigits = 0
             }
             binding.tvAssetAmount.text = format.format(asset.balance)

@@ -57,4 +57,9 @@
         <item name="android:colorAccent">?attr/colorPrimary</item>
         <item name="android:colorControlActivated">?attr/colorPrimary</item>
     </style>
+
+    <style name="CustomAlertDialog" parent="Theme.Material3.DayNight.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
 </resources>

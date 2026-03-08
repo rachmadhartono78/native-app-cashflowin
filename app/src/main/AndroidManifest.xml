@@ -148,6 +148,11 @@
             android:theme="@style/Theme.Cashflowin.NoActionBar" />
 
         <activity
+            android:name=".ui.planning.ZakatCalculatorActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Cashflowin.NoActionBar" />
+
+        <activity
             android:name=".ui.settings.ResetMonthlyTransactionsActivity"
             android:exported="false"
             android:theme="@style/Theme.Cashflowin.NoActionBar" />

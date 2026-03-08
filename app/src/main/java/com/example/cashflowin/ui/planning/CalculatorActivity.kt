@@ -50,6 +50,15 @@ class CalculatorActivity : AppCompatActivity() {
             }
         }
 
+        binding.cardZakat.setOnClickListener {
+            try {
+                val intent = Intent(this, ZakatCalculatorActivity::class.java)
+                startActivity(intent)
+            } catch (e: Exception) {
+                showUnderDevelopmentMessage()
+            }
+        }
+
         binding.cardBasic.setOnClickListener {
             try {
                 val intent = Intent(this, BasicCalculatorActivity::class.java)

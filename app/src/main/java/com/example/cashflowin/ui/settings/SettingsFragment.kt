@@ -6,16 +6,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.RatingBar
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.example.cashflowin.R
 import com.example.cashflowin.api.ApiClient
 import com.example.cashflowin.api.DashboardRepository
 import com.example.cashflowin.databinding.FragmentSettingsBinding
 import com.example.cashflowin.ui.auth.LoginActivity
 import com.example.cashflowin.ui.dashboard.DashboardState
 import com.example.cashflowin.utils.TokenManager
+import com.google.android.material.button.MaterialButton
 import java.text.NumberFormat
 import java.util.*
 
@@ -118,6 +123,10 @@ class SettingsFragment : Fragment() {
             showPrivacyPolicy()
         }
 
+        binding.btnRating.setOnClickListener {
+            showRatingDialog()
+        }
+
         binding.btnLogout.setOnClickListener {
             showLogoutConfirmation()
         }
@@ -129,6 +138,33 @@ class SettingsFragment : Fragment() {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             }
         }
+    }
+
+    private fun showRatingDialog() {
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_rating, null)
+        val dialog = AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
+            .setView(dialogView)
+            .create()
+
+        val ratingBar = dialogView.findViewById<RatingBar>(R.id.ratingBar)
+        val etFeedback = dialogView.findViewById<EditText>(R.id.etFeedback)
+        val btnSubmit = dialogView.findViewById<MaterialButton>(R.id.btnSubmitRating)
+        val btnLater = dialogView.findViewById<MaterialButton>(R.id.btnLater)
+
+        btnSubmit.setOnClickListener {
+            val rating = ratingBar.rating
+            val feedback = etFeedback.text.toString()
+            
+            // Simulasi pengiriman data
+            Toast.makeText(requireContext(), "Terima kasih atas rating $rating bintang Anda!", Toast.LENGTH_SHORT).show()
+            dialog.dismiss()
+        }
+
+        btnLater.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
     private fun showPrivacyPolicy() {
@@ -151,7 +187,7 @@ class SettingsFragment : Fragment() {
             .setTitle("Kebijakan Privasi")
             .setMessage(privacyText)
             .setPositiveButton("Lihat Online") { _, _ ->
-                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://cashflowin.kelingstudio.web.id/privacy-policy"))
+                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://cashflowin.kelingstudio.web.id/privacy"))
                 startActivity(browserIntent)
             }
             .setNegativeButton("Tutup", null)

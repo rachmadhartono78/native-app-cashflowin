@@ -37,4 +37,9 @@
         <item name="colorBackground">@color/md_theme_background</item>
         <item name="android:colorBackground">@color/md_theme_background</item>
     </style>
+
+    <style name="CustomAlertDialog" parent="Theme.Material3.DayNight.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
 </resources>

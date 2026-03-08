@@ -10,7 +10,8 @@
     <ImageView
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:src="@drawable/logo_cashflowin"
+        android:src="@drawable/ic_wallet_foreground"
+        android:tint="@color/primary_green"
         android:layout_marginBottom="16dp" />
 
     <TextView
