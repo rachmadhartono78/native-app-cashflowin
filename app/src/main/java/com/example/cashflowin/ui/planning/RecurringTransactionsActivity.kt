@@ -40,7 +40,9 @@ class RecurringTransactionsActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        recurringAdapter = RecurringTransactionAdapter(emptyList())
+        recurringAdapter = RecurringTransactionAdapter(emptyList()) { transaction ->
+            togglePauseResume(transaction)
+        }
         binding.rvRecurring.apply {
             layoutManager = LinearLayoutManager(this@RecurringTransactionsActivity)
             adapter = recurringAdapter
@@ -95,7 +97,27 @@ class RecurringTransactionsActivity : AppCompatActivity() {
         }
     }
     
-    private fun showError(msg: String) {
-        Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+    private fun togglePauseResume(transaction: com.example.cashflowin.api.model.RecurringTransaction) {
+        lifecycleScope.launch {
+            try {
+                val apiService = ApiClient.getApiService(this@RecurringTransactionsActivity)
+                val response = if (transaction.is_active) {
+                    apiService.pauseRecurringTransaction(transaction.id)
+                } else {
+                    apiService.resumeRecurringTransaction(transaction.id)
+                }
+
+                if (response.isSuccessful) {
+                    // Refresh the list
+                    fetchRecurringTransactions()
+                    val action = if (transaction.is_active) "dipause" else "dilanjutkan"
+                    Toast.makeText(this@RecurringTransactionsActivity, "Transaksi berulang berhasil $action", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this@RecurringTransactionsActivity, "Gagal mengubah status transaksi", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this@RecurringTransactionsActivity, "Kesalahan: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 }

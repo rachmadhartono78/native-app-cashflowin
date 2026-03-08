@@ -10,7 +10,8 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 class RecurringTransactionAdapter(
-    private var transactions: List<RecurringTransaction>
+    private var transactions: List<RecurringTransaction>,
+    private val onPauseResumeClick: (RecurringTransaction) -> Unit
 ) : RecyclerView.Adapter<RecurringTransactionAdapter.ViewHolder>() {
 
     private val format = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
@@ -42,9 +43,21 @@ class RecurringTransactionAdapter(
                     else -> transaction.frequency
                 }
                 
-                // Set active status color
-                val alpha = if (transaction.is_active) 1.0f else 0.5f
-                root.alpha = alpha
+                // Set active status and button
+                if (transaction.is_active) {
+                    root.alpha = 1.0f
+                    btnPauseResume.text = "Pause"
+                    btnPauseResume.setBackgroundColor(android.graphics.Color.parseColor("#EF4444")) // Red for pause
+                } else {
+                    root.alpha = 0.5f
+                    btnPauseResume.text = "Resume"
+                    btnPauseResume.setBackgroundColor(android.graphics.Color.parseColor("#10B981")) // Green for resume
+                }
+                
+                // Set click listener for pause/resume button
+                btnPauseResume.setOnClickListener {
+                    onPauseResumeClick(transaction)
+                }
             }
         }
     }
