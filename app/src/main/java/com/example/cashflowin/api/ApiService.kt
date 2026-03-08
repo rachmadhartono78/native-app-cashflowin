@@ -170,4 +170,23 @@ interface ApiService {
 
     @DELETE("debts/{id}/payments/{paymentId}")
     suspend fun deleteDebtPayment(@Path("id") id: Int, @Path("paymentId") paymentId: Int): Response<com.google.gson.JsonObject>
+
+    // Recurring Transactions
+    @GET("recurring-transactions")
+    suspend fun getRecurringTransactions(): Response<com.example.cashflowin.api.model.RecurringTransactionListResponse>
+
+    @GET("recurring-transactions/{id}")
+    suspend fun getRecurringTransactionDetails(@Path("id") id: Int): Response<com.example.cashflowin.api.model.RecurringTransactionResponse>
+
+    @POST("recurring-transactions")
+    suspend fun addRecurringTransaction(@Body request: com.example.cashflowin.api.model.RecurringTransactionRequest): Response<com.google.gson.JsonObject>
+
+    @PUT("recurring-transactions/{id}")
+    suspend fun updateRecurringTransaction(@Path("id") id: Int, @Body request: com.example.cashflowin.api.model.RecurringTransactionRequest): Response<com.google.gson.JsonObject>
+
+    @DELETE("recurring-transactions/{id}")
+    suspend fun deleteRecurringTransaction(@Path("id") id: Int): Response<com.google.gson.JsonObject>
+
+    @PUT("recurring-transactions/{id}/toggle-active")
+    suspend fun toggleRecurringTransactionActive(@Path("id") id: Int): Response<com.google.gson.JsonObject>
 }

@@ -235,6 +235,37 @@
                     </RelativeLayout>
                 </com.google.android.material.card.MaterialCardView>
 
+                <!-- Recurring -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardRecurring"
+                    android:layout_width="0dp"
+                    android:layout_height="80dp"
+                    android:layout_columnWeight="1"
+                    android:layout_marginStart="6dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="#F0FDF4">
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="12dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Berulang"
+                            android:textColor="@color/text_main"
+                            android:fontFamily="sans-serif-medium"
+                            android:textSize="13sp" />
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_alignParentBottom="true"
+                            android:layout_alignParentEnd="true"
+                            android:src="@drawable/bg_circle_icon"
+                            app:tint="@color/primary_green" />
+                    </RelativeLayout>
+                </com.google.android.material.card.MaterialCardView>
+
             </GridLayout>
 
             <RelativeLayout

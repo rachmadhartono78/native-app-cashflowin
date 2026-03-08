@@ -49,6 +49,10 @@ class PlanningFragment : Fragment() {
         binding.cardCalendar.setOnClickListener {
             navigateTo(CalendarActivity::class.java)
         }
+
+        binding.cardRecurring.setOnClickListener {
+            navigateTo(RecurringTransactionsActivity::class.java)
+        }
     }
 
     private fun <T> navigateTo(activityClass: Class<T>) {

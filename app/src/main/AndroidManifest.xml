@@ -161,6 +161,16 @@
             android:name=".ui.settings.ReportActivity"
             android:exported="false"
             android:theme="@style/Theme.Cashflowin.NoActionBar" />
+
+        <activity
+            android:name=".ui.planning.RecurringTransactionsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Cashflowin.NoActionBar" />
+
+        <activity
+            android:name=".ui.planning.AddRecurringTransactionActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Cashflowin.NoActionBar" />
     </application>
 
 </manifest>
