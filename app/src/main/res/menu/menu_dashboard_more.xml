@@ -9,7 +9,4 @@
     <item
         android:id="@+id/menu_zakat_calculator"
         android:title="Kalkulator Zakat" />
-    <item
-        android:id="@+id/menu_recurring_transactions"
-        android:title="Transaksi Berulang" />
 </menu>

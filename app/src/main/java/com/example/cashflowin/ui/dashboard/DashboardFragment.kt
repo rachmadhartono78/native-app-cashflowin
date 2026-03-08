@@ -120,13 +120,21 @@ class DashboardFragment : Fragment() {
             startActivity(Intent(requireContext(), ScanNotaActivity::class.java))
         }
 
+        binding.btnRecurringTransactions.setOnClickListener {
+            startActivity(Intent(requireContext(), com.example.cashflowin.ui.planning.RecurringTransactionsActivity::class.java))
+        }
+
         binding.btnAiSuggestion.setOnClickListener {
             Toast.makeText(requireContext(), "AI Advisor akan menganalisa keuanganmu...", Toast.LENGTH_LONG).show()
             // Placeholder untuk fitur AI nantinya
         }
 
         binding.btnMore.setOnClickListener {
-            Toast.makeText(requireContext(), "Segera Hadir!", Toast.LENGTH_SHORT).show()
+            if (binding.btnRecurringTransactions.visibility == View.GONE) {
+                binding.btnRecurringTransactions.visibility = View.VISIBLE
+            } else {
+                binding.btnRecurringTransactions.visibility = View.GONE
+            }
         }
 
         binding.btnHideBalance.setOnClickListener {
@@ -215,7 +223,7 @@ class DashboardFragment : Fragment() {
     }
 
     private fun updateUI(summary: Summary) {
-        val format = NumberFormat.getCurrencyInstance(Locale("id", "ID")).apply {
+        val format = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID")).apply {
             maximumFractionDigits = 0
         }
         
