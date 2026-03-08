@@ -15,17 +15,27 @@ data class RecurringTransactionResponse(
     val data: RecurringTransaction
 )
 
+data class RecurringTransactionCategory(
+    val id: Int,
+    val name: String
+)
+
+data class RecurringTransactionAsset(
+    val id: Int,
+    val name: String
+)
+
 data class RecurringTransaction(
     val id: Int,
-    val name: String,
     val description: String?,
     val amount: Double,
     val category_id: Int,
-    val category_name: String?,
+    val category: RecurringTransactionCategory?,
     val asset_id: Int,
-    val asset_name: String?,
+    val asset: RecurringTransactionAsset?,
     val type: String, // "income" or "expense"
     val frequency: String, // "daily", "weekly", "monthly", "yearly"
+    val frequency_interval: Int,
     val start_date: String,
     val end_date: String?,
     val next_execution_date: String?,
@@ -36,13 +46,13 @@ data class RecurringTransaction(
 )
 
 data class RecurringTransactionRequest(
-    val name: String,
     val description: String? = null,
     val amount: Double,
     val category_id: Int,
     val asset_id: Int,
     val type: String,
     val frequency: String,
+    val frequency_interval: Int = 1,
     val start_date: String,
     val end_date: String? = null,
     val auto_execute: Boolean = true

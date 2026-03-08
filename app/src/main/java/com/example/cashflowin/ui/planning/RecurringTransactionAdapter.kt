@@ -32,8 +32,8 @@ class RecurringTransactionAdapter(
 
         fun bind(transaction: RecurringTransaction) {
             binding.apply {
-                tvName.text = transaction.name
-                tvCategory.text = transaction.category_name ?: "Tanpa Kategori"
+                tvName.text = transaction.description ?: "Tanpa Nama"
+                tvCategory.text = transaction.category?.name ?: "Tanpa Kategori"
                 tvAmount.text = currencyFormat.format(transaction.amount)
                 
                 // Format Date
@@ -85,7 +85,7 @@ class RecurringTransactionAdapter(
                 root.setOnClickListener {
                     // Cek apakah data valid
                     if (transaction != null) {
-                        Toast.makeText(root.context, "Membuka detail: ${transaction.name}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(root.context, "Membuka detail: ${transaction.description ?: "Tanpa Nama"}", Toast.LENGTH_SHORT).show()
                         
                         // Gunakan AddRecurringTransactionActivity untuk edit/detail sementara jika belum ada Detail khusus
                         val intent = Intent(root.context, AddRecurringTransactionActivity::class.java).apply {

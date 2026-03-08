@@ -73,8 +73,15 @@ class AddRecurringTransactionActivity : AppCompatActivity() {
     }
 
     private fun saveRecurringTransaction() {
-        val name = binding.etName.text.toString().trim()
-        val description = binding.etDescription.text.toString().trim()
+        val nameInput = binding.etName.text.toString().trim()
+        val descInput = binding.etDescription.text.toString().trim()
+        
+        // Gabungkan name dan description karena backend hanya punya kolom description
+        val finalDescription = if (descInput.isNotEmpty()) {
+            "$nameInput - $descInput"
+        } else {
+            nameInput
+        }
         
         // Ambil nilai asli tanpa titik pemisah ribuan
         val amountFormatted = binding.etAmount.text.toString().trim()
@@ -85,7 +92,7 @@ class AddRecurringTransactionActivity : AppCompatActivity() {
         val startDate = binding.etStartDate.tag?.toString() ?: ""
         val endDate = binding.etEndDate.tag?.toString()
 
-        if (name.isEmpty()) {
+        if (nameInput.isEmpty()) {
             binding.etName.error = "Nama wajib diisi"
             return
         }
@@ -99,13 +106,13 @@ class AddRecurringTransactionActivity : AppCompatActivity() {
         }
 
         val request = RecurringTransactionRequest(
-            name = name,
-            description = description.ifEmpty { null },
+            description = finalDescription,
             amount = amountStr.toDoubleOrNull() ?: 0.0,
             category_id = 1, // Placeholder
             asset_id = 1,    // Placeholder
             type = type,
             frequency = frequency,
+            frequency_interval = 1,
             start_date = startDate,
             end_date = endDate?.ifEmpty { null },
             auto_execute = binding.cbAutoExecute.isChecked
