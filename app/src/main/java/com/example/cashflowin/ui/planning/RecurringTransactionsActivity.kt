@@ -70,12 +70,23 @@ class RecurringTransactionsActivity : AppCompatActivity() {
                 if (response.isSuccessful && response.body() != null) {
                     val data = response.body()!!.data.data
                     
-                    // Update Summary Info
-                    val activeCount = data.size
-                    val totalEstimation = data.sumOf { it.amount }
+                    // Optimasi: Hitung hanya yang aktif untuk ringkasan
+                    val activeTransactions = data.filter { it.is_active }
+                    val activeCount = activeTransactions.size
+                    
+                    // Normalisasi estimasi ke bulanan
+                    val totalMonthlyEstimation = activeTransactions.sumOf { 
+                        when (it.frequency.lowercase()) {
+                            "daily" -> it.amount * 30
+                            "weekly" -> it.amount * 4
+                            "monthly" -> it.amount
+                            "yearly" -> it.amount / 12
+                            else -> it.amount
+                        }
+                    }
                     
                     binding.tvSummaryCount.text = "$activeCount Transaksi Aktif"
-                    binding.tvSummaryAmount.text = "Estimasi per bulan: ${format.format(totalEstimation)}"
+                    binding.tvSummaryAmount.text = "Estimasi per bulan: ${format.format(totalMonthlyEstimation)}"
                     
                     if (data.isEmpty()) {
                         binding.emptyState.visibility = View.VISIBLE
@@ -108,15 +119,14 @@ class RecurringTransactionsActivity : AppCompatActivity() {
                 }
 
                 if (response.isSuccessful) {
-                    // Refresh the list
                     fetchRecurringTransactions()
                     val action = if (transaction.is_active) "dipause" else "dilanjutkan"
-                    Toast.makeText(this@RecurringTransactionsActivity, "Transaksi berulang berhasil $action", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@RecurringTransactionsActivity, "Transaksi berhasil $action", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(this@RecurringTransactionsActivity, "Gagal mengubah status transaksi", Toast.LENGTH_SHORT).show()
+                    showError("Gagal mengubah status")
                 }
             } catch (e: Exception) {
-                Toast.makeText(this@RecurringTransactionsActivity, "Kesalahan: ${e.message}", Toast.LENGTH_SHORT).show()
+                showError("Kesalahan: ${e.message}")
             }
         }
     }
