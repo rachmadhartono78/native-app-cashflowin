@@ -21,6 +21,9 @@ class AddRecurringTransactionActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddRecurringTransactionBinding
     private val apiDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
     private val displayDateFormat = SimpleDateFormat("dd MMMM yyyy", Locale("id", "ID"))
+    
+    private var isEdit = false
+    private var transactionId = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +34,85 @@ class AddRecurringTransactionActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding.toolbar.setNavigationOnClickListener { finish() }
 
+        isEdit = intent.getBooleanExtra("IS_EDIT", false)
+        transactionId = intent.getIntExtra("TRANSACTION_ID", -1)
+
+        if (isEdit && transactionId != -1) {
+            supportActionBar?.title = "Edit Recurring Transaction"
+            binding.btnSave.text = "Simpan Perubahan"
+            fetchTransactionDetails()
+        }
+
         setupListeners()
+    }
+
+    private fun fetchTransactionDetails() {
+        lifecycleScope.launch {
+            try {
+                val apiService = ApiClient.getApiService(this@AddRecurringTransactionActivity)
+                val response = apiService.getRecurringTransactionDetails(transactionId)
+                if (response.isSuccessful && response.body() != null) {
+                    val transaction = response.body()!!.data
+                    populateData(transaction)
+                } else {
+                    Toast.makeText(this@AddRecurringTransactionActivity, "Gagal meload data: ${response.code()}", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this@AddRecurringTransactionActivity, "Kesalahan jaringan: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun populateData(transaction: com.example.cashflowin.api.model.RecurringTransaction) {
+        val descParts = transaction.description?.split(" - ", limit = 2)
+        val name = descParts?.getOrNull(0) ?: ""
+        val desc = descParts?.getOrNull(1) ?: ""
+
+        binding.etName.setText(name)
+        binding.etDescription.setText(desc)
+        binding.etAmount.setText(transaction.amount.toLong().toString()) // TextWatcher will format this
+        
+        // Select Type
+        for (i in 0 until binding.spType.count) {
+            if (binding.spType.getItemAtPosition(i).toString().equals(transaction.type, ignoreCase = true)) {
+                binding.spType.setSelection(i)
+                break
+            }
+        }
+
+        // Select Frequency
+        for (i in 0 until binding.spFrequency.count) {
+            if (binding.spFrequency.getItemAtPosition(i).toString().equals(transaction.frequency, ignoreCase = true)) {
+                binding.spFrequency.setSelection(i)
+                break
+            }
+        }
+
+        binding.cbAutoExecute.isChecked = transaction.auto_execute
+
+        try {
+            val sDateParsed = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).parse(transaction.start_date.replace("T"," ").replace("Z",""))
+            if(sDateParsed != null) {
+                binding.etStartDate.setText(displayDateFormat.format(sDateParsed))
+                binding.etStartDate.tag = apiDateFormat.format(sDateParsed)
+            }
+        } catch (e: Exception) {
+            binding.etStartDate.setText(transaction.start_date)
+            binding.etStartDate.tag = transaction.start_date
+        }
+
+        if (transaction.end_date != null) {
+            try {
+                val eDateParsed = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).parse(transaction.end_date.replace("T"," ").replace("Z",""))
+                if(eDateParsed != null) {
+                   binding.etEndDate.setText(displayDateFormat.format(eDateParsed))
+                   binding.etEndDate.tag = apiDateFormat.format(eDateParsed)
+                }
+            } catch (e: Exception) {
+                binding.etEndDate.setText(transaction.end_date)
+                binding.etEndDate.tag = transaction.end_date
+            }
+        }
     }
 
     private fun setupListeners() {
@@ -121,10 +202,15 @@ class AddRecurringTransactionActivity : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 val apiService = ApiClient.getApiService(this@AddRecurringTransactionActivity)
-                val response = apiService.addRecurringTransaction(request)
+                val response = if (isEdit) {
+                    apiService.updateRecurringTransaction(transactionId, request)
+                } else {
+                    apiService.addRecurringTransaction(request)
+                }
 
                 if (response.isSuccessful) {
-                    Toast.makeText(this@AddRecurringTransactionActivity, "Berhasil ditambahkan", Toast.LENGTH_SHORT).show()
+                    val msg = if (isEdit) "Berhasil diperbarui" else "Berhasil ditambahkan"
+                    Toast.makeText(this@AddRecurringTransactionActivity, msg, Toast.LENGTH_SHORT).show()
                     finish()
                 } else {
                     Toast.makeText(this@AddRecurringTransactionActivity, "Gagal: ${response.code()}", Toast.LENGTH_SHORT).show()
