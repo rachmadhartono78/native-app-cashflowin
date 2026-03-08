@@ -19,12 +19,11 @@ class RecurringTransactionAdapter(
         maximumFractionDigits = 0
     }
     
-    // API Format: 2026-03-08 17:00:00 or 2026-03-08T17:00:00Z
     private val apiDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).apply {
         timeZone = TimeZone.getTimeZone("UTC")
     }
     
-    private val displayDateFormat = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale("id", "ID"))
+    private val displayDateFormat = SimpleDateFormat("dd MMM yyyy", Locale("id", "ID"))
 
     inner class ViewHolder(private val binding: ItemRecurringTransactionBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -38,7 +37,6 @@ class RecurringTransactionAdapter(
                 // Format Date
                 val formattedDate = transaction.next_execution_date?.let { dateStr ->
                     try {
-                        // Handle possible 'T' and 'Z' in ISO 8601 strings if they appear
                         val cleanedDate = dateStr.replace("T", " ").replace("Z", "")
                         val date = apiDateFormat.parse(cleanedDate)
                         date?.let { displayDateFormat.format(it) } ?: dateStr
@@ -47,16 +45,16 @@ class RecurringTransactionAdapter(
                     }
                 } ?: "N/A"
                 
-                tvNextExecution.text = "Selanjutnya: $formattedDate"
+                tvNextExecution.text = "Next: $formattedDate"
                 
-                // Set type indicator with badge style
+                // Set type indicator
                 tvType.text = when (transaction.type) {
                     "income" -> "Pemasukan"
                     "expense" -> "Pengeluaran"
                     else -> transaction.type.replaceFirstChar { it.uppercase() }
                 }
                 
-                // Set frequency badge
+                // Set frequency
                 tvFrequency.text = when (transaction.frequency) {
                     "daily" -> "Harian"
                     "weekly" -> "Mingguan"
@@ -65,19 +63,29 @@ class RecurringTransactionAdapter(
                     else -> transaction.frequency.replaceFirstChar { it.uppercase() }
                 }
                 
-                // Set active status and button style
+                // Active status styling
                 if (transaction.is_active) {
                     root.alpha = 1.0f
                     btnPauseResume.text = "Pause"
-                    btnPauseResume.setBackgroundColor(android.graphics.Color.parseColor("#EF4444")) // Red for pause
+                    btnPauseResume.setBackgroundColor(android.graphics.Color.parseColor("#EF4444"))
                 } else {
                     root.alpha = 0.6f
                     btnPauseResume.text = "Resume"
-                    btnPauseResume.setBackgroundColor(android.graphics.Color.parseColor("#10B981")) // Green for resume
+                    btnPauseResume.setBackgroundColor(android.graphics.Color.parseColor("#10B981"))
                 }
                 
+                // Click for Pause/Resume
                 btnPauseResume.setOnClickListener {
                     onPauseResumeClick(transaction)
+                }
+
+                // Click for Detail (Coming soon or handle here)
+                root.setOnClickListener {
+                    // Sementara munculkan Toast atau log, atau jika ada DetailActivity:
+                    // val intent = Intent(root.context, RecurringDetailActivity::class.java)
+                    // intent.putExtra("ID", transaction.id)
+                    // root.context.startActivity(intent)
+                    android.widget.Toast.makeText(root.context, "Detail: ${transaction.name}", android.widget.Toast.LENGTH_SHORT).show()
                 }
             }
         }
