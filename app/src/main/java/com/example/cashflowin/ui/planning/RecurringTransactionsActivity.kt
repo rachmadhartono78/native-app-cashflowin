@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cashflowin.api.ApiClient
-import com.example.cashflowin.api.model.RecurringTransaction
 import com.example.cashflowin.databinding.ActivityRecurringTransactionsBinding
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
@@ -17,7 +16,9 @@ import java.util.Locale
 class RecurringTransactionsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityRecurringTransactionsBinding
-    private val format = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
+    private val format = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID")).apply {
+        maximumFractionDigits = 0
+    }
     private lateinit var recurringAdapter: RecurringTransactionAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,6 +67,13 @@ class RecurringTransactionsActivity : AppCompatActivity() {
                 
                 if (response.isSuccessful && response.body() != null) {
                     val data = response.body()!!.data.data
+                    
+                    // Update Summary Info
+                    val activeCount = data.size
+                    val totalEstimation = data.sumOf { it.amount }
+                    
+                    binding.tvSummaryCount.text = "$activeCount Transaksi Aktif"
+                    binding.tvSummaryAmount.text = "Estimasi per bulan: ${format.format(totalEstimation)}"
                     
                     if (data.isEmpty()) {
                         binding.emptyState.visibility = View.VISIBLE

@@ -16,6 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:title="Tambah Transaksi Berulang"
+            app:navigationIcon="?attr/homeAsUpIndicator"
             app:titleTextColor="@color/text_main" />
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -84,39 +85,57 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Type Spinner -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tipe"
-                android:textColor="@color/text_main"
-                android:textSize="14sp"
-                android:fontFamily="sans-serif-medium"
-                android:layout_marginBottom="8dp" />
-
-            <Spinner
-                android:id="@+id/spType"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginBottom="16dp"
-                android:entries="@array/transaction_types" />
-
-            <!-- Frequency Spinner -->
-            <TextView
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Frekuensi"
-                android:textColor="@color/text_main"
-                android:textSize="14sp"
-                android:fontFamily="sans-serif-medium"
-                android:layout_marginBottom="8dp" />
-
-            <Spinner
-                android:id="@+id/spFrequency"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:orientation="horizontal"
                 android:layout_marginBottom="16dp"
-                android:entries="@array/transaction_frequencies" />
+                android:baselineAligned="false">
+
+                <!-- Type Spinner Container -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginEnd="8dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tipe"
+                        android:textColor="@color/text_main"
+                        android:textSize="14sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:layout_marginBottom="8dp" />
+                    <Spinner
+                        android:id="@+id/spType"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:entries="@array/transaction_types" />
+                </LinearLayout>
+
+                <!-- Frequency Spinner Container -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="8dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Frekuensi"
+                        android:textColor="@color/text_main"
+                        android:textSize="14sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:layout_marginBottom="8dp" />
+                    <Spinner
+                        android:id="@+id/spFrequency"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:entries="@array/transaction_frequencies" />
+                </LinearLayout>
+            </LinearLayout>
 
             <!-- Start Date -->
             <com.google.android.material.textfield.TextInputLayout
@@ -124,15 +143,18 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 app:hintTextColor="@color/text_secondary"
+                app:startIconDrawable="@android:drawable/ic_menu_today"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etStartDate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Tanggal Mulai (YYYY-MM-DD)"
+                    android:hint="Tanggal Mulai"
                     android:textColor="@color/text_main"
-                    android:inputType="date" />
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:inputType="none" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -142,6 +164,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 app:hintTextColor="@color/text_secondary"
+                app:startIconDrawable="@android:drawable/ic_menu_today"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -150,7 +173,9 @@
                     android:layout_height="wrap_content"
                     android:hint="Tanggal Akhir (Opsional)"
                     android:textColor="@color/text_main"
-                    android:inputType="date" />
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:inputType="none" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -159,7 +184,7 @@
                 android:id="@+id/cbAutoExecute"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Eksekusi Otomatis"
+                android:text="Eksekusi Otomatis setiap periode"
                 android:textColor="@color/text_main"
                 android:checked="true"
                 android:layout_marginBottom="24dp" />
@@ -168,11 +193,13 @@
             <Button
                 android:id="@+id/btnSave"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:text="Simpan"
+                android:layout_height="56dp"
+                android:text="Simpan Transaksi Rutin"
                 android:textColor="#FFFFFF"
+                app:cornerRadius="12dp"
+                android:fontFamily="sans-serif-black"
                 android:backgroundTint="@color/primary_green"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginBottom="32dp" />
 
         </LinearLayout>
 
