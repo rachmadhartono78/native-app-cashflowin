@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_emergency_fund"
+        android:title="Dana Darurat" />
+    <item
+        android:id="@+id/menu_retirement_fund"
+        android:title="Dana Pensiun" />
+    <item
+        android:id="@+id/menu_zakat_calculator"
+        android:title="Kalkulator Zakat" />
+    <item
+        android:id="@+id/menu_recurring_transactions"
+        android:title="Transaksi Berulang" />
+</menu>
