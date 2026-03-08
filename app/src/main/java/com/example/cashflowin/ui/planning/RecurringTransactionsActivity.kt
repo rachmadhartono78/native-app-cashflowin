@@ -120,4 +120,8 @@ class RecurringTransactionsActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun showError(msg: String) {
+        Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+    }
 }
