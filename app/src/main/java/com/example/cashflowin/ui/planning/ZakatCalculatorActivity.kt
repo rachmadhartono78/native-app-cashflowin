@@ -1,8 +1,13 @@
 package com.example.cashflowin.ui.planning
 
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
+import android.text.style.UnderlineSpan
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -22,6 +27,8 @@ class ZakatCalculatorActivity : AppCompatActivity() {
     private val formatRupiah = NumberFormat.getCurrencyInstance(localeID).apply {
         maximumFractionDigits = 0
     }
+    private val GOLD_URL = "https://www.harga-emas.org/"
+    private var isErrorState = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +40,7 @@ class ZakatCalculatorActivity : AppCompatActivity() {
         binding.toolbar.setNavigationOnClickListener { finish() }
 
         setupListeners()
-        fetchGoldPrice() // Ambil harga emas saat app dibuka
+        fetchGoldPrice() 
     }
 
     private fun setupListeners() {
@@ -48,58 +55,111 @@ class ZakatCalculatorActivity : AppCompatActivity() {
         }
 
         binding.tvCheckGoldPrice.setOnClickListener {
-            fetchGoldPrice() // Refresh harga emas
+            if (isErrorState) {
+                openGoldPriceInBrowser()
+            } else {
+                fetchGoldPrice()
+            }
         }
 
         binding.btnCalculate.setOnClickListener {
             calculateZakat()
         }
 
+        // Update Nisab saat harga emas diubah secara manual
         binding.etGoldPrice.setOnFocusChangeListener { _, hasFocus ->
             if (!hasFocus) updateNisabInfo()
         }
     }
 
+    // Helper untuk membersihkan input String menjadi Double (menghapus titik/koma/Rp)
+    private fun String.cleanToDouble(): Double {
+        return this.replace(Regex("[^0-9]"), "").toDoubleOrNull() ?: 0.0
+    }
+
+    private fun openGoldPriceInBrowser() {
+        try {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(GOLD_URL))
+            startActivity(intent)
+        } catch (e: Exception) {
+            Toast.makeText(this, "Tidak dapat membuka browser", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private fun fetchGoldPrice() {
-        // Tampilkan indikasi loading (bisa diubah sesuai UI Anda)
+        isErrorState = false
         binding.tvCheckGoldPrice.text = "Mengambil data..."
         binding.tvCheckGoldPrice.isEnabled = false
 
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                // Mencoba mengambil harga emas dari harga-emas.org
-                // Note: Struktur web bisa berubah, ini adalah contoh scraping dasar
-                val doc = Jsoup.connect("https://www.harga-emas.org/").get()
-                // Mencari elemen harga emas per gram (biasanya ada di tabel pertama)
-                val priceText = doc.select("table.table-price tr:contains(24 Karat) td").get(1).text()
+                val doc = Jsoup.connect(GOLD_URL)
+                    .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+                    .timeout(15000)
+                    .get()
+
+                var cleanPrice: Double? = null
                 
-                // Membersihkan string (Contoh: "Rp 1.200.000" -> 1200000)
-                val cleanPrice = priceText.replace(Regex("[^0-9]"), "").toDoubleOrNull()
+                // Cari di seluruh sel tabel
+                val cells = doc.select("td")
+                for (i in 0 until cells.size) {
+                    val text = cells[i].text()
+                    // Mencari yang mengandung "24 Karat" dan biasanya harga ada di sel berikutnya
+                    if (text.contains("24 Karat", ignoreCase = true)) {
+                        val nextCellText = cells.getOrNull(i + 1)?.text() ?: ""
+                        val priceCandidate = nextCellText.cleanToDouble()
+                        
+                        // Validasi harga masuk akal (di atas 500rb per gram)
+                        if (priceCandidate > 500000) {
+                            cleanPrice = priceCandidate
+                            break
+                        }
+                    }
+                }
 
                 withContext(Dispatchers.Main) {
                     if (cleanPrice != null) {
                         binding.etGoldPrice.setText(cleanPrice.toLong().toString())
                         updateNisabInfo()
                         Toast.makeText(this@ZakatCalculatorActivity, "Harga emas diperbarui", Toast.LENGTH_SHORT).show()
+                        resetButtonState()
+                    } else {
+                        setErrorState()
                     }
-                    resetButtonState()
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(this@ZakatCalculatorActivity, "Gagal mengambil harga emas terbaru", Toast.LENGTH_SHORT).show()
-                    resetButtonState()
+                    setErrorState()
                 }
             }
         }
     }
 
-    private fun resetButtonState() {
-        binding.tvCheckGoldPrice.text = "Cek Harga Emas Hari Ini"
+    private fun setErrorState() {
+        isErrorState = true
         binding.tvCheckGoldPrice.isEnabled = true
+        
+        val errorText = "Gagal ambil data. "
+        val actionText = "Klik di sini cek manual."
+        val fullText = errorText + actionText
+        
+        val spannable = SpannableStringBuilder(fullText)
+        spannable.setSpan(ForegroundColorSpan(Color.RED), 0, errorText.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        spannable.setSpan(ForegroundColorSpan(Color.BLUE), errorText.length, fullText.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        spannable.setSpan(UnderlineSpan(), errorText.length, fullText.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        
+        binding.tvCheckGoldPrice.text = spannable
+    }
+
+    private fun resetButtonState() {
+        isErrorState = false
+        binding.tvCheckGoldPrice.isEnabled = true
+        binding.tvCheckGoldPrice.text = "Cek Harga Emas Hari Ini"
+        binding.tvCheckGoldPrice.setTextColor(Color.BLUE)
     }
 
     private fun updateNisabInfo() {
-        val goldPrice = binding.etGoldPrice.text.toString().toDoubleOrNull() ?: 0.0
+        val goldPrice = binding.etGoldPrice.text.toString().cleanToDouble()
         val isMaal = binding.rbZakatMaal.isChecked
         
         val nisab = if (isMaal) {
@@ -112,8 +172,9 @@ class ZakatCalculatorActivity : AppCompatActivity() {
     }
 
     private fun calculateZakat() {
-        val amount = binding.etAmount.text.toString().toDoubleOrNull() ?: 0.0
-        val goldPrice = binding.etGoldPrice.text.toString().toDoubleOrNull() ?: 0.0
+        // Menggunakan cleanToDouble agar input dengan titik/koma tetap terbaca benar
+        val amount = binding.etAmount.text.toString().cleanToDouble()
+        val goldPrice = binding.etGoldPrice.text.toString().cleanToDouble()
         val isMaal = binding.rbZakatMaal.isChecked
 
         if (amount <= 0) {
@@ -130,11 +191,11 @@ class ZakatCalculatorActivity : AppCompatActivity() {
             val zakatWajib = amount * zakatRate
             binding.tvResultValue.text = formatRupiah.format(zakatWajib)
             binding.tvResultNote.text = "Harta Anda sudah mencapai nisab. Anda wajib menunaikan zakat."
-            binding.cardResult.setCardBackgroundColor(android.graphics.Color.parseColor("#059669"))
+            binding.cardResult.setCardBackgroundColor(Color.parseColor("#059669"))
         } else {
             binding.tvResultValue.text = "Rp 0"
             binding.tvResultNote.text = "Harta Anda belum mencapai nisab (${formatRupiah.format(nisab)}). Anda belum wajib menunaikan zakat."
-            binding.cardResult.setCardBackgroundColor(android.graphics.Color.parseColor("#64748B"))
+            binding.cardResult.setCardBackgroundColor(Color.parseColor("#64748B"))
         }
     }
 }
