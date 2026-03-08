@@ -1,7 +1,9 @@
 package com.example.cashflowin.ui.planning
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cashflowin.api.model.RecurringTransaction
 import com.example.cashflowin.databinding.ItemRecurringTransactionBinding
@@ -15,7 +17,7 @@ class RecurringTransactionAdapter(
     private val onPauseResumeClick: (RecurringTransaction) -> Unit
 ) : RecyclerView.Adapter<RecurringTransactionAdapter.ViewHolder>() {
 
-    private val currencyFormat = NumberFormat.getCurrencyInstance(Locale("id", "ID")).apply {
+    private val currencyFormat = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID")).apply {
         maximumFractionDigits = 0
     }
     
@@ -23,7 +25,7 @@ class RecurringTransactionAdapter(
         timeZone = TimeZone.getTimeZone("UTC")
     }
     
-    private val displayDateFormat = SimpleDateFormat("dd MMM yyyy", Locale("id", "ID"))
+    private val displayDateFormat = SimpleDateFormat("dd MMM yyyy", Locale.forLanguageTag("id-ID"))
 
     inner class ViewHolder(private val binding: ItemRecurringTransactionBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -74,18 +76,26 @@ class RecurringTransactionAdapter(
                     btnPauseResume.setBackgroundColor(android.graphics.Color.parseColor("#10B981"))
                 }
                 
-                // Click for Pause/Resume
+                // Click for Pause/Resume (Tombol)
                 btnPauseResume.setOnClickListener {
                     onPauseResumeClick(transaction)
                 }
 
-                // Click for Detail (Coming soon or handle here)
+                // Click for Detail (Kartu)
                 root.setOnClickListener {
-                    // Sementara munculkan Toast atau log, atau jika ada DetailActivity:
-                    // val intent = Intent(root.context, RecurringDetailActivity::class.java)
-                    // intent.putExtra("ID", transaction.id)
-                    // root.context.startActivity(intent)
-                    android.widget.Toast.makeText(root.context, "Detail: ${transaction.name}", android.widget.Toast.LENGTH_SHORT).show()
+                    // Cek apakah data valid
+                    if (transaction != null) {
+                        Toast.makeText(root.context, "Membuka detail: ${transaction.name}", Toast.LENGTH_SHORT).show()
+                        
+                        // Gunakan AddRecurringTransactionActivity untuk edit/detail sementara jika belum ada Detail khusus
+                        val intent = Intent(root.context, AddRecurringTransactionActivity::class.java).apply {
+                            putExtra("TRANSACTION_ID", transaction.id)
+                            putExtra("IS_EDIT", true)
+                        }
+                        root.context.startActivity(intent)
+                    } else {
+                        Toast.makeText(root.context, "Data transaksi tidak ditemukan", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }
