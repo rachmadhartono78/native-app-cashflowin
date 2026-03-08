@@ -2,6 +2,11 @@ package com.example.cashflowin.api.model
 
 data class RecurringTransactionListResponse(
     val status: String,
+    val data: RecurringTransactionPaginationData
+)
+
+data class RecurringTransactionPaginationData(
+    val current_page: Int,
     val data: List<RecurringTransaction>
 )
 

@@ -1,6 +1,7 @@
 package com.example.cashflowin.ui.planning
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -11,7 +12,6 @@ import com.example.cashflowin.api.model.RecurringTransaction
 import com.example.cashflowin.databinding.ActivityRecurringTransactionsBinding
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
-import java.text.SimpleDateFormat
 import java.util.Locale
 
 class RecurringTransactionsActivity : AppCompatActivity() {
@@ -65,7 +65,7 @@ class RecurringTransactionsActivity : AppCompatActivity() {
                 binding.progressBar.visibility = View.GONE
                 
                 if (response.isSuccessful && response.body() != null) {
-                    val data = response.body()!!.data
+                    val data = response.body()!!.data.data
                     
                     if (data.isEmpty()) {
                         binding.emptyState.visibility = View.VISIBLE
@@ -75,11 +75,14 @@ class RecurringTransactionsActivity : AppCompatActivity() {
                     }
                     
                 } else {
-                    showError("Gagal mengambil data transaksi berulang")
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("RecurringTransactions", "API Error: $errorBody")
+                    showError("Gagal mengambil data: ${response.code()}")
                 }
             } catch (e: Exception) {
                 binding.progressBar.visibility = View.GONE
-                showError("Kesalahan jaringan: ${e.message}")
+                Log.e("RecurringTransactions", "Network Error", e)
+                showError("Kesalahan jaringan: ${e.localizedMessage}")
             }
         }
     }
