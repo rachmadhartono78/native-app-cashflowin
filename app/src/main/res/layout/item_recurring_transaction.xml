@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
-    app:cardCornerRadius="8dp"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="12dp"
     app:cardElevation="0dp"
     app:strokeWidth="1dp"
-    app:strokeColor="@color/border_light">
+    app:strokeColor="#E2E8F0">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,103 +17,115 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:layout_height="wrap_content">
 
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:layout_toStartOf="@+id/llAmount"
+                android:orientation="vertical"
+                android:layout_marginEnd="8dp">
 
                 <TextView
                     android:id="@+id/tvName"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/text_main"
-                    android:textSize="14sp"
-                    android:fontFamily="sans-serif-medium" />
+                    android:textColor="#1E293B"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    tools:text="Netflix Subscription" />
 
                 <TextView
                     android:id="@+id/tvCategory"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/text_secondary"
+                    android:textColor="#64748B"
                     android:textSize="12sp"
-                    android:layout_marginTop="4dp" />
+                    android:layout_marginTop="2dp"
+                    tools:text="Hiburan" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginTop="8dp">
+                    android:layout_marginTop="10dp">
 
                     <TextView
                         android:id="@+id/tvType"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/text_secondary"
+                        android:textColor="#0F172A"
                         android:textSize="11sp"
-                        android:background="@drawable/bg_badge"
+                        android:background="#F1F5F9"
                         android:paddingHorizontal="8dp"
                         android:paddingVertical="4dp"
-                        android:layout_marginEnd="8dp" />
+                        android:layout_marginEnd="6dp"
+                        tools:text="Pengeluaran" />
 
                     <TextView
                         android:id="@+id/tvFrequency"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/text_secondary"
+                        android:textColor="#0F172A"
                         android:textSize="11sp"
-                        android:background="@drawable/bg_badge"
+                        android:background="#F1F5F9"
                         android:paddingHorizontal="8dp"
-                        android:paddingVertical="4dp" />
+                        android:paddingVertical="4dp"
+                        tools:text="Bulanan" />
 
                 </LinearLayout>
 
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/llAmount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
                 android:orientation="vertical"
-                android:gravity="end"
-                android:layout_marginStart="16dp">
+                android:gravity="end">
 
                 <TextView
                     android:id="@+id/tvAmount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/text_main"
-                    android:textSize="14sp"
-                    android:fontFamily="sans-serif-black" />
+                    android:textColor="#1E293B"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    tools:text="Rp 186.000" />
 
                 <TextView
                     android:id="@+id/tvNextExecution"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="12sp"
+                    android:textColor="#94A3B8"
+                    android:textSize="11sp"
                     android:layout_marginTop="4dp"
-                    android:textAlignment="textEnd" />
+                    tools:text="Next: 08 Mar 2026" />
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnPauseResume"
                     android:layout_width="wrap_content"
-                    android:layout_height="28dp"
+                    android:layout_height="32dp"
+                    android:layout_marginTop="8dp"
                     android:textSize="11sp"
                     android:textColor="#FFFFFF"
-                    android:layout_marginTop="8dp"
                     android:paddingHorizontal="12dp"
                     android:minWidth="0dp"
-                    android:minHeight="0dp" />
+                    android:minHeight="0dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    app:cornerRadius="8dp"
+                    tools:text="Pause"
+                    tools:backgroundTint="#EF4444"/>
 
             </LinearLayout>
 
-        </LinearLayout>
+        </RelativeLayout>
 
     </LinearLayout>
 
