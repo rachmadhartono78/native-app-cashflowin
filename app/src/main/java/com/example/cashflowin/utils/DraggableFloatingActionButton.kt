@@ -4,15 +4,14 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewPropertyAnimator
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlin.math.abs
 
 class DraggableFloatingActionButton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : ExtendedFloatingActionButton(context, attrs, defStyleAttr), View.OnTouchListener {
+) : FloatingActionButton(context, attrs, defStyleAttr), View.OnTouchListener {
 
     private var downRawX = 0f
     private var downRawY = 0f
@@ -24,7 +23,6 @@ class DraggableFloatingActionButton @JvmOverloads constructor(
 
     init {
         setOnTouchListener(this)
-        // Add a nice elevation and ensure it looks professional
         elevation = 8f
     }
 
@@ -67,7 +65,6 @@ class DraggableFloatingActionButton @JvmOverloads constructor(
                 if (!isDragging) {
                     return performClick()
                 } else {
-                    // Snap to nearest side for a "Professional" feel
                     snapToEdge(view)
                     return true
                 }
@@ -81,12 +78,12 @@ class DraggableFloatingActionButton @JvmOverloads constructor(
         val parentWidth = viewParent.width
         val viewWidth = view.width
         
-        val margin = 48f // Margin from the edge after snapping
+        val margin = 48f 
         
         val endX = if (view.x + viewWidth / 2 < parentWidth / 2) {
-            margin // Snap to left
+            margin 
         } else {
-            parentWidth - viewWidth - margin // Snap to right
+            parentWidth - viewWidth - margin
         }
 
         view.animate()

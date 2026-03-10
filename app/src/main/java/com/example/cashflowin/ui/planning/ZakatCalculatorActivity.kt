@@ -11,8 +11,11 @@ import android.text.style.UnderlineSpan
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.cashflowin.databinding.ActivityZakatCalculatorBinding
+import com.example.cashflowin.utils.CurrencyTextWatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -35,6 +38,13 @@ class ZakatCalculatorActivity : AppCompatActivity() {
         binding = ActivityZakatCalculatorBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Handle system bars (status bar & navigation bar) insets
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom)
+            insets
+        }
+
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding.toolbar.setNavigationOnClickListener { finish() }
@@ -44,6 +54,10 @@ class ZakatCalculatorActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
+        // Tambahkan CurrencyTextWatcher agar input otomatis berformat ribuan (10.000.000)
+        binding.etAmount.addTextChangedListener(CurrencyTextWatcher(binding.etAmount))
+        binding.etGoldPrice.addTextChangedListener(CurrencyTextWatcher(binding.etGoldPrice))
+
         binding.rgZakatType.setOnCheckedChangeListener { _, checkedId ->
             if (checkedId == binding.rbZakatMaal.id) {
                 binding.tvInputTitle.text = "Total Harta (Tabungan/Emas/Lainnya)"
@@ -66,15 +80,13 @@ class ZakatCalculatorActivity : AppCompatActivity() {
             calculateZakat()
         }
 
-        // Update Nisab saat harga emas diubah secara manual
         binding.etGoldPrice.setOnFocusChangeListener { _, hasFocus ->
             if (!hasFocus) updateNisabInfo()
         }
     }
 
-    // Helper untuk membersihkan input String menjadi Double (menghapus titik/koma/Rp)
     private fun String.cleanToDouble(): Double {
-        return this.replace(Regex("[^0-9]"), "").toDoubleOrNull() ?: 0.0
+        return CurrencyTextWatcher.getUnformattedValue(this).toDouble()
     }
 
     private fun openGoldPriceInBrowser() {
@@ -99,17 +111,12 @@ class ZakatCalculatorActivity : AppCompatActivity() {
                     .get()
 
                 var cleanPrice: Double? = null
-                
-                // Cari di seluruh sel tabel
                 val cells = doc.select("td")
                 for (i in 0 until cells.size) {
                     val text = cells[i].text()
-                    // Mencari yang mengandung "24 Karat" dan biasanya harga ada di sel berikutnya
                     if (text.contains("24 Karat", ignoreCase = true)) {
                         val nextCellText = cells.getOrNull(i + 1)?.text() ?: ""
-                        val priceCandidate = nextCellText.cleanToDouble()
-                        
-                        // Validasi harga masuk akal (di atas 500rb per gram)
+                        val priceCandidate = nextCellText.replace(Regex("[^0-9]"), "").toDoubleOrNull() ?: 0.0
                         if (priceCandidate > 500000) {
                             cleanPrice = priceCandidate
                             break
@@ -138,16 +145,13 @@ class ZakatCalculatorActivity : AppCompatActivity() {
     private fun setErrorState() {
         isErrorState = true
         binding.tvCheckGoldPrice.isEnabled = true
-        
         val errorText = "Gagal ambil data. "
         val actionText = "Klik di sini cek manual."
         val fullText = errorText + actionText
-        
         val spannable = SpannableStringBuilder(fullText)
         spannable.setSpan(ForegroundColorSpan(Color.RED), 0, errorText.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         spannable.setSpan(ForegroundColorSpan(Color.BLUE), errorText.length, fullText.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         spannable.setSpan(UnderlineSpan(), errorText.length, fullText.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-        
         binding.tvCheckGoldPrice.text = spannable
     }
 
@@ -161,18 +165,11 @@ class ZakatCalculatorActivity : AppCompatActivity() {
     private fun updateNisabInfo() {
         val goldPrice = binding.etGoldPrice.text.toString().cleanToDouble()
         val isMaal = binding.rbZakatMaal.isChecked
-        
-        val nisab = if (isMaal) {
-            goldPrice * 85 
-        } else {
-            (goldPrice * 85) / 12
-        }
-        
+        val nisab = if (isMaal) goldPrice * 85 else (goldPrice * 85) / 12
         binding.tvNisabInfo.text = "Nisab: ${formatRupiah.format(nisab)}"
     }
 
     private fun calculateZakat() {
-        // Menggunakan cleanToDouble agar input dengan titik/koma tetap terbaca benar
         val amount = binding.etAmount.text.toString().cleanToDouble()
         val goldPrice = binding.etGoldPrice.text.toString().cleanToDouble()
         val isMaal = binding.rbZakatMaal.isChecked
@@ -186,7 +183,6 @@ class ZakatCalculatorActivity : AppCompatActivity() {
         val zakatRate = 0.025 
 
         binding.cardResult.visibility = View.VISIBLE
-        
         if (amount >= nisab) {
             val zakatWajib = amount * zakatRate
             binding.tvResultValue.text = formatRupiah.format(zakatWajib)

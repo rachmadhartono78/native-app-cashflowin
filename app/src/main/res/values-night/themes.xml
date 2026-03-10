@@ -38,6 +38,19 @@
         <item name="android:colorBackground">@color/md_theme_background</item>
     </style>
 
+    <style name="Theme.Cashflowin.NoActionBar" parent="Theme.Cashflowin">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.Cashflowin.AppBarOverlay" parent="ThemeOverlay.Material3.Dark.ActionBar" />
+
+    <style name="Theme.Cashflowin.PopupOverlay" parent="ThemeOverlay.Material3.Dark" />
+
+    <style name="Widget.Material3.CalendarView" parent="android:Widget.CalendarView">
+        <!-- Custom styling for CalendarView if needed -->
+    </style>
+
     <style name="CustomAlertDialog" parent="Theme.Material3.DayNight.Dialog">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowNoTitle">true</item>

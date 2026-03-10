@@ -19,11 +19,21 @@ class AddGoalActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAddGoalBinding
     private val calendar = Calendar.getInstance()
+    private var goalId: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddGoalBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        goalId = intent.getIntExtra("EXTRA_ID", -1)
+        if (goalId != -1) {
+            binding.toolbar.title = "Edit Target"
+            binding.etName.setText(intent.getStringExtra("EXTRA_NAME"))
+            binding.etTargetAmount.setText(intent.getDoubleExtra("EXTRA_TARGET", 0.0).toLong().toString())
+            binding.etInitialAmount.setText(intent.getDoubleExtra("EXTRA_CURRENT", 0.0).toLong().toString())
+            binding.etDeadline.setText(intent.getStringExtra("EXTRA_DEADLINE"))
+        }
 
         setupToolbar()
         setupListeners()
@@ -69,11 +79,11 @@ class AddGoalActivity : AppCompatActivity() {
         }
 
         if (name.isEmpty()) {
-            binding.etName.error = "Name is required"
+            binding.etName.error = "Nama target diperlukan"
             return
         }
         if (targetAmountFormatted.isEmpty()) {
-            binding.etTargetAmount.error = "Target amount is required"
+            binding.etTargetAmount.error = "Jumlah target diperlukan"
             return
         }
 
@@ -90,17 +100,22 @@ class AddGoalActivity : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 val apiService = ApiClient.getApiService(this@AddGoalActivity)
-                val response = apiService.addGoal(request)
+                val response = if (goalId == -1) {
+                    apiService.addGoal(request)
+                } else {
+                    apiService.updateGoal(goalId, request)
+                }
+                
                 if (response.isSuccessful) {
-                    Toast.makeText(this@AddGoalActivity, "Goal saved", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@AddGoalActivity, "Target berhasil disimpan", Toast.LENGTH_SHORT).show()
                     finish()
                 } else {
-                    Toast.makeText(this@AddGoalActivity, "Failed to save goal", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@AddGoalActivity, "Gagal menyimpan target", Toast.LENGTH_SHORT).show()
                     binding.progressBar.visibility = View.GONE
                     binding.btnSave.isEnabled = true
                 }
             } catch (e: Exception) {
-                Toast.makeText(this@AddGoalActivity, "Network error", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@AddGoalActivity, "Kesalahan jaringan", Toast.LENGTH_SHORT).show()
                 binding.progressBar.visibility = View.GONE
                 binding.btnSave.isEnabled = true
             }

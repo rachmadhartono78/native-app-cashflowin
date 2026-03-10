@@ -1,22 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8FAFC">
+    android:background="@color/bg_gray">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:elevation="0dp">
+        app:elevation="0dp"
+        android:background="@color/white">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="#FFFFFF"
-            app:title="Edit Profile"
-            app:titleTextColor="#1E293B" />
+            android:background="@color/white"
+            app:title="Edit Profil"
+            app:titleTextColor="@color/text_main"
+            app:navigationIcon="@android:drawable/ic_menu_revert"
+            app:navigationIconTint="@color/text_main" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -28,139 +32,187 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="20dp">
 
-            <!-- Profile Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="32dp"
+                app:cardCornerRadius="50dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="2dp"
+                app:strokeColor="@color/primary_green_light">
+                <ImageView
+                    android:id="@+id/ivProfileLarge"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/avatar_1"
+                    android:scaleType="centerCrop" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Profile Info Section -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Profile Information"
-                android:textStyle="bold"
-                android:textColor="#1E293B"
-                android:layout_marginBottom="8dp"/>
+                android:text="Informasi Profil"
+                android:textColor="@color/text_main"
+                android:textSize="16sp"
+                android:fontFamily="sans-serif-black"
+                android:layout_marginBottom="16dp" />
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/white"
                 android:layout_marginBottom="24dp">
                 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="20dp">
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Name"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                        android:hint="Nama Lengkap"
+                        app:hintTextColor="@color/primary_green"
+                        app:boxStrokeColor="@color/primary_green"
+                        app:startIconDrawable="@android:drawable/ic_menu_myplaces"
+                        app:startIconTint="@color/text_secondary"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
                         
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etName"
                             android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
                             android:inputType="textPersonName"
-                            android:layout_height="wrap_content"/>
+                            android:textColor="@color/text_main"
+                            android:fontFamily="sans-serif-medium"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Email"
-                        android:layout_marginTop="12dp"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                        android:layout_marginTop="16dp"
+                        app:hintTextColor="@color/primary_green"
+                        app:boxStrokeColor="@color/primary_green"
+                        app:startIconDrawable="@android:drawable/ic_dialog_email"
+                        app:startIconTint="@color/text_secondary"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
                         
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etEmail"
                             android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
                             android:inputType="textEmailAddress"
-                            android:layout_height="wrap_content"/>
+                            android:textColor="@color/text_main"
+                            android:fontFamily="sans-serif-medium"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <Button
+                    <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnUpdateProfile"
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:text="Update Profile"
-                        android:layout_marginTop="16dp"
-                        app:cornerRadius="8dp"/>
+                        android:layout_height="56dp"
+                        android:text="Simpan Perubahan"
+                        android:layout_marginTop="24dp"
+                        app:cornerRadius="16dp"
+                        android:backgroundTint="@color/primary_green"
+                        android:fontFamily="sans-serif-black"
+                        android:textAllCaps="false" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Password Card -->
+            <!-- Password Section -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Change Password"
-                android:textStyle="bold"
-                android:textColor="#1E293B"
-                android:layout_marginBottom="8dp"/>
+                android:text="Ubah Kata Sandi"
+                android:textColor="@color/text_main"
+                android:textSize="16sp"
+                android:fontFamily="sans-serif-black"
+                android:layout_marginBottom="16dp" />
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp">
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/white"
+                android:layout_marginBottom="32dp">
                 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="20dp">
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Current Password"
+                        android:hint="Kata Sandi Saat Ini"
                         app:passwordToggleEnabled="true"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                        app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
+                        app:startIconTint="@color/text_secondary"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
                         
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etCurrentPassword"
                             android:layout_width="match_parent"
-                            android:inputType="textPassword"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:inputType="textPassword" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="New Password"
-                        android:layout_marginTop="12dp"
+                        android:hint="Kata Sandi Baru"
+                        android:layout_marginTop="16dp"
                         app:passwordToggleEnabled="true"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                        app:startIconDrawable="@android:drawable/ic_lock_lock"
+                        app:startIconTint="@color/text_secondary"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
                         
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etNewPassword"
                             android:layout_width="match_parent"
-                            android:inputType="textPassword"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:inputType="textPassword" />
                     </com.google.android.material.textfield.TextInputLayout>
                     
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Confirm New Password"
-                        android:layout_marginTop="12dp"
+                        android:hint="Konfirmasi Sandi Baru"
+                        android:layout_marginTop="16dp"
                         app:passwordToggleEnabled="true"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                        app:startIconDrawable="@android:drawable/ic_lock_lock"
+                        app:startIconTint="@color/text_secondary"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
                         
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etConfirmPassword"
                             android:layout_width="match_parent"
-                            android:inputType="textPassword"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:inputType="textPassword" />
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <Button
+                    <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnUpdatePassword"
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:text="Update Password"
-                        android:layout_marginTop="16dp"
-                        app:cornerRadius="8dp"/>
+                        android:layout_height="56dp"
+                        android:text="Ubah Kata Sandi"
+                        android:layout_marginTop="24dp"
+                        app:cornerRadius="16dp"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:textColor="@color/primary_green"
+                        android:backgroundTint="@color/primary_green_light"
+                        android:fontFamily="sans-serif-black"
+                        android:textAllCaps="false" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

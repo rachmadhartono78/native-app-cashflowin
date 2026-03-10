@@ -13,11 +13,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cashflowin.R
 import com.example.cashflowin.api.ApiClient
 import com.example.cashflowin.api.DashboardRepository
+import com.example.cashflowin.api.model.AssetInfo
 import com.example.cashflowin.api.model.Summary
 import com.example.cashflowin.databinding.FragmentDashboardBinding
 import com.example.cashflowin.ui.auth.LoginActivity
 import com.example.cashflowin.ui.transaction.ScanNotaActivity
 import com.example.cashflowin.utils.TokenManager
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.text.NumberFormat
 import java.util.*
 
@@ -37,6 +39,7 @@ class DashboardFragment : Fragment() {
     
     private var isBalanceVisible = true
     private var currentSummary: Summary? = null
+    private var currentAssets: List<AssetInfo> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -79,22 +82,14 @@ class DashboardFragment : Fragment() {
     }
 
     private fun setupListeners() {
-        // Foto profil bisa diklik untuk pindah ke tab Settings
         binding.btnProfile.setOnClickListener {
-            try {
-                findNavController().navigate(R.id.nav_settings)
-            } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Membuka Profil...", Toast.LENGTH_SHORT).show()
-            }
+            // Gunakan cara yang lebih aman untuk navigasi BNB agar tidak nge-bug
+            val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.nav_view)
+            bottomNav?.selectedItemId = R.id.nav_settings
         }
 
-        binding.btnCatat.setOnClickListener {
-            openAddTransaction()
-        }
-
-        binding.btnAddTransactionFab.setOnClickListener {
-            openAddTransaction()
-        }
+        binding.btnCatat.setOnClickListener { openAddTransaction() }
+        binding.btnAddTransactionFab.setOnClickListener { openAddTransaction() }
 
         binding.btnBudgets.setOnClickListener {
             startActivity(Intent(requireContext(), com.example.cashflowin.ui.planning.BudgetsActivity::class.java))
@@ -125,37 +120,23 @@ class DashboardFragment : Fragment() {
         }
 
         binding.btnAiSuggestion.setOnClickListener {
-            Toast.makeText(requireContext(), "AI Advisor akan menganalisa keuanganmu...", Toast.LENGTH_LONG).show()
-            // Placeholder untuk fitur AI nantinya
+            Toast.makeText(requireContext(), "AI Advisor sedang menganalisa...", Toast.LENGTH_SHORT).show()
         }
 
         binding.btnMore.setOnClickListener {
-            if (binding.btnRecurringTransactions.visibility == View.GONE) {
-                binding.btnRecurringTransactions.visibility = View.VISIBLE
-            } else {
-                binding.btnRecurringTransactions.visibility = View.GONE
-            }
+            binding.btnRecurringTransactions.visibility = if (binding.btnRecurringTransactions.visibility == View.GONE) View.VISIBLE else View.GONE
         }
 
         binding.btnHideBalance.setOnClickListener {
             isBalanceVisible = !isBalanceVisible
-            currentSummary?.let { updateUI(it) }
+            updateUI()
             
-            val iconRes = if (isBalanceVisible) {
-                android.R.drawable.ic_menu_view
-            } else {
-                android.R.drawable.ic_menu_close_clear_cancel 
-            }
+            val iconRes = if (isBalanceVisible) android.R.drawable.ic_menu_view else android.R.drawable.ic_menu_close_clear_cancel 
             binding.btnHideBalance.setImageResource(iconRes)
         }
         
         binding.tvViewAll.setOnClickListener {
-            // Pindah ke tab Transaksi
-            try {
-                findNavController().navigate(R.id.nav_transactions)
-            } catch (e: Exception) {
-                Toast.makeText(requireContext(), getString(R.string.view_all), Toast.LENGTH_SHORT).show()
-            }
+            findNavController().navigate(R.id.nav_transactions)
         }
     }
 
@@ -194,18 +175,14 @@ class DashboardFragment : Fragment() {
     private fun setupObservers() {
         viewModel.dashboardState.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is DashboardState.Loading -> setLoading(true)
+                is DashboardState.Loading -> {}
                 is DashboardState.Success -> {
-                    setLoading(false)
-                    val summary = state.response.data?.summary
-                    val transactions = state.response.data?.recent_transactions ?: emptyList()
-
-                    currentSummary = summary
-                    summary?.let { updateUI(it) }
-                    transactionAdapter.submitList(transactions)
+                    currentSummary = state.response.data?.summary
+                    currentAssets = state.assets
+                    updateUI()
+                    transactionAdapter.submitList(state.response.data?.recent_transactions ?: emptyList())
                 }
                 is DashboardState.Error -> {
-                    setLoading(false)
                     if (state.message == "UNAUTHORIZED") {
                         tokenManager.clearToken()
                         navigateToLogin()
@@ -213,26 +190,26 @@ class DashboardFragment : Fragment() {
                         Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
                     }
                 }
-                else -> setLoading(false)
+                else -> {}
             }
         }
     }
 
-    private fun setLoading(isLoading: Boolean) {
-        // Simple loading for now
-    }
-
-    private fun updateUI(summary: Summary) {
-        val format = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID")).apply {
+    private fun updateUI() {
+        val summary = currentSummary ?: return
+        val format = NumberFormat.getCurrencyInstance(Locale("id", "ID")).apply {
             maximumFractionDigits = 0
         }
         
+        // Perbaikan Logika: Total Saldo dihitung dari akumulasi seluruh aset
+        val calculatedTotalBalance = currentAssets.sumOf { it.balance }
+        
         if (isBalanceVisible) {
-            binding.tvTotalBalance.text = format.format(summary.balance)
+            binding.tvTotalBalance.text = format.format(calculatedTotalBalance)
             binding.tvIncome.text = format.format(summary.total_income_month)
             binding.tvExpense.text = format.format(summary.total_expense_month)
         } else {
-            val hiddenText = getString(R.string.balance_hidden)
+            val hiddenText = "••••••••"
             binding.tvTotalBalance.text = hiddenText
             binding.tvIncome.text = hiddenText
             binding.tvExpense.text = hiddenText

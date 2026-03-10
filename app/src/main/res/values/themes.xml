@@ -13,18 +13,17 @@
         <item name="colorSecondaryContainer">@color/md_theme_secondaryContainer</item>
         <item name="colorOnSecondaryContainer">@color/md_theme_onSecondaryContainer</item>
 
-        <!-- Tertiary brand color. -->
-        <item name="colorTertiary">@color/md_theme_tertiary</item>
-        <item name="colorOnTertiary">@color/md_theme_onTertiary</item>
-        <item name="colorTertiaryContainer">@color/md_theme_tertiaryContainer</item>
-        <item name="colorOnTertiaryContainer">@color/md_theme_onTertiaryContainer</item>
-
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorSurface</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">true</item>
 
-        <!-- Navigation bar color. -->
-        <item name="android:navigationBarColor">?attr/colorSurface</item>
+        <!-- Navigation bar color: SET TO TRANSPARENT FOR EDGE-TO-EDGE -->
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+
+        <!-- FORCE HIDE THE NAV BAR PROTECTION LAYER -->
+        <item name="android:enforceNavigationBarContrast" tools:targetApi="q">false</item>
 
         <!-- Customize your theme here. -->
         <item name="colorSurface">@color/md_theme_surface</item>
@@ -33,7 +32,6 @@
         <item name="colorOnSurfaceVariant">@color/md_theme_onSurfaceVariant</item>
         <item name="colorOutline">@color/md_theme_outline</item>
 
-        <!-- Background color attribute -->
         <item name="colorBackground">@color/md_theme_background</item>
         <item name="android:colorBackground">@color/md_theme_background</item>
     </style>
@@ -43,23 +41,9 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="Theme.Cashflowin.AppBarOverlay" parent="ThemeOverlay.Material3.Dark.ActionBar" />
+    <style name="Theme.Cashflowin.AppBarOverlay" parent="ThemeOverlay.Material3.ActionBar" />
 
     <style name="Theme.Cashflowin.PopupOverlay" parent="ThemeOverlay.Material3.Light" />
 
-    <style name="Widget.Material3.Circular" parent="">
-        <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">50%</item>
-    </style>
-
-    <!-- Custom style for CalendarView to match Material 3 -->
-    <style name="Widget.Material3.CalendarView" parent="Theme.Material3.DayNight">
-        <item name="android:colorAccent">?attr/colorPrimary</item>
-        <item name="android:colorControlActivated">?attr/colorPrimary</item>
-    </style>
-
-    <style name="CustomAlertDialog" parent="Theme.Material3.DayNight.Dialog">
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:windowNoTitle">true</item>
-    </style>
+    <style name="Widget.Material3.CalendarView" parent="android:Widget.CalendarView" />
 </resources>

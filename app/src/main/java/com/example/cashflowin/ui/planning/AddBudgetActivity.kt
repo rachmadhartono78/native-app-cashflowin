@@ -18,11 +18,18 @@ class AddBudgetActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAddBudgetBinding
     private var categoriesList: List<CategoryInfo> = emptyList()
+    private var budgetId: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddBudgetBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        budgetId = intent.getIntExtra("EXTRA_ID", -1)
+        if (budgetId != -1) {
+            binding.toolbar.title = "Edit Anggaran"
+            binding.etAmount.setText(intent.getDoubleExtra("EXTRA_AMOUNT", 0.0).toLong().toString())
+        }
 
         setupToolbar()
         setupListeners()
@@ -53,6 +60,15 @@ class AddBudgetActivity : AppCompatActivity() {
                         categoriesList.map { it.name }
                     )
                     binding.spinnerCategory.adapter = adapter
+                    
+                    // Pre-select category if editing
+                    if (budgetId != -1) {
+                        val categoryId = intent.getIntExtra("EXTRA_CATEGORY_ID", -1)
+                        val index = categoriesList.indexOfFirst { it.id == categoryId }
+                        if (index != -1) {
+                            binding.spinnerCategory.setSelection(index)
+                        }
+                    }
                 }
             } catch (e: Exception) {
                 Toast.makeText(this@AddBudgetActivity, "Gagal memuat kategori", Toast.LENGTH_SHORT).show()
@@ -66,11 +82,11 @@ class AddBudgetActivity : AppCompatActivity() {
         val selectedCategoryPos = binding.spinnerCategory.selectedItemPosition
 
         if (amountFormatted.isEmpty()) {
-            binding.etAmount.error = "Amount is required"
+            binding.etAmount.error = "Jumlah anggaran diperlukan"
             return
         }
         if (selectedCategoryPos == -1 || categoriesList.isEmpty()) {
-            Toast.makeText(this, "Please select a category", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Silakan pilih kategori", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -87,17 +103,21 @@ class AddBudgetActivity : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 val apiService = ApiClient.getApiService(this@AddBudgetActivity)
+                // Backend might not have separate update endpoint for budgets in some designs, 
+                // but usually POST to /budgets creates or updates for that month/category.
+                // If there's no specific PUT /budgets/{id}, we'll use addBudget.
                 val response = apiService.addBudget(request)
+                
                 if (response.isSuccessful) {
-                    Toast.makeText(this@AddBudgetActivity, "Budget saved", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@AddBudgetActivity, "Anggaran berhasil disimpan", Toast.LENGTH_SHORT).show()
                     finish()
                 } else {
-                    Toast.makeText(this@AddBudgetActivity, "Failed to save budget", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@AddBudgetActivity, "Gagal menyimpan anggaran", Toast.LENGTH_SHORT).show()
                     binding.progressBar.visibility = View.GONE
                     binding.btnSave.isEnabled = true
                 }
             } catch (e: Exception) {
-                Toast.makeText(this@AddBudgetActivity, "Network error", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@AddBudgetActivity, "Kesalahan jaringan", Toast.LENGTH_SHORT).show()
                 binding.progressBar.visibility = View.GONE
                 binding.btnSave.isEnabled = true
             }

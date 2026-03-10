@@ -11,8 +11,10 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cashflowin.api.ApiClient
 import com.example.cashflowin.api.CategoryRepository
+import com.example.cashflowin.api.model.CategoryInfo
 import com.example.cashflowin.databinding.FragmentCategoriesBinding
 import com.example.cashflowin.utils.TokenManager
+import com.google.android.material.tabs.TabLayout
 
 class CategoriesFragment : Fragment() {
 
@@ -25,7 +27,7 @@ class CategoriesFragment : Fragment() {
         CategoryViewModelFactory(repository)
     }
     private lateinit var categoryAdapter: CategoryAdapter
-    private lateinit var tokenManager: TokenManager
+    private var allCategories: List<CategoryInfo> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,8 +41,6 @@ class CategoriesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        tokenManager = TokenManager(requireContext())
-
         setupRecyclerView()
         setupObservers()
         setupListeners()
@@ -48,7 +48,7 @@ class CategoriesFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        fetchCategories()
+        viewModel.loadCategories()
     }
 
     private fun setupRecyclerView() {
@@ -57,6 +57,8 @@ class CategoriesFragment : Fragment() {
                 putExtra("EXTRA_CATEGORY_ID", category.id)
                 putExtra("EXTRA_CATEGORY_NAME", category.name)
                 putExtra("EXTRA_CATEGORY_TYPE", category.type)
+                putExtra("EXTRA_CATEGORY_COLOR", category.color)
+                putExtra("EXTRA_CATEGORY_ICON", category.icon)
             }
             startActivity(intent)
         }
@@ -70,44 +72,48 @@ class CategoriesFragment : Fragment() {
         binding.btnAddCategory.setOnClickListener {
             startActivity(Intent(requireContext(), AddEditCategoryActivity::class.java))
         }
+
+        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                filterCategories(tab?.position ?: 0)
+            }
+            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+            override fun onTabReselected(tab: TabLayout.Tab?) {}
+        })
     }
 
     private fun setupObservers() {
         viewModel.categoriesState.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is CategoriesState.Idle -> {}
                 is CategoriesState.Loading -> {
                     binding.progressBar.visibility = View.VISIBLE
                     binding.emptyStateLayout.visibility = View.GONE
                 }
                 is CategoriesState.Success -> {
                     binding.progressBar.visibility = View.GONE
-                    val list = state.response.data
-                    
-                    if (list.isEmpty()) {
-                        binding.emptyStateLayout.visibility = View.VISIBLE
-                        categoryAdapter.submitList(emptyList())
-                    } else {
-                        binding.emptyStateLayout.visibility = View.GONE
-                        // Sort by type to group them (Income first, then Expense)
-                        val sortedList = list.sortedByDescending { it.type }
-                        categoryAdapter.submitList(sortedList)
-                    }
+                    allCategories = state.response.data
+                    filterCategories(binding.tabLayout.selectedTabPosition)
                 }
                 is CategoriesState.Error -> {
                     binding.progressBar.visibility = View.GONE
-                    if (state.message == "UNAUTHORIZED") {
-                        Toast.makeText(requireContext(), "Session expired.", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
-                    }
+                    Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
                 }
+                else -> {}
             }
         }
     }
 
-    private fun fetchCategories() {
-        viewModel.loadCategories()
+    private fun filterCategories(tabPosition: Int) {
+        val type = if (tabPosition == 0) "expense" else "income"
+        val filteredList = allCategories.filter { it.type == type }
+        
+        if (filteredList.isEmpty()) {
+            binding.emptyStateLayout.visibility = View.VISIBLE
+            categoryAdapter.submitList(emptyList())
+        } else {
+            binding.emptyStateLayout.visibility = View.GONE
+            categoryAdapter.submitList(filteredList)
+        }
     }
 
     override fun onDestroyView() {

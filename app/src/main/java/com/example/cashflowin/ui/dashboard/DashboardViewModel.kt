@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.cashflowin.api.DashboardRepository
+import com.example.cashflowin.api.model.AssetInfo
 import com.example.cashflowin.api.model.DashboardResponse
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
@@ -13,7 +14,7 @@ import okhttp3.ResponseBody
 sealed class DashboardState {
     object Idle : DashboardState()
     object Loading : DashboardState()
-    data class Success(val response: DashboardResponse) : DashboardState()
+    data class Success(val response: DashboardResponse, val assets: List<AssetInfo> = emptyList()) : DashboardState()
     data class Error(val message: String) : DashboardState()
     object LoggedOut : DashboardState()
     data class ExportComplete(val fileName: String, val message: String) : DashboardState()
@@ -31,18 +32,22 @@ class DashboardViewModel(
         _dashboardState.value = DashboardState.Loading
         viewModelScope.launch {
             try {
-                val response = repository.getDashboardSummary()
-                if (response.isSuccessful && response.body() != null) {
-                    val body = response.body()!!
+                val summaryResponse = repository.getDashboardSummary()
+                val assetsResponse = repository.getAssets()
+                
+                if (summaryResponse.isSuccessful && summaryResponse.body() != null) {
+                    val body = summaryResponse.body()!!
+                    val assets = if (assetsResponse.isSuccessful) assetsResponse.body()?.data ?: emptyList() else emptyList()
+                    
                     if (body.status.equals("success", ignoreCase = true)) {
-                        _dashboardState.value = DashboardState.Success(body)
+                        _dashboardState.value = DashboardState.Success(body, assets)
                     } else {
                         _dashboardState.value = DashboardState.Error(body.message ?: "Failed to fetch data")
                     }
-                } else if (response.code() == 401) {
+                } else if (summaryResponse.code() == 401) {
                     _dashboardState.value = DashboardState.Error("UNAUTHORIZED")
                 } else {
-                    _dashboardState.value = DashboardState.Error("Server error: ${response.code()}")
+                    _dashboardState.value = DashboardState.Error("Server error: ${summaryResponse.code()}")
                 }
             } catch (e: Exception) {
                 _dashboardState.value = DashboardState.Error(e.message ?: "Network error occurred")

@@ -36,9 +36,14 @@ class GoalsActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         goalAdapter = GoalAdapter(emptyList()) { goal ->
-            // Navigate to Goal Detail if you have one, or Edit Goal
-            // For now, let's assume we might have a detail or just toast
-            Toast.makeText(this, "Selected: ${goal.name}", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, AddGoalActivity::class.java).apply {
+                putExtra("EXTRA_ID", goal.id)
+                putExtra("EXTRA_NAME", goal.name)
+                putExtra("EXTRA_TARGET", goal.target_amount)
+                putExtra("EXTRA_CURRENT", goal.current_amount)
+                putExtra("EXTRA_DEADLINE", goal.deadline)
+            }
+            startActivity(intent)
         }
         binding.rvGoals.apply {
             layoutManager = LinearLayoutManager(this@GoalsActivity)
@@ -66,7 +71,7 @@ class GoalsActivity : AppCompatActivity() {
                 if (response.isSuccessful && response.body() != null) {
                     val data = response.body()!!.data
                     
-                    binding.tvTotalGoals.text = "${data.size} Goals"
+                    binding.tvTotalGoals.text = "${data.size} Target"
                     binding.rvGoals.visibility = View.VISIBLE
                     goalAdapter.updateData(data)
                     

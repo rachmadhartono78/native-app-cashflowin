@@ -3,6 +3,7 @@ package com.example.cashflowin.ui.dashboard
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -51,7 +52,15 @@ class TransactionAdapter(
     inner class TransactionViewHolder(private val binding: ItemTransactionBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(transaction: TransactionItem) {
             val context = binding.root.context
-            binding.tvCategoryName.text = transaction.category?.name ?: transaction.description ?: "Lainnya"
+            
+            // Perbaikan 1: Tampilkan keterangan transaksi
+            binding.tvCategoryName.text = transaction.category?.name ?: "Lainnya"
+            if (!transaction.description.isNullOrEmpty()) {
+                binding.tvDescription.text = transaction.description
+                binding.tvDescription.visibility = View.VISIBLE
+            } else {
+                binding.tvDescription.visibility = View.GONE
+            }
             
             val dateStr = try {
                 val date = inputDateFormat.parse(transaction.date)
@@ -72,9 +81,8 @@ class TransactionAdapter(
             binding.tvDate.text = "$dateStr$timeStr"
             
             val amountValue = (transaction.amount.toDoubleOrNull() ?: 0.0)
-            val formattedAmount = currencyFormat.format(amountValue).replace("Rp", "Rp")
+            val formattedAmount = currencyFormat.format(amountValue)
 
-            // Improvisasi: Gunakan warna dan ikon dari kategori jika tersedia
             val categoryColor = transaction.category?.color
             val categoryIcon = transaction.category?.icon
             
@@ -93,11 +101,8 @@ class TransactionAdapter(
 
             if (!categoryIcon.isNullOrEmpty()) {
                 val resId = context.resources.getIdentifier(categoryIcon, "drawable", context.packageName)
-                val androidResId = context.resources.getIdentifier(categoryIcon, "drawable", "android")
                 if (resId != 0) {
                     binding.ivCategoryIcon.setImageResource(resId)
-                } else if (androidResId != 0) {
-                    binding.ivCategoryIcon.setImageResource(androidResId)
                 }
             }
 

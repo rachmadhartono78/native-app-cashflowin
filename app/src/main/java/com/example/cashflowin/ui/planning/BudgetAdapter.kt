@@ -1,6 +1,5 @@
 package com.example.cashflowin.ui.planning
 
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -10,8 +9,10 @@ import com.example.cashflowin.databinding.ItemBudgetBinding
 import java.text.NumberFormat
 import java.util.Locale
 
-class BudgetAdapter(private var budgets: List<Budget>) :
-    RecyclerView.Adapter<BudgetAdapter.BudgetViewHolder>() {
+class BudgetAdapter(
+    private var budgets: List<Budget>,
+    private val onItemClick: (Budget) -> Unit
+) : RecyclerView.Adapter<BudgetAdapter.BudgetViewHolder>() {
 
     fun updateData(newBudgets: List<Budget>) {
         budgets = newBudgets
@@ -24,7 +25,9 @@ class BudgetAdapter(private var budgets: List<Budget>) :
     }
 
     override fun onBindViewHolder(holder: BudgetViewHolder, position: Int) {
-        holder.bind(budgets[position])
+        val budget = budgets[position]
+        holder.bind(budget)
+        holder.itemView.setOnClickListener { onItemClick(budget) }
     }
 
     override fun getItemCount(): Int = budgets.size
@@ -46,7 +49,6 @@ class BudgetAdapter(private var budgets: List<Budget>) :
             val progress = if (budget.amount > 0) (spent / budget.amount * 100).toInt() else 0
             binding.progressBudget.progress = progress
             
-            // Change color if over budget
             if (spent > budget.amount) {
                 binding.progressBudget.setIndicatorColor(Color.parseColor("#EF4444")) // Red
                 binding.tvRemainingBudget.setTextColor(Color.parseColor("#EF4444"))

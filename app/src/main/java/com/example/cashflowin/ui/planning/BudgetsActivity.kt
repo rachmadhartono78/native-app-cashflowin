@@ -1,5 +1,6 @@
 package com.example.cashflowin.ui.planning
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -39,7 +40,14 @@ class BudgetsActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        budgetAdapter = BudgetAdapter(emptyList())
+        budgetAdapter = BudgetAdapter(emptyList()) { budget ->
+            val intent = Intent(this, AddBudgetActivity::class.java).apply {
+                putExtra("EXTRA_ID", budget.id)
+                putExtra("EXTRA_CATEGORY_ID", budget.category?.id)
+                putExtra("EXTRA_AMOUNT", budget.amount)
+            }
+            startActivity(intent)
+        }
         binding.rvBudgets.apply {
             layoutManager = LinearLayoutManager(this@BudgetsActivity)
             adapter = budgetAdapter
@@ -48,7 +56,7 @@ class BudgetsActivity : AppCompatActivity() {
 
     private fun setupListeners() {
         binding.fabAddBudget.setOnClickListener {
-            startActivity(android.content.Intent(this, AddBudgetActivity::class.java))
+            startActivity(Intent(this, AddBudgetActivity::class.java))
         }
     }
 
