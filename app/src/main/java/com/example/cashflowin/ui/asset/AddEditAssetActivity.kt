@@ -15,10 +15,10 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.cashflowin.BaseActivity
 import com.example.cashflowin.R
 import com.example.cashflowin.api.ApiClient
 import com.example.cashflowin.api.AssetRepository
@@ -29,7 +29,7 @@ import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
 
-class AddEditAssetActivity : AppCompatActivity() {
+class AddEditAssetActivity : BaseActivity() {
 
     private lateinit var binding: ActivityAddEditAssetBinding
     private val viewModel: AddEditAssetViewModel by viewModels {

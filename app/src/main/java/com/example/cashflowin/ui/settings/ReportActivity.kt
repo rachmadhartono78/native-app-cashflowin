@@ -8,8 +8,8 @@ import android.os.Environment
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.example.cashflowin.BaseActivity
 import com.example.cashflowin.api.ApiClient
 import com.example.cashflowin.databinding.ActivityReportBinding
 import com.example.cashflowin.utils.TokenManager
@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
 
-class ReportActivity : AppCompatActivity() {
+class ReportActivity : BaseActivity() {
 
     private lateinit var binding: ActivityReportBinding
     private lateinit var tokenManager: TokenManager

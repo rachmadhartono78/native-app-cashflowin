@@ -43,7 +43,7 @@
                 android:layout_marginBottom="24dp"
                 app:cardCornerRadius="24dp"
                 app:cardElevation="0dp"
-                app:cardBackgroundColor="@color/primary_green">
+                app:cardBackgroundColor="?attr/colorPrimary">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -201,7 +201,7 @@
                 android:textSize="16sp"
                 android:fontFamily="sans-serif-black"
                 app:cornerRadius="12dp"
-                android:backgroundTint="@color/primary_green" />
+                android:backgroundTint="?attr/colorPrimary" />
 
             <ProgressBar
                 android:id="@+id/progressBar"

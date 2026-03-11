@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.example.cashflowin.BaseActivity
 import com.example.cashflowin.api.ApiClient
 import com.example.cashflowin.api.model.BudgetRequest
 import com.example.cashflowin.api.model.CategoryInfo
@@ -14,7 +14,7 @@ import com.example.cashflowin.utils.CurrencyTextWatcher
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
-class AddBudgetActivity : AppCompatActivity() {
+class AddBudgetActivity : BaseActivity() {
 
     private lateinit var binding: ActivityAddBudgetBinding
     private var categoriesList: List<CategoryInfo> = emptyList()

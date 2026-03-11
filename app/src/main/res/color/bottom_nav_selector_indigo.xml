@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Bottom Navigation color selector untuk tema Indigo.
+    Diapply secara programmatic di MainActivity saat brand = BRAND_INDIGO.
+    State checked (aktif) = indigo_500, state default = text_secondary abu.
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="@color/indigo_500" android:state_checked="true" />
+    <item android:color="@color/text_secondary" />
+</selector>

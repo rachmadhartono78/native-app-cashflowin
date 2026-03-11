@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="ic_launcher_background">#00AA5B</color>
+    <!-- Background launcher icon untuk tema Indigo/Cashflowin Web Style -->
+    <color name="ic_launcher_background_indigo">#6366F1</color>
 </resources>

@@ -2,8 +2,8 @@ package com.example.cashflowin.ui.planning
 
 import android.os.Bundle
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.example.cashflowin.BaseActivity
 import com.example.cashflowin.api.ApiClient
 import com.example.cashflowin.api.model.RecurringTransactionRequest
 import com.example.cashflowin.databinding.ActivityAddRecurringTransactionBinding
@@ -16,11 +16,11 @@ import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 
-class AddRecurringTransactionActivity : AppCompatActivity() {
+class AddRecurringTransactionActivity : BaseActivity() {
 
     private lateinit var binding: ActivityAddRecurringTransactionBinding
     private val apiDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-    private val displayDateFormat = SimpleDateFormat("dd MMMM yyyy", Locale("id", "ID"))
+    private val displayDateFormat = SimpleDateFormat("dd MMMM yyyy", Locale.forLanguageTag("id-ID"))
     
     private var isEdit = false
     private var transactionId = -1

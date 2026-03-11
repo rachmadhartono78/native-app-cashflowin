@@ -5,13 +5,13 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import com.example.cashflowin.BaseActivity
 import com.example.cashflowin.databinding.ActivityDebtSimulationBinding
 import java.text.NumberFormat
 import java.util.*
 import kotlin.math.pow
 
-class DebtSimulationActivity : AppCompatActivity() {
+class DebtSimulationActivity : BaseActivity() {
 
     private lateinit var binding: ActivityDebtSimulationBinding
     private var currentAmount = ""

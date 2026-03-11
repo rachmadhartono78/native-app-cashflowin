@@ -3,9 +3,9 @@ package com.example.cashflowin.ui.planning
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.cashflowin.BaseActivity
 import com.example.cashflowin.api.ApiClient
 import com.example.cashflowin.api.model.Debt
 import com.example.cashflowin.databinding.ActivityDebtDetailBinding
@@ -16,10 +16,10 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
 
-class DebtDetailActivity : AppCompatActivity() {
+class DebtDetailActivity : BaseActivity() {
 
     private lateinit var binding: ActivityDebtDetailBinding
-    private val currencyFormat = NumberFormat.getCurrencyInstance(Locale("id", "ID")).apply {
+    private val currencyFormat = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID")).apply {
         maximumFractionDigits = 0
     }
     private var debtId: Int = -1
@@ -148,7 +148,7 @@ class DebtDetailActivity : AppCompatActivity() {
             SimpleDateFormat("yyyy-MM-dd", Locale.US)
         )
         
-        val outputFormat = SimpleDateFormat("dd MMM yyyy", Locale("id", "ID"))
+        val outputFormat = SimpleDateFormat("dd MMM yyyy", Locale.forLanguageTag("id-ID"))
         
         for (format in inputFormats) {
             try {

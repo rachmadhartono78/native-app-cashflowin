@@ -3,6 +3,7 @@ package com.example.cashflowin.ui.asset
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -59,8 +60,19 @@ class AssetAdapter(private val onAssetClick: (AssetInfo) -> Unit) :
                     binding.ivAssetIcon.setImageResource(androidResId)
                 }
             } catch (e: Exception) {
-                binding.iconContainer.setCardBackgroundColor(ContextCompat.getColor(context, R.color.primary_green_light))
-                binding.ivAssetIcon.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.primary_green))
+                // Fallback: resolve warna dari theme aktif (Green atau Indigo)
+                // agar warna asset icon selalu sinkron dengan brand color
+                val typedValue = TypedValue()
+                val theme = context.theme
+
+                theme.resolveAttribute(com.google.android.material.R.attr.colorPrimaryContainer, typedValue, true)
+                val containerColor = typedValue.data
+
+                theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true)
+                val primaryColor = typedValue.data
+
+                binding.iconContainer.setCardBackgroundColor(containerColor)
+                binding.ivAssetIcon.imageTintList = ColorStateList.valueOf(primaryColor)
             }
 
             binding.root.setOnClickListener { onAssetClick(asset) }

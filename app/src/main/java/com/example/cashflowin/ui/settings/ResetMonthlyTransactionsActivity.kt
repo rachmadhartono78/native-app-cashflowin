@@ -5,15 +5,15 @@ import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.example.cashflowin.BaseActivity
 import com.example.cashflowin.api.ApiClient
 import com.example.cashflowin.api.model.ResetMonthlyTransactionRequest
 import com.example.cashflowin.databinding.ActivityResetMonthlyTransactionsBinding
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
-class ResetMonthlyTransactionsActivity : AppCompatActivity() {
+class ResetMonthlyTransactionsActivity : BaseActivity() {
 
     private lateinit var binding: ActivityResetMonthlyTransactionsBinding
 

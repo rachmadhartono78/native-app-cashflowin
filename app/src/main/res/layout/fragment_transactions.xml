@@ -17,8 +17,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
-            app:tabIndicatorColor="@color/primary_green"
-            app:tabSelectedTextColor="@color/primary_green"
+            app:tabIndicatorColor="?attr/colorPrimary"
+            app:tabSelectedTextColor="?attr/colorPrimary"
             app:tabTextColor="@color/text_secondary"
             app:tabIndicatorHeight="2dp"
             app:tabRippleColor="@android:color/transparent">
@@ -65,7 +65,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@android:drawable/ic_menu_my_calendar"
-                    app:tint="@color/primary_green" />
+                    app:tint="?attr/colorPrimary" />
                 <TextView
                     android:id="@+id/tvActiveDateFilter"
                     android:layout_width="wrap_content"

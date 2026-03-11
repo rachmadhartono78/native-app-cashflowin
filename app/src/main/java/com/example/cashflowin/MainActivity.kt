@@ -1,31 +1,33 @@
 package com.example.cashflowin
 
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.view.ViewGroup
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import com.example.cashflowin.BaseActivity
 import com.example.cashflowin.databinding.ActivityMainBinding
 import com.example.cashflowin.ui.auth.LoginActivity
+import com.example.cashflowin.utils.ThemeManager
 import com.example.cashflowin.utils.TokenManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var tokenManager: TokenManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // 1. Paksa Edge-to-Edge dengan style transparan penuh
+        // 1. Enable Edge-to-Edge modern
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
             navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT)
@@ -33,61 +35,47 @@ class MainActivity : AppCompatActivity() {
         
         super.onCreate(savedInstanceState)
 
-        // 2. Hilangkan proteksi contrast agar navigasi sistem benar-benar menyatu
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            window.isNavigationBarContrastEnforced = false
-        }
-        window.navigationBarColor = Color.TRANSPARENT
-        
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.navViewContainer.bringToFront()
-
-        // 3. Update Insets: Kuncinya adalah integrasi navigasi bawah
-        ViewCompat.setOnApplyWindowInsetsListener(binding.activityContainer) { _, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-            
-            // Toolbar tetap di bawah Status Bar
-            binding.appBarLayout.setPadding(0, systemBars.top, 0, 0)
-            
-            val density = resources.displayMetrics.density
-
-            // INTEGRASI NAVIGASI: Buat nav bar menempel ke pinggir dan bawah
-            binding.navViewContainer.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                leftMargin = 0
-                rightMargin = 0
-                bottomMargin = 0
-            }
-            
-            // PENTING: Berikan padding pada BottomNavigationView, bukan containernya
-            // Padding atas (12dp) agar icon tidak mepet lengkungan atas
-            // Padding bawah (navBars.bottom + 8dp) agar teks label tidak terpotong tombol sistem
-            binding.navView.setPadding(
-                0, 
-                (12 * density).toInt(), 
-                0, 
-                navBars.bottom + (8 * density).toInt()
-            )
-
-            // Padding untuk konten fragment agar tidak tertutup bar navigasi
-            // Estimasi tinggi: 64dp (minHeight) + 12dp (padding top) + 8dp (padding bottom) + navBars.bottom
-            val totalBottomPadding = ((64 + 12 + 8) * density).toInt() + navBars.bottom
-            binding.navHostFragmentActivityMain.setPadding(0, 0, 0, totalBottomPadding)
-
-            insets
+        // Pastikan navigasi bar tidak memiliki kontras paksaan agar benar-benar transparan
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            window.isNavigationBarContrastEnforced = false
         }
 
+        setupWindowInsets()
+        
         tokenManager = TokenManager(this)
-        val token = tokenManager.getToken()
-
-        if (token == null) {
+        if (tokenManager.getToken() == null) {
             navigateToLogin()
             return
         }
 
         setupNavigation()
+    }
+
+    private fun setupWindowInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            
+            // Terapkan padding atas untuk AppBarLayout (Status Bar)
+            binding.appBarLayout.updatePadding(top = systemBars.top)
+            
+            // Terapkan padding bawah untuk NavView (Navigation Bar)
+            val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            
+            // Update padding bawah BottomNav agar icon/label tidak tertutup navigation bar sistem
+            binding.navView.updatePadding(bottom = navBars.bottom)
+            
+            // Pastikan FragmentContainerView memiliki padding bawah yang cukup agar konten tidak tertutup BottomNav
+            // Kita gunakan post {} agar tinggi navView sudah terukur dengan benar
+            binding.navViewContainer.post {
+                val navHeight = binding.navViewContainer.height
+                binding.navHostFragmentActivityMain.updatePadding(bottom = navHeight)
+            }
+
+            insets
+        }
     }
 
     private fun setupNavigation() {
@@ -103,16 +91,27 @@ class MainActivity : AppCompatActivity() {
             )
         )
         
-        binding.toolbar.let {
-            setupActionBarWithNavControllerCustom(it, navController, appBarConfiguration)
-        }
-        
+        setSupportActionBar(binding.toolbar)
+        androidx.navigation.ui.NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        // Apply warna bottom navigation sesuai brand color aktif
+        applyNavColors(navView)
     }
 
-    private fun setupActionBarWithNavControllerCustom(toolbar: androidx.appcompat.widget.Toolbar, navController: androidx.navigation.NavController, appBarConfiguration: AppBarConfiguration) {
-        setSupportActionBar(toolbar)
-        androidx.navigation.ui.NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration)
+    /**
+     * Pilih color state list yang tepat untuk BottomNavigationView.
+     * Color state list di XML tidak bisa resolve ?attr/colorPrimary,
+     * jadi kita terapkan secara programmatic di sini berdasarkan brand.
+     */
+    private fun applyNavColors(navView: BottomNavigationView) {
+        val selectorRes = when (ThemeManager.getBrand(this)) {
+            ThemeManager.BRAND_INDIGO -> R.color.bottom_nav_selector_indigo
+            else                      -> R.color.bottom_nav_selector
+        }
+        val colorStateList = ContextCompat.getColorStateList(this, selectorRes)
+        navView.itemIconTintList = colorStateList
+        navView.itemTextColor   = colorStateList
     }
 
     override fun onSupportNavigateUp(): Boolean {

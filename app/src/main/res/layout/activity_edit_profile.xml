@@ -42,7 +42,7 @@
                 app:cardCornerRadius="50dp"
                 app:cardElevation="0dp"
                 app:strokeWidth="2dp"
-                app:strokeColor="@color/primary_green_light">
+                app:strokeColor="?attr/colorPrimaryContainer">
                 <ImageView
                     android:id="@+id/ivProfileLarge"
                     android:layout_width="match_parent"
@@ -79,8 +79,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Nama Lengkap"
-                        app:hintTextColor="@color/primary_green"
-                        app:boxStrokeColor="@color/primary_green"
+                        app:hintTextColor="?attr/colorPrimary"
+                        app:boxStrokeColor="?attr/colorPrimary"
                         app:startIconDrawable="@android:drawable/ic_menu_myplaces"
                         app:startIconTint="@color/text_secondary"
                         style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
@@ -99,8 +99,8 @@
                         android:layout_height="wrap_content"
                         android:hint="Email"
                         android:layout_marginTop="16dp"
-                        app:hintTextColor="@color/primary_green"
-                        app:boxStrokeColor="@color/primary_green"
+                        app:hintTextColor="?attr/colorPrimary"
+                        app:boxStrokeColor="?attr/colorPrimary"
                         app:startIconDrawable="@android:drawable/ic_dialog_email"
                         app:startIconTint="@color/text_secondary"
                         style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
@@ -121,7 +121,7 @@
                         android:text="Simpan Perubahan"
                         android:layout_marginTop="24dp"
                         app:cornerRadius="16dp"
-                        android:backgroundTint="@color/primary_green"
+                        android:backgroundTint="?attr/colorPrimary"
                         android:fontFamily="sans-serif-black"
                         android:textAllCaps="false" />
                 </LinearLayout>
@@ -209,8 +209,8 @@
                         android:layout_marginTop="24dp"
                         app:cornerRadius="16dp"
                         style="@style/Widget.Material3.Button.TonalButton"
-                        android:textColor="@color/primary_green"
-                        android:backgroundTint="@color/primary_green_light"
+                        android:textColor="?attr/colorPrimary"
+                        android:backgroundTint="?attr/colorPrimaryContainer"
                         android:fontFamily="sans-serif-black"
                         android:textAllCaps="false" />
                 </LinearLayout>

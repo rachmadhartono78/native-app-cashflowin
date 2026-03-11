@@ -1,11 +1,11 @@
 package com.example.cashflowin.ui.planning
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import com.example.cashflowin.BaseActivity
 import com.example.cashflowin.databinding.ActivityBasicCalculatorBinding
 import java.text.DecimalFormat
 
-class BasicCalculatorActivity : AppCompatActivity() {
+class BasicCalculatorActivity : BaseActivity() {
 
     private lateinit var binding: ActivityBasicCalculatorBinding
     private var expression = ""

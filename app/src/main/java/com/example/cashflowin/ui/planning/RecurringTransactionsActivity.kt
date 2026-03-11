@@ -4,16 +4,16 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.cashflowin.BaseActivity
 import com.example.cashflowin.api.ApiClient
 import com.example.cashflowin.databinding.ActivityRecurringTransactionsBinding
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
 
-class RecurringTransactionsActivity : AppCompatActivity() {
+class RecurringTransactionsActivity : BaseActivity() {
 
     private lateinit var binding: ActivityRecurringTransactionsBinding
     private val format = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID")).apply {

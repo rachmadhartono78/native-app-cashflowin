@@ -58,7 +58,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Pengelola Keuangan"
-                        android:textColor="@color/primary_green"
+                        android:textColor="?attr/colorPrimary"
                         android:textSize="14sp" />
                 </LinearLayout>
             </LinearLayout>
@@ -103,7 +103,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Total Aset"
-                            android:textColor="@color/primary_green"
+                            android:textColor="?attr/colorPrimary"
                             android:textSize="11sp" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -329,9 +329,107 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:checked="true"
-                            app:thumbTint="@color/primary_green"
-                            app:trackTint="@color/primary_green_light" />
+                            app:thumbTint="?attr/colorPrimary"
+                            app:trackTint="?attr/colorPrimaryContainer" />
                     </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ─────────────────────────────────────────────── -->
+            <!-- Section: Tema Warna (Brand Color Picker)         -->
+            <!-- ─────────────────────────────────────────────── -->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tema Warna"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="4dp" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/border_light"
+                app:cardBackgroundColor="@color/white">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <!-- Label atas -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@android:drawable/ic_menu_manage"
+                            app:tint="@color/text_secondary" />
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="16dp"
+                            android:text="Pilih Warna Aplikasi"
+                            android:textColor="@color/text_main"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <!--
+                        MaterialButtonToggleGroup: single selection mode.
+                        Dua pilihan: Green (default) dan Cashflowin Web (Indigo).
+                        ID dipakai oleh SettingsFragment untuk read & write pilihan.
+                    -->
+                    <com.google.android.material.button.MaterialButtonToggleGroup
+                        android:id="@+id/toggleBrandColor"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:singleSelection="true"
+                        app:selectionRequired="true">
+
+                        <!-- Tombol pilihan 1: Green -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnBrandGreen"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="🟢  Green"
+                            android:textSize="13sp" />
+
+                        <!-- Tombol pilihan 2: Cashflowin Web (Indigo) -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnBrandIndigo"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="🟣  Web Style"
+                            android:textSize="13sp" />
+
+                    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+                    <!-- Keterangan tema aktif -->
+                    <TextView
+                        android:id="@+id/tvBrandColorHint"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Tema aktif: Green — restart ringan diterapkan saat switch"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="11sp"
+                        android:layout_marginTop="8dp" />
+
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

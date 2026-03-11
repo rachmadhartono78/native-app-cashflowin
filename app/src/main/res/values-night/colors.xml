@@ -32,4 +32,30 @@
     <color name="expense">#FB7185</color>
     <color name="white">#0F172A</color> <!-- In dark mode, card backgrounds often use surface color -->
     <color name="black">#FFFFFF</color>
+
+    <!-- ============================================ -->
+    <!-- Cashflowin Web Theme — Indigo/Purple (Dark)  -->
+    <!-- ============================================ -->
+
+    <!-- Material 3 Token Mapping — Indigo Dark -->
+    <!-- primary-400 dipakai sebagai primary di dark agar kontras lebih baik -->
+    <color name="md_theme_indigo_primary">#818CF8</color>
+    <color name="md_theme_indigo_onPrimary">#1E1B4B</color>
+    <color name="md_theme_indigo_primaryContainer">#3730A3</color>
+    <color name="md_theme_indigo_onPrimaryContainer">#E0E7FF</color>
+    <color name="md_theme_indigo_secondary">#C084FC</color>
+    <color name="md_theme_indigo_onSecondary">#3B0764</color>
+    <color name="md_theme_indigo_secondaryContainer">#581C87</color>
+    <color name="md_theme_indigo_onSecondaryContainer">#F5F3FF</color>
+    <!-- Background: navy gelap sesuai spec colour.md -->
+    <color name="md_theme_indigo_background">#020617</color>
+    <color name="md_theme_indigo_surface">#0F0F1A</color>
+    <color name="md_theme_indigo_onSurface">#E2E8F0</color>
+    <color name="md_theme_indigo_surfaceVariant">#1E1B4B</color>
+    <color name="md_theme_indigo_onSurfaceVariant">#A5B4FC</color>
+    <color name="md_theme_indigo_outline">#4338CA</color>
+    <color name="md_theme_indigo_tertiary">#A5B4FC</color>
+    <color name="md_theme_indigo_onTertiary">#1E1B4B</color>
+    <color name="md_theme_indigo_tertiaryContainer">#3730A3</color>
+    <color name="md_theme_indigo_onTertiaryContainer">#E0E7FF</color>
 </resources>

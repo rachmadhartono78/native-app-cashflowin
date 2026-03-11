@@ -33,7 +33,7 @@
                 android:layout_height="48dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_wallet_foreground"
-                app:tint="@color/primary_green" />
+                app:tint="?attr/colorPrimary" />
         </com.google.android.material.card.MaterialCardView>
 
         <TextView
@@ -95,7 +95,7 @@
             android:fontFamily="sans-serif-black"
             android:textSize="16sp"
             app:cornerRadius="16dp"
-            android:backgroundTint="@color/primary_green" />
+            android:backgroundTint="?attr/colorPrimary" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLater"

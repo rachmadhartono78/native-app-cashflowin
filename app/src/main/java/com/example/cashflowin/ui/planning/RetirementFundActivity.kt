@@ -2,13 +2,13 @@ package com.example.cashflowin.ui.planning
 
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
+import com.example.cashflowin.BaseActivity
 import com.example.cashflowin.databinding.ActivityRetirementFundBinding
 import com.example.cashflowin.utils.CurrencyTextWatcher
 import java.text.NumberFormat
 import java.util.Locale
 
-class RetirementFundActivity : AppCompatActivity() {
+class RetirementFundActivity : BaseActivity() {
 
     private lateinit var binding: ActivityRetirementFundBinding
     private val format = NumberFormat.getCurrencyInstance(Locale("id", "ID"))

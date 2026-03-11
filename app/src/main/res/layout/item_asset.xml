@@ -7,7 +7,7 @@
     android:layout_marginBottom="12dp"
     app:cardCornerRadius="16dp"
     app:cardElevation="0dp"
-    app:cardBackgroundColor="@color/white"
+    app:cardBackgroundColor="?attr/colorSurface"
     app:strokeWidth="1dp"
     app:strokeColor="#F1F5F9"
     android:clickable="true"
@@ -24,7 +24,7 @@
             android:layout_height="42dp"
             app:cardCornerRadius="14dp"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="#F8FAFC"
+            app:cardBackgroundColor="?attr/colorSurfaceVariant"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
@@ -86,7 +86,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Aset Utama"
-                android:textColor="@color/primary_green"
+                android:textColor="?attr/colorPrimary"
                 android:textSize="10sp"
                 android:fontFamily="sans-serif-black" />
         </LinearLayout>

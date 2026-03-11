@@ -57,7 +57,7 @@
                     app:cardCornerRadius="22dp"
                     app:cardElevation="0dp"
                     app:strokeWidth="1.5dp"
-                    app:strokeColor="@color/primary_green_light"
+                    app:strokeColor="?attr/colorPrimaryContainer"
                     android:clickable="true"
                     android:focusable="true"
                     android:foreground="?attr/selectableItemBackground">
@@ -75,7 +75,7 @@
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="28dp"
                 app:cardElevation="0dp"
-                app:cardBackgroundColor="@color/primary_green">
+                app:cardBackgroundColor="?attr/colorPrimary">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -202,7 +202,7 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@android:drawable/ic_input_add"
-                            app:tint="@color/primary_green" />
+                            app:tint="?attr/colorPrimary" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -225,7 +225,7 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@android:drawable/ic_menu_agenda"
-                            app:tint="@color/primary_green" />
+                            app:tint="?attr/colorPrimary" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -248,7 +248,7 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@android:drawable/ic_menu_myplaces"
-                            app:tint="@color/primary_green" />
+                            app:tint="?attr/colorPrimary" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -271,7 +271,7 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@android:drawable/ic_menu_more"
-                            app:tint="@color/primary_green" />
+                            app:tint="?attr/colorPrimary" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -296,7 +296,7 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_sync"
-                            app:tint="@color/primary_green" />
+                            app:tint="?attr/colorPrimary" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -466,7 +466,7 @@
                             android:layout_height="24dp"
                             android:layout_gravity="center"
                             android:src="@android:drawable/ic_menu_info_details"
-                            app:tint="@color/primary_green" />
+                            app:tint="?attr/colorPrimary" />
                     </com.google.android.material.card.MaterialCardView>
                     <TextView
                         android:layout_width="wrap_content"
@@ -498,7 +498,7 @@
                     android:layout_centerVertical="true"
                     android:layout_alignParentEnd="true"
                     android:text="Lihat Semua"
-                    android:textColor="@color/primary_green"
+                    android:textColor="?attr/colorPrimary"
                     android:textSize="13sp"
                     android:fontFamily="sans-serif-black" />
             </RelativeLayout>
@@ -522,7 +522,7 @@
         android:layout_margin="24dp"
         android:src="@android:drawable/ic_input_add"
         app:tint="@color/white"
-        app:backgroundTint="@color/primary_green"
+        app:backgroundTint="?attr/colorPrimary"
         app:elevation="12dp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

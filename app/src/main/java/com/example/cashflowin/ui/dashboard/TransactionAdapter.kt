@@ -21,11 +21,11 @@ class TransactionAdapter(
 
     private var transactions: List<TransactionItem> = listOf()
 
-    private val currencyFormat = NumberFormat.getCurrencyInstance(Locale("id", "ID")).apply {
+    private val currencyFormat = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID")).apply {
         maximumFractionDigits = 0
     }
     private val inputDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-    private val outputDateFormat = SimpleDateFormat("dd MMM yyyy", Locale("id", "ID"))
+    private val outputDateFormat = SimpleDateFormat("dd MMM yyyy", Locale.forLanguageTag("id-ID"))
     private val isoFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", Locale.US).apply {
         timeZone = TimeZone.getTimeZone("UTC")
     }

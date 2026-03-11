@@ -51,7 +51,7 @@
                             android:layout_alignParentEnd="true"
                             app:cardCornerRadius="12dp"
                             app:cardElevation="0dp"
-                            app:cardBackgroundColor="@color/primary_green_light">
+                            app:cardBackgroundColor="?attr/colorPrimaryContainer">
                             <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -63,12 +63,12 @@
                                     android:layout_width="14dp"
                                     android:layout_height="14dp"
                                     android:src="@drawable/ic_trending_up"
-                                    app:tint="@color/primary_green" />
+                                    app:tint="?attr/colorPrimary" />
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="+2.5%"
-                                    android:textColor="@color/primary_green"
+                                    android:textColor="?attr/colorPrimary"
                                     android:textSize="12sp"
                                     android:textStyle="bold"
                                     android:layout_marginStart="4dp" />
@@ -214,8 +214,8 @@
                         app:icon="@drawable/ic_sync"
                         app:iconGravity="textStart"
                         app:cornerRadius="16dp"
-                        android:backgroundTint="@color/primary_green_light"
-                        android:textColor="@color/primary_green"
+                        android:backgroundTint="?attr/colorPrimaryContainer"
+                        android:textColor="?attr/colorPrimary"
                         android:fontFamily="sans-serif-black" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -244,7 +244,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Lihat Semua"
-                    android:textColor="@color/primary_green"
+                    android:textColor="?attr/colorPrimary"
                     android:textSize="14sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -300,7 +300,7 @@
         android:layout_margin="24dp"
         android:src="@android:drawable/ic_input_add"
         app:tint="@color/white"
-        app:backgroundTint="@color/primary_green"
+        app:backgroundTint="?attr/colorPrimary"
         app:elevation="8dp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -6,14 +6,14 @@ import android.util.Patterns
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
+import com.example.cashflowin.BaseActivity
 import com.example.cashflowin.MainActivity
 import com.example.cashflowin.api.ApiClient
 import com.example.cashflowin.api.AuthRepository
 import com.example.cashflowin.databinding.ActivityLoginBinding
 import com.example.cashflowin.utils.TokenManager
 
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : BaseActivity() {
 
     private lateinit var binding: ActivityLoginBinding
     private val viewModel: AuthViewModel by viewModels {

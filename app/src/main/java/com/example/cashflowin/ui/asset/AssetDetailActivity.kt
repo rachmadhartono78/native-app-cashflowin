@@ -1,16 +1,14 @@
 package com.example.cashflowin.ui.asset
 
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.cashflowin.R
+import com.example.cashflowin.BaseActivity
 import com.example.cashflowin.api.ApiClient
 import com.example.cashflowin.api.AssetRepository
 import com.example.cashflowin.databinding.ActivityAssetDetailBinding
@@ -18,7 +16,7 @@ import com.example.cashflowin.ui.dashboard.TransactionAdapter
 import java.text.NumberFormat
 import java.util.Locale
 
-class AssetDetailActivity : AppCompatActivity() {
+class AssetDetailActivity : BaseActivity() {
 
     private lateinit var binding: ActivityAssetDetailBinding
     private val viewModel: AssetDetailViewModel by viewModels {
@@ -29,7 +27,8 @@ class AssetDetailActivity : AppCompatActivity() {
     private var assetName: String = ""
     private var assetType: String = ""
     private var assetAmount: String = "0"
-    private var assetColor: String = "#00AA5B"
+    // assetColor kosong = fallback ke colorPrimary dari tema aktif
+    private var assetColor: String = ""
     private var assetIcon: String = "ic_menu_gallery"
 
     private lateinit var transactionAdapter: TransactionAdapter
@@ -47,7 +46,8 @@ class AssetDetailActivity : AppCompatActivity() {
         assetName = intent.getStringExtra("EXTRA_ASSET_NAME") ?: ""
         assetType = intent.getStringExtra("EXTRA_ASSET_TYPE") ?: ""
         assetAmount = intent.getStringExtra("EXTRA_ASSET_AMOUNT") ?: "0"
-        assetColor = intent.getStringExtra("EXTRA_ASSET_COLOR") ?: "#00AA5B"
+        // Jika tidak ada custom color dari API, biarkan kosong → akan fallback ke colorPrimary
+        assetColor = intent.getStringExtra("EXTRA_ASSET_COLOR") ?: ""
         assetIcon = intent.getStringExtra("EXTRA_ASSET_ICON") ?: "ic_menu_gallery"
 
         setupUI()
@@ -62,15 +62,23 @@ class AssetDetailActivity : AppCompatActivity() {
         binding.tvAssetType.text = assetType
         
         val amount = assetAmount.toDoubleOrNull() ?: 0.0
-        val format = NumberFormat.getCurrencyInstance(Locale("id", "ID")).apply {
+        val format = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID")).apply {
             maximumFractionDigits = 0
         }
         binding.tvAssetBalance.text = format.format(amount)
 
         try {
-            val color = Color.parseColor(assetColor)
-            binding.cardAsset.setCardBackgroundColor(color)
-            
+            val cardColor = if (assetColor.isNotEmpty()) {
+                // Asset punya custom color — pakai warna pilihannya sendiri
+                Color.parseColor(assetColor)
+            } else {
+                // Tidak ada custom color → resolve dari aktif theme (Green atau Indigo)
+                val tv = TypedValue()
+                theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, tv, true)
+                tv.data
+            }
+            binding.cardAsset.setCardBackgroundColor(cardColor)
+
             val resId = resources.getIdentifier(assetIcon, "drawable", packageName)
             val androidResId = resources.getIdentifier(assetIcon, "drawable", "android")
             if (resId != 0) {

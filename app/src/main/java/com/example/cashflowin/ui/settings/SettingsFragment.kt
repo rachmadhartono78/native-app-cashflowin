@@ -19,6 +19,7 @@ import com.example.cashflowin.api.DashboardRepository
 import com.example.cashflowin.databinding.FragmentSettingsBinding
 import com.example.cashflowin.ui.auth.LoginActivity
 import com.example.cashflowin.ui.dashboard.DashboardState
+import com.example.cashflowin.utils.ThemeManager
 import com.example.cashflowin.utils.TokenManager
 import com.google.android.material.button.MaterialButton
 import java.text.NumberFormat
@@ -63,10 +64,25 @@ class SettingsFragment : Fragment() {
 
     private fun setupUI() {
         binding.tvProfileName.text = tokenManager.getUserName() ?: "User"
-        
+
         // Sync dark mode switch state
         val isDarkMode = AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES
         binding.switchDarkMode.isChecked = isDarkMode
+
+        // Sync brand color toggle state ke pilihan yang tersimpan
+        val activeBrand = ThemeManager.getBrand(requireContext())
+        when (activeBrand) {
+            ThemeManager.BRAND_INDIGO -> {
+                binding.toggleBrandColor.check(R.id.btnBrandIndigo)
+                binding.tvBrandColorHint.text =
+                    "🟣 Tema aktif: Cashflowin Web (Indigo) — restart ringan diterapkan saat switch"
+            }
+            else -> {
+                binding.toggleBrandColor.check(R.id.btnBrandGreen)
+                binding.tvBrandColorHint.text =
+                    "🟢 Tema aktif: Green — restart ringan diterapkan saat switch"
+            }
+        }
     }
 
     private fun setupObservers() {
@@ -137,6 +153,46 @@ class SettingsFragment : Fragment() {
             } else {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             }
+        }
+
+        // Brand Color Picker: listener untuk setiap perubahan pilihan di toggle group.
+        // Saat user tap tombol berbeda:
+        //   1. Cek apakah berbeda dari yang aktif sekarang (hindari recreate jika sama)
+        //   2. Simpan pilihan baru ke SharedPreferences via ThemeManager
+        //   3. Panggil requireActivity().recreate() — theme baru diterapkan di onCreate
+        binding.toggleBrandColor.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (!isChecked) return@addOnButtonCheckedListener // abaikan event uncheck
+
+            val newBrand = when (checkedId) {
+                R.id.btnBrandIndigo -> ThemeManager.BRAND_INDIGO
+                else                -> ThemeManager.BRAND_GREEN
+            }
+
+            val currentBrand = ThemeManager.getBrand(requireContext())
+            if (newBrand == currentBrand) return@addOnButtonCheckedListener // tidak ada perubahan
+
+            // Simpan pilihan baru
+            ThemeManager.saveBrand(requireContext(), newBrand)
+
+            // Beri tahu user sebelum app menutup/relaunch akibat pergantian ikon launcher
+            val hintText = when (newBrand) {
+                ThemeManager.BRAND_INDIGO ->
+                    "🟣 Tema berhasil diubah! Aplikasi akan menyesuaikan dan menutup sebentar — silakan buka kembali."
+                else ->
+                    "🟢 Tema berhasil diubah! Aplikasi akan menyesuaikan dan menutup sebentar — silakan buka kembali."
+            }
+            binding.tvBrandColorHint.text = hintText
+
+            // Fade-out root fragment (150ms), lalu recreate()
+            // BaseActivity akan apply fade-in saat Activity baru muncul
+            // → efek: konten lama fade out → konten baru fade in (smooth & premium)
+            binding.root.animate()
+                .alpha(0f)
+                .setDuration(150)
+                .withEndAction {
+                    requireActivity().recreate()
+                }
+                .start()
         }
     }
 

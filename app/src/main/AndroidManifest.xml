@@ -20,22 +20,54 @@
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
         android:theme="@style/Theme.Cashflowin">
+
         <activity
             android:name=".MainActivity"
-            android:exported="true"
+            android:exported="false"
             android:theme="@style/Theme.Cashflowin.NoActionBar">
         </activity>
         
         <activity
             android:name=".ui.auth.LoginActivity"
-            android:exported="true"
+            android:exported="false"
             android:label="@string/app_name"
             android:theme="@style/Theme.Cashflowin.NoActionBar">
+        </activity>
+
+        <!--
+             DYNAMIC LAUNCHER ICON — activity-alias
+             PENTING: targetActivity harus menggunakan Full Path jika alias di root package
+        -->
+
+        <!-- Alias 1: Green (Default) -->
+        <activity-alias
+            android:name="com.example.cashflowin.AliasCashflowinGreen"
+            android:targetActivity="com.example.cashflowin.ui.auth.LoginActivity"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_launcher"
+            android:roundIcon="@mipmap/ic_launcher_round"
+            android:enabled="true"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
+        </activity-alias>
+
+        <!-- Alias 2: Indigo -->
+        <activity-alias
+            android:name="com.example.cashflowin.AliasCashflowinIndigo"
+            android:targetActivity="com.example.cashflowin.ui.auth.LoginActivity"
+            android:label="@string/app_name"
+            android:icon="@mipmap/ic_launcher_indigo"
+            android:roundIcon="@mipmap/ic_launcher_indigo_round"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
 
         <activity
             android:name=".ui.auth.RegisterActivity"

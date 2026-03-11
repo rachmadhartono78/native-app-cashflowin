@@ -3,10 +3,10 @@ package com.example.cashflowin.ui.planning
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import com.example.cashflowin.BaseActivity
 import com.example.cashflowin.databinding.ActivityCalculatorBinding
 
-class CalculatorActivity : AppCompatActivity() {
+class CalculatorActivity : BaseActivity() {
 
     private lateinit var binding: ActivityCalculatorBinding
 

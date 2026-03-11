@@ -55,4 +55,56 @@
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowNoTitle">true</item>
     </style>
+
+    <!-- ================================================== -->
+    <!-- Theme Tambahan: Cashflowin Web Style (Indigo/Purple) -->
+    <!-- Dark Mode Override                                  -->
+    <!-- ================================================== -->
+
+    <!--
+        Dark Mode — Indigo theme.
+        values-night folder: Android otomatis pakai file ini saat night mode aktif.
+        Primary pakai indigo-400 (#818CF8) agar lebih cerah di latar gelap.
+        Background navy pekat (#020617) sesuai spec colour.md.
+    -->
+    <style name="Theme.Cashflowin.Indigo" parent="Theme.Material3.DayNight.NoActionBar">
+
+        <!-- Primary: Indigo-400 di dark agar kontras AA 4.5:1 terjaga -->
+        <item name="colorPrimary">@color/md_theme_indigo_primary</item>
+        <item name="colorOnPrimary">@color/md_theme_indigo_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/md_theme_indigo_primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/md_theme_indigo_onPrimaryContainer</item>
+
+        <!-- Secondary: Purple-400 (#C084FC) -->
+        <item name="colorSecondary">@color/md_theme_indigo_secondary</item>
+        <item name="colorOnSecondary">@color/md_theme_indigo_onSecondary</item>
+        <item name="colorSecondaryContainer">@color/md_theme_indigo_secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/md_theme_indigo_onSecondaryContainer</item>
+
+        <!-- Tertiary: Indigo-300 (#A5B4FC) -->
+        <item name="colorTertiary">@color/md_theme_indigo_tertiary</item>
+        <item name="colorOnTertiary">@color/md_theme_indigo_onTertiary</item>
+        <item name="colorTertiaryContainer">@color/md_theme_indigo_tertiaryContainer</item>
+        <item name="colorOnTertiaryContainer">@color/md_theme_indigo_onTertiaryContainer</item>
+
+        <!-- System bars: dark mode style -->
+        <item name="android:statusBarColor">?attr/colorSurface</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">?attr/colorSurface</item>
+
+        <!-- Surface & Background: navy gelap -->
+        <item name="colorSurface">@color/md_theme_indigo_surface</item>
+        <item name="colorOnSurface">@color/md_theme_indigo_onSurface</item>
+        <item name="colorSurfaceVariant">@color/md_theme_indigo_surfaceVariant</item>
+        <item name="colorOnSurfaceVariant">@color/md_theme_indigo_onSurfaceVariant</item>
+        <item name="colorOutline">@color/md_theme_indigo_outline</item>
+        <item name="colorBackground">@color/md_theme_indigo_background</item>
+        <item name="android:colorBackground">@color/md_theme_indigo_background</item>
+    </style>
+
+    <style name="Theme.Cashflowin.Indigo.NoActionBar" parent="Theme.Cashflowin.Indigo">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
 </resources>

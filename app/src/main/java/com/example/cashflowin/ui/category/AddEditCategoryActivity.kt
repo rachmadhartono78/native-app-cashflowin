@@ -13,10 +13,10 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.cashflowin.BaseActivity
 import com.example.cashflowin.R
 import com.example.cashflowin.api.ApiClient
 import com.example.cashflowin.api.CategoryRepository
@@ -24,7 +24,7 @@ import com.example.cashflowin.databinding.ActivityAddEditCategoryBinding
 import com.example.cashflowin.utils.TokenManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 
-class AddEditCategoryActivity : AppCompatActivity() {
+class AddEditCategoryActivity : BaseActivity() {
 
     private lateinit var binding: ActivityAddEditCategoryBinding
     private val viewModel: AddEditCategoryViewModel by viewModels {

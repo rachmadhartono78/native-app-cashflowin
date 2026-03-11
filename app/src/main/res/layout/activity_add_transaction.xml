@@ -221,7 +221,7 @@
                 app:cornerRadius="12dp"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
-                android:backgroundTint="@color/primary_green" />
+                android:backgroundTint="?attr/colorPrimary" />
 
             <ProgressBar
                 android:id="@+id/progressBar"

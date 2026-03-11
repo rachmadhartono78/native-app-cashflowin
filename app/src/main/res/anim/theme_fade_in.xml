@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Animasi fade-in untuk transisi pergantian tema.
+    Durasi: 280ms dengan interpolator AccelerateDecelerate
+    agar transisi terasa natural dan tidak kaku.
+    Dipakai oleh BaseActivity saat theme baru diterapkan.
+-->
+<alpha xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="280"
+    android:fromAlpha="0.0"
+    android:toAlpha="1.0"
+    android:interpolator="@android:anim/accelerate_decelerate_interpolator" />

@@ -45,4 +45,47 @@
     <color name="textPrimary">#1E293B</color>
     <color name="textSecondary">#64748B</color>
     <color name="divider">#F1F5F9</color>
+
+    <!-- ============================================ -->
+    <!-- Cashflowin Web Theme — Indigo/Purple (Light) -->
+    <!-- ============================================ -->
+
+    <!-- Primary Ramp: Indigo -->
+    <color name="indigo_50">#EEF2FF</color>
+    <color name="indigo_100">#E0E7FF</color>
+    <color name="indigo_200">#C7D2FE</color>
+    <color name="indigo_300">#A5B4FC</color>
+    <color name="indigo_400">#818CF8</color>
+    <color name="indigo_500">#6366F1</color>
+    <color name="indigo_600">#4F46E5</color>
+    <color name="indigo_700">#4338CA</color>
+    <color name="indigo_800">#3730A3</color>
+    <color name="indigo_900">#312E81</color>
+
+    <!-- Secondary Ramp: Purple -->
+    <color name="purple_300">#D8B4FE</color>
+    <color name="purple_400">#C084FC</color>
+    <color name="purple_500">#A855F7</color>
+    <color name="purple_600">#9333EA</color>
+    <color name="purple_700">#7E22CE</color>
+
+    <!-- Material 3 Token Mapping — Indigo Light -->
+    <color name="md_theme_indigo_primary">#6366F1</color>
+    <color name="md_theme_indigo_onPrimary">#FFFFFF</color>
+    <color name="md_theme_indigo_primaryContainer">#E0E7FF</color>
+    <color name="md_theme_indigo_onPrimaryContainer">#312E81</color>
+    <color name="md_theme_indigo_secondary">#A855F7</color>
+    <color name="md_theme_indigo_onSecondary">#FFFFFF</color>
+    <color name="md_theme_indigo_secondaryContainer">#F5F3FF</color>
+    <color name="md_theme_indigo_onSecondaryContainer">#3B0764</color>
+    <color name="md_theme_indigo_background">#F8FAFC</color>
+    <color name="md_theme_indigo_surface">#FFFFFF</color>
+    <color name="md_theme_indigo_onSurface">#1E293B</color>
+    <color name="md_theme_indigo_surfaceVariant">#EEF2FF</color>
+    <color name="md_theme_indigo_onSurfaceVariant">#4338CA</color>
+    <color name="md_theme_indigo_outline">#C7D2FE</color>
+    <color name="md_theme_indigo_tertiary">#818CF8</color>
+    <color name="md_theme_indigo_onTertiary">#FFFFFF</color>
+    <color name="md_theme_indigo_tertiaryContainer">#EEF2FF</color>
+    <color name="md_theme_indigo_onTertiaryContainer">#312E81</color>
 </resources>

@@ -198,7 +198,7 @@
                 android:textColor="#FFFFFF"
                 app:cornerRadius="12dp"
                 android:fontFamily="sans-serif-black"
-                android:backgroundTint="@color/primary_green"
+                android:backgroundTint="?attr/colorPrimary"
                 android:layout_marginBottom="32dp" />
 
         </LinearLayout>

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8FAFC">
+    android:background="?attr/colorBackground">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBar"
@@ -40,7 +40,7 @@
                 android:layout_height="160dp"
                 app:cardCornerRadius="24dp"
                 app:cardElevation="0dp"
-                app:cardBackgroundColor="@color/primary_green">
+                app:cardBackgroundColor="?attr/colorPrimary">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -148,6 +148,6 @@
         android:textColor="@color/white"
         app:icon="@android:drawable/ic_menu_edit"
         app:iconTint="@color/white"
-        app:backgroundTint="@color/primary_green" />
+        app:backgroundTint="?attr/colorPrimary" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

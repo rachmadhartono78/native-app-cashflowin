@@ -4,14 +4,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.cashflowin.BaseActivity
 import com.example.cashflowin.api.ApiClient
 import com.example.cashflowin.databinding.ActivityGoalsBinding
 import kotlinx.coroutines.launch
 
-class GoalsActivity : AppCompatActivity() {
+class GoalsActivity : BaseActivity() {
 
     private lateinit var binding: ActivityGoalsBinding
     private lateinit var goalAdapter: GoalAdapter

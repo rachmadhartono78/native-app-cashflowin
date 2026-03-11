@@ -10,10 +10,10 @@ import android.text.style.ForegroundColorSpan
 import android.text.style.UnderlineSpan
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
+import com.example.cashflowin.BaseActivity
 import com.example.cashflowin.databinding.ActivityZakatCalculatorBinding
 import com.example.cashflowin.utils.CurrencyTextWatcher
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +23,7 @@ import org.jsoup.Jsoup
 import java.text.NumberFormat
 import java.util.*
 
-class ZakatCalculatorActivity : AppCompatActivity() {
+class ZakatCalculatorActivity : BaseActivity() {
 
     private lateinit var binding: ActivityZakatCalculatorBinding
     private val localeID = Locale.forLanguageTag("id-ID")

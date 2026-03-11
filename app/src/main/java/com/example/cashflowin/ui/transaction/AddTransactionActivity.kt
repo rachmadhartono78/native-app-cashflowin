@@ -7,7 +7,7 @@ import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
+import com.example.cashflowin.BaseActivity
 import com.example.cashflowin.api.ApiClient
 import com.example.cashflowin.api.TransactionRepository
 import com.example.cashflowin.api.model.AssetInfo
@@ -22,7 +22,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-class AddTransactionActivity : AppCompatActivity() {
+class AddTransactionActivity : BaseActivity() {
 
     private lateinit var binding: ActivityAddTransactionBinding
     private val viewModel: AddTransactionViewModel by viewModels {
