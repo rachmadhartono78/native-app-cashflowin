@@ -80,7 +80,7 @@ class TransactionAdapter(
 
             binding.tvDate.text = "$dateStr$timeStr"
             
-            val amountValue = (transaction.amount.toDoubleOrNull() ?: 0.0)
+            val amountValue = transaction.amount
             val formattedAmount = currencyFormat.format(amountValue)
 
             val categoryColor = transaction.category?.color

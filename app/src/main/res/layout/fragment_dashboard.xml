@@ -4,121 +4,121 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_gray">
+    android:background="#F5F7FA">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        app:elevation="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvGreeting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Selamat Pagi,"
+                    android:textColor="#64748B"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tvUserName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="User"
+                    android:textColor="#1E293B"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/btnProfile"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_circle_icon"
+                android:src="@android:drawable/ic_menu_myplaces"
+                app:tint="@color/primary_green" />
+        </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:paddingBottom="120dp"
-        android:overScrollMode="never">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:paddingHorizontal="16dp"
+            android:paddingBottom="80dp">
 
-            <!-- Header Section -->
-            <RelativeLayout
+            <!-- Card Ringkasan Saldo -->
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="24dp">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-                    <TextView
-                        android:id="@+id/tvGreeting"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Selamat Pagi,"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="13sp"
-                        android:fontFamily="sans-serif" />
-                    <TextView
-                        android:id="@+id/tvUserName"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Rachmad"
-                        android:textColor="@color/text_main"
-                        android:textSize="18sp"
-                        android:fontFamily="sans-serif-black" />
-                </LinearLayout>
-
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/btnProfile"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    app:cardCornerRadius="22dp"
-                    app:cardElevation="0dp"
-                    app:strokeWidth="1.5dp"
-                    app:strokeColor="@color/primary_green_light"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackground">
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/avatar_1"
-                        android:scaleType="centerCrop" />
-                </com.google.android.material.card.MaterialCardView>
-            </RelativeLayout>
-
-            <!-- Main Balance Card -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="28dp"
-                app:cardElevation="0dp"
-                app:cardBackgroundColor="@color/primary_green">
+                app:cardCornerRadius="20dp"
+                app:cardElevation="4dp"
+                android:layout_marginVertical="8dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="24dp">
+                    android:background="@drawable/gradient_dashboard_card"
+                    android:padding="20dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Total Saldo"
+                            android:textColor="#CCFFFFFF"
+                            android:textSize="14sp" />
+
+                        <ImageButton
+                            android:id="@+id/btnHideBalance"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_alignParentEnd="true"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:src="@android:drawable/ic_menu_view"
+                            app:tint="@color/white" />
+                    </RelativeLayout>
 
                     <TextView
+                        android:id="@+id/tvTotalBalance"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Total Saldo"
-                        android:textColor="#CCFFFFFF"
-                        android:textSize="13sp"
-                        android:fontFamily="sans-serif-medium" />
+                        android:text="Rp 0"
+                        android:textColor="@color/white"
+                        android:textSize="28sp"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#33FFFFFF"
+                        android:layout_marginVertical="16dp" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginTop="4dp">
-                        <TextView
-                            android:id="@+id/tvTotalBalance"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Rp 0"
-                            android:textColor="@color/white"
-                            android:textSize="30sp"
-                            android:fontFamily="sans-serif-black" />
-                        <ImageView
-                            android:id="@+id/btnHideBalance"
-                            android:layout_width="22dp"
-                            android:layout_height="22dp"
-                            android:src="@android:drawable/ic_menu_view"
-                            app:tint="@color/white"
-                            android:alpha="0.8" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="24dp"
                         android:orientation="horizontal">
 
                         <LinearLayout
@@ -126,403 +126,105 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:orientation="vertical">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Pemasukan"
-                                android:textColor="#CCFFFFFF"
-                                android:textSize="11sp" />
-                            <TextView
-                                android:id="@+id/tvIncome"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Rp 0"
-                                android:textColor="@color/white"
-                                android:textSize="16sp"
-                                android:fontFamily="sans-serif-black" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Pemasukan" android:textColor="#CCFFFFFF" android:textSize="11sp" />
+                            <TextView android:id="@+id/tvIncome" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Rp 0" android:textColor="@color/white" android:textStyle="bold" />
                         </LinearLayout>
-
-                        <View
-                            android:layout_width="1dp"
-                            android:layout_height="24dp"
-                            android:background="#33FFFFFF"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginHorizontal="16dp" />
 
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:orientation="vertical">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Pengeluaran"
-                                android:textColor="#CCFFFFFF"
-                                android:textSize="11sp" />
-                            <TextView
-                                android:id="@+id/tvExpense"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Rp 0"
-                                android:textColor="@color/white"
-                                android:textSize="16sp"
-                                android:fontFamily="sans-serif-black" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Pengeluaran" android:textColor="#CCFFFFFF" android:textSize="11sp" />
+                            <TextView android:id="@+id/tvExpense" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Rp 0" android:textColor="@color/white" android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="8dp">
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tabungan" android:textColor="#CCFFFFFF" android:textSize="11sp" />
+                            <TextView android:id="@+id/tvSavings" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Rp 0" android:textColor="@color/white" android:textStyle="bold" />
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Kekayaan Bersih" android:textColor="#CCFFFFFF" android:textSize="11sp" />
+                            <TextView android:id="@+id/tvNetWorth" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Rp 0" android:textColor="@color/white" android:textStyle="bold" />
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+            </androidx.cardview.widget.CardView>
 
-            <!-- Quick Action Grid -->
-            <com.google.android.material.card.MaterialCardView
+            <!-- Quick Actions Grid -->
+            <GridLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="-20dp"
-                android:layout_marginHorizontal="20dp"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="8dp"
-                app:cardBackgroundColor="@color/white"
-                app:strokeWidth="0dp">
+                android:columnCount="4"
+                android:layout_marginVertical="16dp">
 
-                <GridLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:columnCount="4"
-                    android:paddingVertical="18dp">
+                <include android:id="@+id/btnCatat" layout="@layout/item_dashboard_action" android:layout_width="0dp" android:layout_columnWeight="1" />
+                <include android:id="@+id/btnBudgets" layout="@layout/item_dashboard_action" android:layout_width="0dp" android:layout_columnWeight="1" />
+                <include android:id="@+id/btnGoals" layout="@layout/item_dashboard_action" android:layout_width="0dp" android:layout_columnWeight="1" />
+                <include android:id="@+id/btnDebts" layout="@layout/item_dashboard_action" android:layout_width="0dp" android:layout_columnWeight="1" />
+                <include android:id="@+id/btnCalendar" layout="@layout/item_dashboard_action" android:layout_width="0dp" android:layout_columnWeight="1" />
+                <include android:id="@+id/btnFinancialCalculator" layout="@layout/item_dashboard_action" android:layout_width="0dp" android:layout_columnWeight="1" />
+                <include android:id="@+id/btnScanNota" layout="@layout/item_dashboard_action" android:layout_width="0dp" android:layout_columnWeight="1" />
+                <include android:id="@+id/btnMore" layout="@layout/item_dashboard_action" android:layout_width="0dp" android:layout_columnWeight="1" />
+            </GridLayout>
 
-                    <LinearLayout
-                        android:id="@+id/btnCatat"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:background="?attr/selectableItemBackground">
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@android:drawable/ic_input_add"
-                            app:tint="@color/primary_green" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Catat"
-                            android:textSize="11sp"
-                            android:textColor="@color/text_main"
-                            android:fontFamily="sans-serif-bold"
-                            android:layout_marginTop="8dp" />
-                    </LinearLayout>
+            <include android:id="@+id/btnRecurringTransactions" layout="@layout/item_dashboard_action" android:layout_width="match_parent" android:visibility="gone" />
+            <Button android:id="@+id/btnAiSuggestion" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Tanya AI Advisor" android:layout_marginBottom="16dp" />
 
-                    <LinearLayout
-                        android:id="@+id/btnBudgets"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:background="?attr/selectableItemBackground">
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@android:drawable/ic_menu_agenda"
-                            app:tint="@color/primary_green" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Budget"
-                            android:textSize="11sp"
-                            android:textColor="@color/text_main"
-                            android:fontFamily="sans-serif-bold"
-                            android:layout_marginTop="8dp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/btnGoals"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:background="?attr/selectableItemBackground">
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@android:drawable/ic_menu_myplaces"
-                            app:tint="@color/primary_green" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Target"
-                            android:textSize="11sp"
-                            android:textColor="@color/text_main"
-                            android:fontFamily="sans-serif-bold"
-                            android:layout_marginTop="8dp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/btnMore"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:background="?attr/selectableItemBackground">
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@android:drawable/ic_menu_more"
-                            app:tint="@color/primary_green" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Menu"
-                            android:textSize="11sp"
-                            android:textColor="@color/text_main"
-                            android:fontFamily="sans-serif-bold"
-                            android:layout_marginTop="8dp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/btnRecurringTransactions"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:background="?attr/selectableItemBackground"
-                        android:visibility="gone"
-                        android:layout_marginTop="16dp">
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@drawable/ic_sync"
-                            app:tint="@color/primary_green" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Berulang"
-                            android:textSize="11sp"
-                            android:textColor="@color/text_main"
-                            android:fontFamily="sans-serif-bold"
-                            android:layout_marginTop="8dp" />
-                    </LinearLayout>
-                </GridLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Main Features Section -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Layanan Keuangan"
-                android:textColor="@color/text_main"
-                android:textSize="16sp"
-                android:fontFamily="sans-serif-black"
-                android:layout_marginTop="32dp"
-                android:layout_marginBottom="16dp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:layout_marginBottom="32dp"
-                android:weightSum="5">
-
-                <LinearLayout
-                    android:id="@+id/btnDebts"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="52dp"
-                        android:layout_height="52dp"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="#FEE2E2">
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_gravity="center"
-                            android:src="@android:drawable/ic_menu_recent_history"
-                            app:tint="#EF4444" />
-                    </com.google.android.material.card.MaterialCardView>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Hutang"
-                        android:textSize="10sp"
-                        android:textColor="@color/text_main"
-                        android:fontFamily="sans-serif-medium"
-                        android:layout_marginTop="8dp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/btnCalendar"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="52dp"
-                        android:layout_height="52dp"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="#E0F2FE">
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_gravity="center"
-                            android:src="@android:drawable/ic_menu_today"
-                            app:tint="#0284C7" />
-                    </com.google.android.material.card.MaterialCardView>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Kalender"
-                        android:textSize="10sp"
-                        android:textColor="@color/text_main"
-                        android:fontFamily="sans-serif-medium"
-                        android:layout_marginTop="8dp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/btnFinancialCalculator"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="52dp"
-                        android:layout_height="52dp"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="#FEF3C7">
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_gravity="center"
-                            android:src="@android:drawable/ic_menu_edit"
-                            app:tint="#D97706" />
-                    </com.google.android.material.card.MaterialCardView>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Kalkulator"
-                        android:textSize="10sp"
-                        android:textColor="@color/text_main"
-                        android:fontFamily="sans-serif-medium"
-                        android:layout_marginTop="8dp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/btnScanNota"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="52dp"
-                        android:layout_height="52dp"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="#F3E8FF">
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_gravity="center"
-                            android:src="@android:drawable/ic_menu_camera"
-                            app:tint="#9333EA" />
-                    </com.google.android.material.card.MaterialCardView>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Scan Nota"
-                        android:textSize="10sp"
-                        android:textColor="@color/text_main"
-                        android:fontFamily="sans-serif-medium"
-                        android:layout_marginTop="8dp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/btnAiSuggestion"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="52dp"
-                        android:layout_height="52dp"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="#DCFCE7">
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_gravity="center"
-                            android:src="@android:drawable/ic_menu_info_details"
-                            app:tint="@color/primary_green" />
-                    </com.google.android.material.card.MaterialCardView>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="AI Advice"
-                        android:textSize="10sp"
-                        android:textColor="@color/text_main"
-                        android:fontFamily="sans-serif-medium"
-                        android:layout_marginTop="8dp" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- Recent Transactions Section -->
+            <!-- Recent Transactions -->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="12dp">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Transaksi Terbaru"
-                    android:textColor="@color/text_main"
+                    android:text="Transaksi Terakhir"
+                    android:textColor="#1E293B"
                     android:textSize="16sp"
-                    android:fontFamily="sans-serif-black" />
+                    android:textStyle="bold" />
                 <TextView
                     android:id="@+id/tvViewAll"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
                     android:layout_alignParentEnd="true"
                     android:text="Lihat Semua"
                     android:textColor="@color/primary_green"
-                    android:textSize="13sp"
-                    android:fontFamily="sans-serif-black" />
+                    android:textStyle="bold" />
             </RelativeLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvTransactions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
                 tools:listitem="@layout/item_transaction"
-                tools:itemCount="3" />
+                tools:itemCount="5" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <com.example.cashflowin.utils.DraggableFloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnAddTransactionFab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="24dp"
-        android:src="@android:drawable/ic_input_add"
+        android:layout_margin="16dp"
+        app:srcCompat="@android:drawable/ic_input_add"
         app:tint="@color/white"
-        app:backgroundTint="@color/primary_green"
-        app:elevation="12dp" />
+        app:backgroundTint="@color/primary_green" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

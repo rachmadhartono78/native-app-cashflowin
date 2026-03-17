@@ -58,10 +58,40 @@ class DashboardFragment : Fragment() {
             return
         }
 
+        setupActionButtons()
         updateGreeting()
         setupRecyclerView()
         setupObservers()
         setupListeners()
+    }
+
+    private fun setupActionButtons() {
+        binding.btnCatat.tvActionLabel.text = "Catat"
+        binding.btnCatat.ivActionIcon.setImageResource(R.drawable.ic_add)
+        
+        binding.btnBudgets.tvActionLabel.text = "Anggaran"
+        binding.btnBudgets.ivActionIcon.setImageResource(android.R.drawable.ic_menu_agenda)
+        
+        binding.btnGoals.tvActionLabel.text = "Target"
+        binding.btnGoals.ivActionIcon.setImageResource(android.R.drawable.ic_menu_compass)
+        
+        binding.btnDebts.tvActionLabel.text = "Hutang"
+        binding.btnDebts.ivActionIcon.setImageResource(android.R.drawable.ic_menu_recent_history)
+
+        binding.btnCalendar.tvActionLabel.text = "Kalender"
+        binding.btnCalendar.ivActionIcon.setImageResource(android.R.drawable.ic_menu_today)
+
+        binding.btnFinancialCalculator.tvActionLabel.text = "Kalkulator"
+        binding.btnFinancialCalculator.ivActionIcon.setImageResource(android.R.drawable.ic_menu_edit)
+
+        binding.btnScanNota.tvActionLabel.text = "Scan Nota"
+        binding.btnScanNota.ivActionIcon.setImageResource(android.R.drawable.ic_menu_camera)
+
+        binding.btnMore.tvActionLabel.text = "Lainnya"
+        binding.btnMore.ivActionIcon.setImageResource(android.R.drawable.ic_menu_more)
+        
+        binding.btnRecurringTransactions.tvActionLabel.text = "Rutin"
+        binding.btnRecurringTransactions.ivActionIcon.setImageResource(android.R.drawable.ic_popup_sync)
     }
 
     private fun updateGreeting() {
@@ -69,10 +99,10 @@ class DashboardFragment : Fragment() {
         val hour = calendar.get(Calendar.HOUR_OF_DAY)
         
         val greeting = when (hour) {
-            in 0..10 -> getString(R.string.greeting_morning)
-            in 11..14 -> getString(R.string.greeting_afternoon)
-            in 15..18 -> getString(R.string.greeting_evening)
-            else -> getString(R.string.greeting_night)
+            in 0..10 -> "Selamat Pagi"
+            in 11..14 -> "Selamat Siang"
+            in 15..18 -> "Selamat Sore"
+            else -> "Selamat Malam"
         }
         
         binding.tvGreeting.text = "$greeting,"
@@ -83,39 +113,38 @@ class DashboardFragment : Fragment() {
 
     private fun setupListeners() {
         binding.btnProfile.setOnClickListener {
-            // Gunakan cara yang lebih aman untuk navigasi BNB agar tidak nge-bug
             val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.nav_view)
             bottomNav?.selectedItemId = R.id.nav_settings
         }
 
-        binding.btnCatat.setOnClickListener { openAddTransaction() }
+        binding.btnCatat.root.setOnClickListener { openAddTransaction() }
         binding.btnAddTransactionFab.setOnClickListener { openAddTransaction() }
 
-        binding.btnBudgets.setOnClickListener {
+        binding.btnBudgets.root.setOnClickListener {
             startActivity(Intent(requireContext(), com.example.cashflowin.ui.planning.BudgetsActivity::class.java))
         }
 
-        binding.btnGoals.setOnClickListener {
+        binding.btnGoals.root.setOnClickListener {
             startActivity(Intent(requireContext(), com.example.cashflowin.ui.planning.GoalsActivity::class.java))
         }
 
-        binding.btnDebts.setOnClickListener {
+        binding.btnDebts.root.setOnClickListener {
             startActivity(Intent(requireContext(), com.example.cashflowin.ui.planning.DebtsActivity::class.java))
         }
 
-        binding.btnCalendar.setOnClickListener {
+        binding.btnCalendar.root.setOnClickListener {
             startActivity(Intent(requireContext(), com.example.cashflowin.ui.planning.CalendarActivity::class.java))
         }
 
-        binding.btnFinancialCalculator.setOnClickListener {
+        binding.btnFinancialCalculator.root.setOnClickListener {
             startActivity(Intent(requireContext(), com.example.cashflowin.ui.planning.CalculatorActivity::class.java))
         }
 
-        binding.btnScanNota.setOnClickListener {
+        binding.btnScanNota.root.setOnClickListener {
             startActivity(Intent(requireContext(), ScanNotaActivity::class.java))
         }
 
-        binding.btnRecurringTransactions.setOnClickListener {
+        binding.btnRecurringTransactions.root.setOnClickListener {
             startActivity(Intent(requireContext(), com.example.cashflowin.ui.planning.RecurringTransactionsActivity::class.java))
         }
 
@@ -123,8 +152,8 @@ class DashboardFragment : Fragment() {
             Toast.makeText(requireContext(), "AI Advisor sedang menganalisa...", Toast.LENGTH_SHORT).show()
         }
 
-        binding.btnMore.setOnClickListener {
-            binding.btnRecurringTransactions.visibility = if (binding.btnRecurringTransactions.visibility == View.GONE) View.VISIBLE else View.GONE
+        binding.btnMore.root.setOnClickListener {
+            binding.btnRecurringTransactions.root.visibility = if (binding.btnRecurringTransactions.root.visibility == View.GONE) View.VISIBLE else View.GONE
         }
 
         binding.btnHideBalance.setOnClickListener {
@@ -201,18 +230,21 @@ class DashboardFragment : Fragment() {
             maximumFractionDigits = 0
         }
         
-        // Perbaikan Logika: Total Saldo dihitung dari akumulasi seluruh aset
         val calculatedTotalBalance = currentAssets.sumOf { it.balance }
         
         if (isBalanceVisible) {
             binding.tvTotalBalance.text = format.format(calculatedTotalBalance)
             binding.tvIncome.text = format.format(summary.total_income_month)
             binding.tvExpense.text = format.format(summary.total_expense_month)
+            binding.tvSavings.text = format.format(summary.total_savings ?: 0.0)
+            binding.tvNetWorth.text = format.format(summary.net_worth ?: 0.0)
         } else {
             val hiddenText = "••••••••"
             binding.tvTotalBalance.text = hiddenText
             binding.tvIncome.text = hiddenText
             binding.tvExpense.text = hiddenText
+            binding.tvSavings.text = hiddenText
+            binding.tvNetWorth.text = hiddenText
         }
     }
 
