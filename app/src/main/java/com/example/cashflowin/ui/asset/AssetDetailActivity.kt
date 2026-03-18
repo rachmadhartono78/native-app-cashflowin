@@ -62,7 +62,7 @@ class AssetDetailActivity : AppCompatActivity() {
         binding.tvAssetType.text = assetType
         
         val amount = assetAmount.toDoubleOrNull() ?: 0.0
-        val format = NumberFormat.getCurrencyInstance(Locale("id", "ID")).apply {
+        val format = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID")).apply {
             maximumFractionDigits = 0
         }
         binding.tvAssetBalance.text = format.format(amount)

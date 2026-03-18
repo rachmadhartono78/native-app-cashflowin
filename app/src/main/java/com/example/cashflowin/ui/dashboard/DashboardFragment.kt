@@ -197,7 +197,7 @@ class DashboardFragment : Fragment() {
 
     private fun updateUI() {
         val summary = currentSummary ?: return
-        val format = NumberFormat.getCurrencyInstance(Locale("id", "ID")).apply {
+        val format = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID")).apply {
             maximumFractionDigits = 0
         }
         

@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="16dp"
     android:layout_marginBottom="12dp"
     app:cardCornerRadius="16dp"
     app:cardElevation="0dp"
@@ -12,17 +11,18 @@
     app:strokeWidth="1dp"
     app:strokeColor="#F1F5F9"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="14dp">
+        android:padding="16dp">
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardIcon"
-            android:layout_width="42dp"
-            android:layout_height="42dp"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
             app:cardCornerRadius="14dp"
             app:cardElevation="0dp"
             app:cardBackgroundColor="#F8FAFC"
@@ -44,8 +44,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginStart="14dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="12dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/tvAmount"
             app:layout_constraintStart_toEndOf="@id/cardIcon"
@@ -56,8 +56,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="#1E293B"
-                android:textSize="14sp"
-                android:fontFamily="sans-serif-black"
+                android:textSize="15sp"
+                android:fontFamily="sans-serif-medium"
                 android:maxLines="1"
                 android:ellipsize="end"
                 tools:text="Coffee &amp; Bistro" />
@@ -71,6 +71,7 @@
                 android:fontFamily="sans-serif"
                 android:maxLines="1"
                 android:ellipsize="end"
+                android:layout_marginTop="2dp"
                 android:visibility="gone"
                 tools:text="Beli Kopi Sore"
                 tools:visibility="visible" />
@@ -79,20 +80,19 @@
                 android:id="@+id/tvDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
                 android:textColor="#94A3B8"
                 android:textSize="11sp"
-                android:fontFamily="sans-serif-medium"
-                android:maxLines="1"
-                android:ellipsize="end"
-                tools:text="12 Jan 2024 • 09:41" />
+                android:fontFamily="sans-serif"
+                android:layout_marginTop="2dp"
+                android:visibility="gone"
+                tools:text="09:41" />
         </LinearLayout>
 
         <TextView
             android:id="@+id/tvAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="14sp"
+            android:textSize="15sp"
             android:fontFamily="sans-serif-black"
             android:textAlignment="viewEnd"
             android:textColor="#1E293B"

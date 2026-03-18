@@ -10,19 +10,20 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.cashflowin.R
 import com.example.cashflowin.api.model.TransactionItem
 import com.example.cashflowin.databinding.ItemTransactionBinding
+import com.example.cashflowin.databinding.ItemTransactionHeaderBinding
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Locale
 import java.util.TimeZone
 
 class TransactionAdapter(
     private val onItemClick: ((TransactionItem) -> Unit)? = null
-) : RecyclerView.Adapter<TransactionAdapter.TransactionViewHolder>() {
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private var transactions: List<TransactionItem> = listOf()
+    private var items: List<Any> = listOf()
 
-    // Menggunakan DecimalFormat agar simbol "Rp" bisa kita kontrol manual di UI
     private val numberFormat = DecimalFormat("#,###").apply {
         decimalFormatSymbols = DecimalFormatSymbols(Locale.forLanguageTag("id-ID")).apply {
             groupingSeparator = '.'
@@ -30,7 +31,7 @@ class TransactionAdapter(
     }
     
     private val inputDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-    private val outputDateFormat = SimpleDateFormat("dd MMM yyyy", Locale.forLanguageTag("id-ID"))
+    private val headerDateFormat = SimpleDateFormat("dd MMMM yyyy", Locale.forLanguageTag("id-ID"))
     private val isoFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", Locale.US).apply {
         timeZone = TimeZone.getTimeZone("UTC")
     }
@@ -38,21 +39,72 @@ class TransactionAdapter(
         timeZone = TimeZone.getDefault()
     }
 
+    companion object {
+        private const val TYPE_HEADER = 0
+        private const val TYPE_TRANSACTION = 1
+    }
+
     fun submitList(list: List<TransactionItem>) {
-        transactions = list
+        val groupedItems = mutableListOf<Any>()
+        val groupedByDate = list.groupBy { it.date }
+        
+        val today = Calendar.getInstance()
+        val yesterday = Calendar.getInstance().apply { add(Calendar.DATE, -1) }
+        val dateOnlyFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+        
+        val todayStr = dateOnlyFormat.format(today.time)
+        val yesterdayStr = dateOnlyFormat.format(yesterday.time)
+
+        groupedByDate.keys.sortedDescending().forEach { date ->
+            val headerTitle = when (date) {
+                todayStr -> "Hari Ini"
+                yesterdayStr -> "Kemarin"
+                else -> {
+                    try {
+                        val parsedDate = inputDateFormat.parse(date)
+                        if (parsedDate != null) headerDateFormat.format(parsedDate) else date
+                    } catch (e: Exception) {
+                        date
+                    }
+                }
+            }
+            groupedItems.add(headerTitle)
+            groupedByDate[date]?.let { groupedItems.addAll(it) }
+        }
+        
+        items = groupedItems
         notifyDataSetChanged()
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionViewHolder {
-        val binding = ItemTransactionBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return TransactionViewHolder(binding)
+    override fun getItemViewType(position: Int): Int {
+        return if (items[position] is String) TYPE_HEADER else TYPE_TRANSACTION
     }
 
-    override fun onBindViewHolder(holder: TransactionViewHolder, position: Int) {
-        holder.bind(transactions[position])
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return if (viewType == TYPE_HEADER) {
+            val binding = ItemTransactionHeaderBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            HeaderViewHolder(binding)
+        } else {
+            val binding = ItemTransactionBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            TransactionViewHolder(binding)
+        }
     }
 
-    override fun getItemCount(): Int = transactions.size
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        if (holder is HeaderViewHolder) {
+            holder.bind(items[position] as String)
+        } else if (holder is TransactionViewHolder) {
+            holder.bind(items[position] as TransactionItem)
+        }
+    }
+
+    override fun getItemCount(): Int = items.size
+
+    inner class HeaderViewHolder(private val binding: ItemTransactionHeaderBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(title: String) {
+            binding.tvHeaderDate.text = title
+        }
+    }
 
     inner class TransactionViewHolder(private val binding: ItemTransactionBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(transaction: TransactionItem) {
@@ -66,23 +118,21 @@ class TransactionAdapter(
                 binding.tvDescription.visibility = View.GONE
             }
             
-            val dateStr = try {
-                val date = inputDateFormat.parse(transaction.date)
-                if (date != null) outputDateFormat.format(date) else transaction.date
-            } catch (e: Exception) {
-                transaction.date
-            }
-
             val timeStr = try {
                 if (transaction.createdAt != null) {
                     val timeDate = isoFormat.parse(transaction.createdAt)
-                    if (timeDate != null) " • ${outputTimeFormat.format(timeDate)}" else ""
+                    if (timeDate != null) outputTimeFormat.format(timeDate) else ""
                 } else ""
             } catch (e: Exception) {
                 ""
             }
 
-            binding.tvDate.text = "$dateStr$timeStr"
+            if (timeStr.isNotEmpty()) {
+                binding.tvDate.text = timeStr
+                binding.tvDate.visibility = View.VISIBLE
+            } else {
+                binding.tvDate.visibility = View.GONE
+            }
             
             val amountValue = transaction.amount
             val formattedAmount = numberFormat.format(amountValue)
