@@ -21,7 +21,7 @@ data class Summary(
 
 data class TransactionItem(
     val id: Int,
-    val amount: String,
+    val amount: Double,
     val type: String, // 'income' or 'expense'
     val description: String?,
     val date: String,

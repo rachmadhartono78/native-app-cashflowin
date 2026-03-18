@@ -3,7 +3,7 @@ package com.example.cashflowin.api.model
 import com.google.gson.annotations.SerializedName
 
 data class AssetResponse(
-    val status: String,
+    val status: String? = null,
     val data: List<AssetInfo>,
     val message: String? = null
 )

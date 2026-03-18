@@ -37,7 +37,6 @@ class MainActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             window.isNavigationBarContrastEnforced = false
         }
-        window.navigationBarColor = Color.TRANSPARENT
         
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

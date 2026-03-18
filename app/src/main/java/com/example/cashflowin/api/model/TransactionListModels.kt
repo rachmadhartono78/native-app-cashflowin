@@ -1,7 +1,7 @@
 package com.example.cashflowin.api.model
 
 data class TransactionListResponse(
-    val status: String,
+    val status: String? = null,
     val data: PaginatedTransactionData?
 )
 
