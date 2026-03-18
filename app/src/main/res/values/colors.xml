@@ -37,6 +37,7 @@
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="light_blue">#D1E9FF</color>
+    <color name="gray_600">#4B5563</color>
 
     <!-- Compatibility -->
     <color name="primaryColor">#00AA5B</color>

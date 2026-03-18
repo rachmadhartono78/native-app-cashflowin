@@ -8,6 +8,8 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import com.example.cashflowin.R
 import com.example.cashflowin.api.ApiClient
 import com.example.cashflowin.api.TransactionRepository
 import com.example.cashflowin.api.model.AssetInfo
@@ -59,10 +61,10 @@ class AddTransactionActivity : AppCompatActivity() {
         setupObservers()
         setupListeners()
         checkEditMode()
+        updateTypeUi() // Set initial color based on selection
 
-        // Jika bukan mode edit, pastikan jam & tanggal adalah waktu SEKARANG yang paling baru
         if (!isEditMode) {
-            calendar.time = java.util.Date() // Ambil waktu detik ini juga
+            calendar.time = java.util.Date()
             updateDateTimeInView()
         }
 
@@ -77,14 +79,13 @@ class AddTransactionActivity : AppCompatActivity() {
 
     private fun setupDateTimePicker() {
         binding.etDate.setOnClickListener {
-            DatePickerDialog(
+            val datePicker = DatePickerDialog(
                 this,
                 { _, year, monthOfYear, dayOfMonth ->
                     calendar.set(Calendar.YEAR, year)
                     calendar.set(Calendar.MONTH, monthOfYear)
                     calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
                     
-                    // After picking date, pick time
                     TimePickerDialog(
                         this,
                         { _, hourOfDay, minute ->
@@ -101,22 +102,22 @@ class AddTransactionActivity : AppCompatActivity() {
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
-            ).show()
+            )
+            datePicker.show()
         }
     }
 
     private fun updateDateTimeInView() {
-        val myFormat = "yyyy-MM-dd HH:mm:ss"
-        val sdf = SimpleDateFormat(myFormat, Locale.US)
-        binding.etDate.setText(sdf.format(calendar.time))
+        val displayFormat = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale("id", "ID"))
+        binding.etDate.setText(displayFormat.format(calendar.time))
     }
 
     private fun checkEditMode() {
         editTransactionId = intent.getIntExtra("EXTRA_ID", -1)
         if (editTransactionId != -1) {
             isEditMode = true
-            supportActionBar?.title = "Edit Transaction"
-            binding.btnSave.text = "Update Transaction"
+            supportActionBar?.title = "Edit Transaksi"
+            binding.btnSave.text = "Update Transaksi"
 
             initialAmount = intent.getStringExtra("EXTRA_AMOUNT")
             initialType = intent.getStringExtra("EXTRA_TYPE")
@@ -125,11 +126,10 @@ class AddTransactionActivity : AppCompatActivity() {
             initialCategoryId = intent.getIntExtra("EXTRA_CATEGORY_ID", -1)
             initialAssetId = intent.getIntExtra("EXTRA_ASSET_ID", -1)
 
-            // Format nominal saat edit mode
             if (initialAmount != null) {
                 try {
                     val amountLong = initialAmount!!.toDouble().toLong()
-                    val symbols = DecimalFormatSymbols(Locale.forLanguageTag("id-ID"))
+                    val symbols = DecimalFormatSymbols(Locale("id", "ID"))
                     symbols.groupingSeparator = '.'
                     val formatter = DecimalFormat("#,###", symbols)
                     binding.etAmount.setText(formatter.format(amountLong))
@@ -140,10 +140,8 @@ class AddTransactionActivity : AppCompatActivity() {
 
             binding.etDescription.setText(initialDesc)
             
-            // Format Tanggal dan Waktu saat edit mode
             if (initialDate != null) {
                 try {
-                    // Coba berbagai format kemungkinan dari API/Intent
                     val inputFormats = arrayOf(
                         "yyyy-MM-dd HH:mm:ss", 
                         "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", 
@@ -152,50 +150,27 @@ class AddTransactionActivity : AppCompatActivity() {
                     )
                     
                     var parsedDate: java.util.Date? = null
-                    var usedFormat: String? = null
-                    
                     for (format in inputFormats) {
                         try {
                             val sdf = SimpleDateFormat(format, Locale.US)
-                            // Jika format ISO Z, pastikan handle timezone UTC
                             if (format.contains("'Z'")) sdf.timeZone = java.util.TimeZone.getTimeZone("UTC")
-                            
                             parsedDate = sdf.parse(initialDate!!)
-                            if (parsedDate != null) {
-                                usedFormat = format
-                                break
-                            }
+                            if (parsedDate != null) break
                         } catch (e: Exception) {}
                     }
                     
                     if (parsedDate != null) {
-                        val oldTime = Calendar.getInstance().apply { time = parsedDate }
-                        
-                        // Jika formatnya hanya tanggal (tanpa jam), pertahankan jam saat ini
-                        // agar tidak berubah jadi 00:00:00
-                        if (usedFormat == "yyyy-MM-dd") {
-                            val now = Calendar.getInstance()
-                            calendar.set(oldTime.get(Calendar.YEAR), oldTime.get(Calendar.MONTH), oldTime.get(Calendar.DAY_OF_MONTH),
-                                         now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), now.get(Calendar.SECOND))
-                        } else {
-                            calendar.time = parsedDate
-                        }
+                        calendar.time = parsedDate
                         updateDateTimeInView()
-                    } else {
-                        binding.etDate.setText(initialDate)
                     }
-                } catch (e: Exception) {
-                    binding.etDate.setText(initialDate)
-                }
+                } catch (e: Exception) {}
             }
 
             if (initialType == "income") {
                 binding.rbIncome.isChecked = true
-            } else if (initialType == "expense") {
+            } else {
                 binding.rbExpense.isChecked = true
             }
-        } else {
-            supportActionBar?.title = "Add Transaction"
         }
     }
 
@@ -214,73 +189,32 @@ class AddTransactionActivity : AppCompatActivity() {
     }
 
     private fun setupObservers() {
-        // Categories
         viewModel.categoriesState.observe(this) { state ->
-            when (state) {
-                is DropdownState.Loading -> { }
-                is DropdownState.Success -> {
-                    categoriesList = state.data
-                    val adapter = ArrayAdapter(
-                        this,
-                        android.R.layout.simple_spinner_dropdown_item,
-                        categoriesList.map { it.name }
-                    )
-                    binding.spinnerCategory.adapter = adapter
-                    populateSpinnersIfEditing()
-                }
-                is DropdownState.Error -> {
-                    Toast.makeText(this, state.message, Toast.LENGTH_SHORT).show()
-                }
+            if (state is DropdownState.Success) {
+                categoriesList = state.data
+                val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, categoriesList.map { it.name })
+                binding.spinnerCategory.adapter = adapter
+                populateSpinnersIfEditing()
             }
         }
 
-        // Assets
         viewModel.assetsState.observe(this) { state ->
-            when (state) {
-                is DropdownState.Loading -> { }
-                is DropdownState.Success -> {
-                    assetsList = state.data
-                    val adapter = ArrayAdapter(
-                        this,
-                        android.R.layout.simple_spinner_dropdown_item,
-                        assetsList.map { it.name }
-                    )
-                    binding.spinnerAsset.adapter = adapter
-                    populateSpinnersIfEditing()
-                }
-                is DropdownState.Error -> {
-                    Toast.makeText(this, state.message, Toast.LENGTH_SHORT).show()
-                }
+            if (state is DropdownState.Success) {
+                assetsList = state.data
+                val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, assetsList.map { it.name })
+                binding.spinnerAsset.adapter = adapter
+                populateSpinnersIfEditing()
             }
         }
 
-        // Submit
         viewModel.submitState.observe(this) { state ->
             when (state) {
-                is SubmitState.Idle -> {
-                    binding.progressBar.visibility = View.GONE
-                    binding.btnSave.isEnabled = true
-                }
                 is SubmitState.Loading -> {
                     binding.progressBar.visibility = View.VISIBLE
                     binding.btnSave.isEnabled = false
                 }
-                is SubmitState.Success -> {
-                    binding.progressBar.visibility = View.GONE
-                    binding.btnSave.isEnabled = true
-                    Toast.makeText(this, "Transaction saved!", Toast.LENGTH_SHORT).show()
-                    finish()
-                }
-                is SubmitState.UpdateSuccess -> {
-                    binding.progressBar.visibility = View.GONE
-                    binding.btnSave.isEnabled = true
-                    Toast.makeText(this, "Transaction updated!", Toast.LENGTH_SHORT).show()
-                    finish()
-                }
-                is SubmitState.DeleteSuccess -> {
-                    binding.progressBar.visibility = View.GONE
-                    binding.btnSave.isEnabled = true
-                    Toast.makeText(this, "Transaction deleted!", Toast.LENGTH_SHORT).show()
+                is SubmitState.Success, is SubmitState.UpdateSuccess, is SubmitState.DeleteSuccess -> {
+                    Toast.makeText(this, "Berhasil disimpan!", Toast.LENGTH_SHORT).show()
                     finish()
                 }
                 is SubmitState.Error -> {
@@ -288,39 +222,58 @@ class AddTransactionActivity : AppCompatActivity() {
                     binding.btnSave.isEnabled = true
                     Toast.makeText(this, state.message, Toast.LENGTH_SHORT).show()
                 }
+                else -> {
+                    binding.progressBar.visibility = View.GONE
+                    binding.btnSave.isEnabled = true
+                }
             }
         }
     }
 
     private fun setupListeners() {
         binding.etAmount.addTextChangedListener(CurrencyTextWatcher(binding.etAmount))
+        
+        binding.rgType.setOnCheckedChangeListener { _, _ ->
+            updateTypeUi()
+        }
 
         binding.btnSave.setOnClickListener {
             saveTransaction()
         }
     }
 
+    private fun updateTypeUi() {
+        val color = if (binding.rbIncome.isChecked) {
+            ContextCompat.getColor(this, R.color.income)
+        } else {
+            ContextCompat.getColor(this, R.color.expense)
+        }
+        binding.etAmount.setTextColor(color)
+    }
+
     private fun saveTransaction() {
         val amountFormatted = binding.etAmount.text.toString().trim()
         val amountStr = CurrencyTextWatcher.getUnformattedValue(amountFormatted).toString()
-        val dateStr = binding.etDate.text.toString().trim()
         val descStr = binding.etDescription.text.toString().trim()
-        
         val type = if (binding.rbIncome.isChecked) "income" else "expense"
+        
+        // Use API format for date string
+        val apiFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
+        val dateStr = apiFormat.format(calendar.time)
         
         val selectedCategoryPos = binding.spinnerCategory.selectedItemPosition
         val selectedAssetPos = binding.spinnerAsset.selectedItemPosition
 
-        if (amountFormatted.isEmpty()) {
-            binding.etAmount.error = "Amount is required"
+        if (amountFormatted.isEmpty() || amountStr == "0") {
+            binding.etAmount.error = "Masukkan nominal"
             return
         }
-        if (selectedCategoryPos == -1 || categoriesList.isEmpty()) {
-            Toast.makeText(this, "Please select a category", Toast.LENGTH_SHORT).show()
+        if (selectedCategoryPos == -1) {
+            Toast.makeText(this, "Pilih kategori", Toast.LENGTH_SHORT).show()
             return
         }
-        if (selectedAssetPos == -1 || assetsList.isEmpty()) {
-            Toast.makeText(this, "Please select an asset", Toast.LENGTH_SHORT).show()
+        if (selectedAssetPos == -1) {
+            Toast.makeText(this, "Pilih dompet/aset", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -341,24 +294,18 @@ class AddTransactionActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: android.view.Menu?): Boolean {
-        if (isEditMode) {
-            menuInflater.inflate(com.example.cashflowin.R.menu.menu_add_transaction, menu)
-        }
+        if (isEditMode) menuInflater.inflate(R.menu.menu_add_transaction, menu)
         return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: android.view.MenuItem): Boolean {
-        if (item.itemId == com.example.cashflowin.R.id.action_delete) {
-            if (editTransactionId != -1) {
-                androidx.appcompat.app.AlertDialog.Builder(this)
-                    .setTitle("Delete Transaction")
-                    .setMessage("Are you sure you want to delete this transaction?")
-                    .setPositiveButton("Delete") { _, _ ->
-                        viewModel.deleteTransaction(editTransactionId)
-                    }
-                    .setNegativeButton("Cancel", null)
-                    .show()
-            }
+        if (item.itemId == R.id.action_delete) {
+            androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Hapus Transaksi")
+                .setMessage("Apakah Anda yakin ingin menghapus transaksi ini?")
+                .setPositiveButton("Hapus") { _, _ -> viewModel.deleteTransaction(editTransactionId) }
+                .setNegativeButton("Batal", null)
+                .show()
             return true
         }
         return super.onOptionsItemSelected(item)

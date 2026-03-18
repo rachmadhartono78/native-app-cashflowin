@@ -10,7 +10,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.cashflowin.R
 import com.example.cashflowin.api.model.TransactionItem
 import com.example.cashflowin.databinding.ItemTransactionBinding
-import java.text.NumberFormat
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
@@ -21,11 +22,15 @@ class TransactionAdapter(
 
     private var transactions: List<TransactionItem> = listOf()
 
-    private val currencyFormat = NumberFormat.getCurrencyInstance(Locale("id", "ID")).apply {
-        maximumFractionDigits = 0
+    // Menggunakan DecimalFormat agar simbol "Rp" bisa kita kontrol manual di UI
+    private val numberFormat = DecimalFormat("#,###").apply {
+        decimalFormatSymbols = DecimalFormatSymbols(Locale.forLanguageTag("id-ID")).apply {
+            groupingSeparator = '.'
+        }
     }
+    
     private val inputDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-    private val outputDateFormat = SimpleDateFormat("dd MMM yyyy", Locale("id", "ID"))
+    private val outputDateFormat = SimpleDateFormat("dd MMM yyyy", Locale.forLanguageTag("id-ID"))
     private val isoFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", Locale.US).apply {
         timeZone = TimeZone.getTimeZone("UTC")
     }
@@ -53,7 +58,6 @@ class TransactionAdapter(
         fun bind(transaction: TransactionItem) {
             val context = binding.root.context
             
-            // Perbaikan 1: Tampilkan keterangan transaksi
             binding.tvCategoryName.text = transaction.category?.name ?: "Lainnya"
             if (!transaction.description.isNullOrEmpty()) {
                 binding.tvDescription.text = transaction.description
@@ -80,8 +84,8 @@ class TransactionAdapter(
 
             binding.tvDate.text = "$dateStr$timeStr"
             
-            val amountValue = (transaction.amount.toDoubleOrNull() ?: 0.0)
-            val formattedAmount = currencyFormat.format(amountValue)
+            val amountValue = transaction.amount
+            val formattedAmount = numberFormat.format(amountValue)
 
             val categoryColor = transaction.category?.color
             val categoryIcon = transaction.category?.icon
@@ -107,10 +111,10 @@ class TransactionAdapter(
             }
 
             if (transaction.type == "income") {
-                binding.tvAmount.text = "+$formattedAmount"
+                binding.tvAmount.text = "+ Rp $formattedAmount"
                 binding.tvAmount.setTextColor(ContextCompat.getColor(context, R.color.income))
             } else {
-                binding.tvAmount.text = "-$formattedAmount"
+                binding.tvAmount.text = "- Rp $formattedAmount"
                 binding.tvAmount.setTextColor(ContextCompat.getColor(context, R.color.expense))
             }
 

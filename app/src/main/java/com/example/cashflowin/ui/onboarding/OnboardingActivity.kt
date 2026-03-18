@@ -17,14 +17,22 @@ class OnboardingActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        tokenManager = TokenManager(this)
+        
+        // Cek jika bukan pertama kali, langsung ke MainActivity (yang nanti akan cek Login)
+        if (!tokenManager.isFirstTime()) {
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+            return
+        }
+
         binding = ActivityOnboardingBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        tokenManager = TokenManager(this)
-
         val onboardingItems = listOf(
             OnboardingItem(
-                R.drawable.ic_nav_dashboard, // Ganti dengan illustrasi yang sesuai jika ada
+                R.drawable.ic_nav_dashboard,
                 "Atur Keuanganmu",
                 "Catat setiap pemasukan dan pengeluaranmu dengan mudah dan cepat."
             ),

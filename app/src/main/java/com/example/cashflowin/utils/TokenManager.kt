@@ -24,6 +24,14 @@ class TokenManager(context: Context) {
     fun getUserName(): String? = prefs.getString("USER_NAME", null)
     fun getUserEmail(): String? = prefs.getString("USER_EMAIL", null)
 
+    fun isFirstTime(): Boolean {
+        return prefs.getBoolean("IS_FIRST_TIME", true)
+    }
+
+    fun setFirstTime(isFirst: Boolean) {
+        prefs.edit().putBoolean("IS_FIRST_TIME", isFirst).apply()
+    }
+
     fun clearToken() {
         prefs.edit()
             .remove("USER_TOKEN")
