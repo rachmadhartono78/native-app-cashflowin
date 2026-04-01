@@ -18,3 +18,8 @@ data class LoginRequest(
     val password: String,
     val device_name: String = "android_device"
 )
+
+data class GoogleLoginRequest(
+    val token: String,
+    val device_name: String = "android_device"
+)

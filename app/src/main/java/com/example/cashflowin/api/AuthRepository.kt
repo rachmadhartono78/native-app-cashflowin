@@ -11,6 +11,10 @@ class AuthRepository(private val apiService: ApiService) {
         return apiService.login(request)
     }
 
+    suspend fun loginWithGoogle(token: String, deviceName: String = "android_device"): Response<LoginResponse> {
+        return apiService.loginWithGoogle(com.example.cashflowin.api.model.GoogleLoginRequest(token, deviceName))
+    }
+
     suspend fun register(request: RegisterRequest): Response<LoginResponse> {
         return apiService.register(request)
     }

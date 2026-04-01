@@ -25,21 +25,44 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
         _authState.value = AuthState.Loading
         viewModelScope.launch {
             try {
-                val request = LoginRequest(email = email, password = password)
-                val response = repository.login(request)
-                
-                if (response.isSuccessful && response.body() != null) {
-                    val body = response.body()!!
-                    if (body.status == "success") {
-                        _authState.value = AuthState.Success(body)
-                    } else {
-                        _authState.value = AuthState.Error(body.message ?: "Login failed")
-                    }
+                val response = repository.login(LoginRequest(email, password))
+                if (response.isSuccessful) {
+                    _authState.value = AuthState.Success(response.body()!!)
                 } else {
-                    _authState.value = AuthState.Error("Login failed. Check your credentials.")
+                    val errorBody = response.errorBody()?.string()
+                    val errorMessage = try {
+                        val json = com.google.gson.JsonParser.parseString(errorBody).asJsonObject
+                        json.get("message").asString
+                    } catch (e: Exception) {
+                        "Login failed: ${response.message()}"
+                    }
+                    _authState.value = AuthState.Error(errorMessage)
                 }
             } catch (e: Exception) {
-                _authState.value = AuthState.Error(e.message ?: "Network error occurred")
+                _authState.value = AuthState.Error(e.message ?: "An error occurred")
+            }
+        }
+    }
+
+    fun loginWithGoogle(token: String, deviceName: String = "android_device") {
+        _authState.value = AuthState.Loading
+        viewModelScope.launch {
+            try {
+                val response = repository.loginWithGoogle(token, deviceName)
+                if (response.isSuccessful) {
+                    _authState.value = AuthState.Success(response.body()!!)
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    val errorMessage = try {
+                        val json = com.google.gson.JsonParser.parseString(errorBody).asJsonObject
+                        json.get("message").asString
+                    } catch (e: Exception) {
+                        "Google login failed: ${response.message()}"
+                    }
+                    _authState.value = AuthState.Error(errorMessage)
+                }
+            } catch (e: Exception) {
+                _authState.value = AuthState.Error(e.message ?: "An error occurred")
             }
         }
     }

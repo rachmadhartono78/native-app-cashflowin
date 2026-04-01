@@ -103,4 +103,7 @@ dependencies {
 
     // ML Kit Text Recognition
     implementation("com.google.mlkit:text-recognition:16.0.0")
+
+    // Google Auth
+    implementation(libs.play.services.auth)
 }
