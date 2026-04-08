@@ -32,7 +32,18 @@ object ApiClient {
                         requestBuilder.addHeader("Authorization", "Bearer $it")
                     }
                     
-                    chain.proceed(requestBuilder.build())
+                    val response = chain.proceed(requestBuilder.build())
+                    
+                    // Auto-logout on token expiration (401 Unauthorized)
+                    if (response.code == 401) {
+                        tokenManager.clearToken()
+                        val intent = android.content.Intent(context, com.example.cashflowin.ui.auth.LoginActivity::class.java).apply {
+                            flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        }
+                        context.startActivity(intent)
+                    }
+                    
+                    response
                 }
                 .build()
 

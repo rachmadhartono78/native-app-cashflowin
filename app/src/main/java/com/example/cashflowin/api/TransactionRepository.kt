@@ -62,4 +62,12 @@ class TransactionRepository(private val apiService: ApiService) {
     suspend fun getGoals(): Response<GoalListResponse> {
         return apiService.getGoals()
     }
+
+    suspend fun exportPdf(month: String, year: String): Response<okhttp3.ResponseBody> {
+        return apiService.exportPdf(month, year)
+    }
+
+    suspend fun exportCsv(month: String, year: String): Response<okhttp3.ResponseBody> {
+        return apiService.exportCsv(month, year)
+    }
 }
