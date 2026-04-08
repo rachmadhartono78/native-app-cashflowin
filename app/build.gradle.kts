@@ -17,7 +17,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         
-        buildConfigField("String", "BASE_URL", "\"https://cashflowin.kelingstudio.web.id/api/\"")
+        buildConfigField("String", "BASE_URL", "\"https://cashflowinapp.net/api/\"")
     }
 
     packaging {
