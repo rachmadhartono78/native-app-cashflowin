@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.cashflowin.api.TransactionRepository
 import com.example.cashflowin.api.model.ApiErrorResponse
 import com.example.cashflowin.api.model.AssetInfo
 import com.example.cashflowin.api.model.CategoryInfo
@@ -81,8 +82,6 @@ class AddTransactionViewModel(private val repository: TransactionRepository) : V
         _debtsState.value = DropdownState.Loading
         viewModelScope.launch {
             try {
-                val apiService = com.example.cashflowin.api.ApiClient.getApiService(null) // Context will be handled by Repo usually, but here checking repository methods
-                // Actually TransactionRepository needs to support getDebts and getGoals too
                 val response = repository.getDebts()
                 if (response.isSuccessful && response.body() != null) {
                     _debtsState.value = DropdownState.Success(response.body()!!.data.debts)
