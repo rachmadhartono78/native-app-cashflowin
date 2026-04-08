@@ -26,4 +26,8 @@ class DashboardRepository(private val apiService: ApiService) {
     suspend fun exportCsv(month: String, year: String): Response<ResponseBody> {
         return apiService.exportCsv(month, year)
     }
+
+    suspend fun syncAssets(): Response<com.google.gson.JsonObject> {
+        return apiService.syncAssets()
+    }
 }

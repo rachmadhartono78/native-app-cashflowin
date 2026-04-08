@@ -188,7 +188,14 @@ class AddTransactionViewModel(
             val errorBody = response.errorBody()?.string()
             if (errorBody != null) {
                 val errorResponse = Gson().fromJson(errorBody, ApiErrorResponse::class.java)
-                errorResponse.message ?: getApplication<Application>().getString(R.string.error_with_code, response.code())
+                
+                // Priority: Specific "duplicate" error for Duplicate Protection
+                val duplicateError = errorResponse.errors?.get("duplicate")?.firstOrNull()
+                if (duplicateError != null) return duplicateError
+                
+                // Generic errors fallback
+                val firstError = errorResponse.errors?.values?.flatten()?.firstOrNull()
+                firstError ?: errorResponse.message ?: getApplication<Application>().getString(R.string.error_with_code, response.code())
             } else {
                 getApplication<Application>().getString(R.string.error_with_code, response.code())
             }

@@ -46,12 +46,30 @@ class TransactionsViewModel(private val repository: TransactionRepository) : Vie
             currentTransactions.clear()
             _transactionsState.value = TransactionsState.Loading
             
-            // Save filters for next page calls
+            // Default to current month if no dates provided (Sync with Web logic)
+            val calendar = java.util.Calendar.getInstance()
+            val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US)
+            
+            if (startDate == null && endDate == null) {
+                // Start of Month
+                calendar.set(java.util.Calendar.DAY_OF_MONTH, 1)
+                val start = sdf.format(calendar.time)
+                
+                // End of Month
+                calendar.set(java.util.Calendar.DAY_OF_MONTH, calendar.getActualMaximum(java.util.Calendar.DAY_OF_MONTH))
+                val end = sdf.format(calendar.time)
+                
+                currentStartDate = start
+                currentEndDate = end
+            } else {
+                currentStartDate = startDate
+                currentEndDate = endDate
+            }
+
+            // Save other filters
             currentType = type
             currentCategoryId = categoryId
             currentSearch = search
-            currentStartDate = startDate
-            currentEndDate = endDate
         } else {
             if (currentPage >= lastPage) return
             _transactionsState.value = TransactionsState.LoadingMore

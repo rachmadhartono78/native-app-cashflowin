@@ -114,6 +114,9 @@ interface ApiService {
     @DELETE("assets/{id}")
     suspend fun deleteAsset(@Path("id") id: Int): Response<com.google.gson.JsonObject>
 
+    @POST("assets/sync")
+    suspend fun syncAssets(): Response<com.google.gson.JsonObject>
+
     @PUT("profile")
     suspend fun updateProfile(@Body request: com.example.cashflowin.api.model.UpdateProfileRequest): Response<com.example.cashflowin.api.model.UpdateProfileResponse>
 

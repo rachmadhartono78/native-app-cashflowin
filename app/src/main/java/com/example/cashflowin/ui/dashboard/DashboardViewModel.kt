@@ -96,4 +96,23 @@ class DashboardViewModel(
             }
         }
     }
+
+    fun syncBalances() {
+        _dashboardState.value = DashboardState.Loading
+        viewModelScope.launch {
+            try {
+                val response = repository.syncAssets()
+                if (response.isSuccessful && response.body() != null) {
+                    val message = response.body()?.get("message")?.asString ?: "Balances synced successfully"
+                    // Reload dashboard data post-sync
+                    loadDashboardData()
+                    // Re-use ExportComplete state to show a specific message if needed, or just let loadDashboard data finish
+                } else {
+                    _dashboardState.value = DashboardState.Error("Sync failed: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                _dashboardState.value = DashboardState.Error(e.message ?: "Network error")
+            }
+        }
+    }
 }
