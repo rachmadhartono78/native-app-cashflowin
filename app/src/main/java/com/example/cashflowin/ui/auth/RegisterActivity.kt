@@ -13,6 +13,11 @@ import com.example.cashflowin.api.ApiClient
 import com.example.cashflowin.api.AuthRepository
 import com.example.cashflowin.databinding.ActivityRegisterBinding
 import com.example.cashflowin.utils.TokenManager
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import androidx.activity.result.contract.ActivityResultContracts
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -21,6 +26,7 @@ class RegisterActivity : AppCompatActivity() {
         AuthViewModelFactory(AuthRepository(ApiClient.getApiService(this)))
     }
     private lateinit var tokenManager: TokenManager
+    private lateinit var googleSignInClient: GoogleSignInClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,8 +35,34 @@ class RegisterActivity : AppCompatActivity() {
 
         tokenManager = TokenManager(this)
 
+        setupGoogleSignIn()
         setupObservers()
         setupListeners()
+    }
+
+    private fun setupGoogleSignIn() {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestEmail()
+            .requestIdToken("YOUR_WEB_CLIENT_ID_HERE") // Replace with actual ID
+            .build()
+
+        googleSignInClient = GoogleSignIn.getClient(this, gso)
+    }
+
+    private val googleSignInLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+            try {
+                val account = task.getResult(ApiException::class.java)
+                account.idToken?.let { token ->
+                    viewModel.loginWithGoogle(token)
+                } ?: run {
+                    Toast.makeText(this, "Google ID Token not found", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: ApiException) {
+                Toast.makeText(this, "Google Sign-In failed: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun setupListeners() {
@@ -41,6 +73,12 @@ class RegisterActivity : AppCompatActivity() {
 
             if (validateInput(name, email, password)) {
                 viewModel.register(name, email, password)
+            }
+        }
+
+        binding.btnGoogleRegister.setOnClickListener {
+            googleSignInClient.signOut().addOnCompleteListener {
+                googleSignInLauncher.launch(googleSignInClient.signInIntent)
             }
         }
 
