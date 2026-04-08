@@ -47,8 +47,23 @@ class AssetDetailActivity : AppCompatActivity() {
         assetName = intent.getStringExtra("EXTRA_ASSET_NAME") ?: ""
         assetType = intent.getStringExtra("EXTRA_ASSET_TYPE") ?: ""
         assetAmount = intent.getStringExtra("EXTRA_ASSET_AMOUNT") ?: "0"
-        assetColor = intent.getStringExtra("EXTRA_ASSET_COLOR") ?: "#00AA5B"
-        assetIcon = intent.getStringExtra("EXTRA_ASSET_ICON") ?: "ic_menu_gallery"
+        val parsedColor = intent.getStringExtra("EXTRA_ASSET_COLOR")
+        assetColor = parsedColor?.takeIf { it.isNotEmpty() && it != "null" } ?: when (assetType) {
+            "Bank" -> "#6366f1"
+            "Cash" -> "#10b981"
+            "E-Wallet" -> "#a855f7"
+            "Investasi", "Investment" -> "#f59e0b"
+            else -> "#64748b"
+        }
+        
+        val parsedIcon = intent.getStringExtra("EXTRA_ASSET_ICON")
+        assetIcon = parsedIcon?.takeIf { it.isNotEmpty() && it != "null" } ?: when (assetType) {
+            "Bank" -> "ic_menu_myplaces"
+            "Cash" -> "ic_menu_gallery"
+            "E-Wallet" -> "ic_menu_send"
+            "Investasi", "Investment" -> "ic_menu_sort_by_size"
+            else -> "ic_menu_manage"
+        }
 
         setupUI()
         setupRecyclerView()

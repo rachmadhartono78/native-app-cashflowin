@@ -32,7 +32,7 @@ class AddTransactionActivity : AppCompatActivity() {
     private val viewModel: AddTransactionViewModel by viewModels {
         val apiService = ApiClient.getApiService(this)
         val repository = TransactionRepository(apiService)
-        TransactionViewModelFactory(repository)
+        TransactionViewModelFactory(application, repository)
     }
     private lateinit var tokenManager: TokenManager
 
@@ -112,7 +112,7 @@ class AddTransactionActivity : AppCompatActivity() {
     }
 
     private fun updateDateTimeInView() {
-        val displayFormat = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale("id", "ID"))
+        val displayFormat = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.forLanguageTag("id-ID"))
         binding.etDate.setText(displayFormat.format(calendar.time))
     }
 
@@ -120,8 +120,8 @@ class AddTransactionActivity : AppCompatActivity() {
         editTransactionId = intent.getIntExtra("EXTRA_ID", -1)
         if (editTransactionId != -1) {
             isEditMode = true
-            supportActionBar?.title = "Edit Transaksi"
-            binding.btnSave.text = "Update Transaksi"
+            supportActionBar?.title = getString(R.string.title_edit_transaction)
+            binding.btnSave.text = getString(R.string.btn_update_transaction)
 
             initialAmount = intent.getStringExtra("EXTRA_AMOUNT")
             initialType = intent.getStringExtra("EXTRA_TYPE")
@@ -133,7 +133,7 @@ class AddTransactionActivity : AppCompatActivity() {
             if (initialAmount != null) {
                 try {
                     val amountLong = initialAmount!!.toDouble().toLong()
-                    val symbols = DecimalFormatSymbols(Locale("id", "ID"))
+                    val symbols = DecimalFormatSymbols(Locale.forLanguageTag("id-ID"))
                     symbols.groupingSeparator = '.'
                     val formatter = DecimalFormat("#,###", symbols)
                     binding.etAmount.setText(formatter.format(amountLong))
@@ -215,7 +215,7 @@ class AddTransactionActivity : AppCompatActivity() {
         viewModel.debtsState.observe(this) { state ->
             if (state is DropdownState.Success) {
                 debtsList = state.data
-                val names = mutableListOf("Tidak Ada Hubungan")
+                val names = mutableListOf(getString(R.string.label_no_relation))
                 names.addAll(debtsList.map { "${it.person_name} (${it.type})" })
                 val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, names)
                 binding.spinnerDebt.adapter = adapter
@@ -225,7 +225,7 @@ class AddTransactionActivity : AppCompatActivity() {
         viewModel.goalsState.observe(this) { state ->
             if (state is DropdownState.Success) {
                 goalsList = state.data
-                val names = mutableListOf("Tidak Ada Hubungan")
+                val names = mutableListOf(getString(R.string.label_no_relation))
                 names.addAll(goalsList.map { it.name })
                 val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, names)
                 binding.spinnerGoal.adapter = adapter
@@ -239,7 +239,7 @@ class AddTransactionActivity : AppCompatActivity() {
                     binding.btnSave.isEnabled = false
                 }
                 is SubmitState.Success, is SubmitState.UpdateSuccess, is SubmitState.DeleteSuccess -> {
-                    Toast.makeText(this, "Berhasil disimpan!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.message_save_success), Toast.LENGTH_SHORT).show()
                     finish()
                 }
                 is SubmitState.Error -> {
@@ -306,32 +306,49 @@ class AddTransactionActivity : AppCompatActivity() {
         val selectedGoalPos = binding.spinnerGoal.selectedItemPosition
 
         if (amountFormatted.isEmpty() || amountStr == "0") {
-            binding.etAmount.error = "Masukkan nominal"
+            binding.etAmount.error = getString(R.string.error_enter_amount)
             return
         }
         if (!isTransfer && selectedCategoryPos == -1) {
-            Toast.makeText(this, "Pilih kategori", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.error_select_category), Toast.LENGTH_SHORT).show()
             return
         }
         if (selectedAssetPos == -1) {
-            Toast.makeText(this, "Pilih dompet/aset", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.error_select_asset), Toast.LENGTH_SHORT).show()
             return
         }
-        if (isTransfer && selectedDestAssetPos != -1 && selectedAssetPos == selectedDestAssetPos) {
-            Toast.makeText(this, "Aset sumber dan tujuan tidak boleh sama", Toast.LENGTH_SHORT).show()
+
+        if (isTransfer) {
+            if (selectedDestAssetPos == -1) {
+                Toast.makeText(this, getString(R.string.error_select_dest_asset), Toast.LENGTH_SHORT).show()
+                return
+            }
+            if (selectedAssetPos == selectedDestAssetPos) {
+                Toast.makeText(this, getString(R.string.error_same_asset), Toast.LENGTH_SHORT).show()
+                return
+            }
+
+            val transferRequest = com.example.cashflowin.api.model.TransferAssetRequest(
+                source_asset_id = assetsList[selectedAssetPos].id,
+                destination_asset_id = assetsList[selectedDestAssetPos].id,
+                amount = amountStr,
+                date = dateStr,
+                description = descStr.ifEmpty { null }
+            )
+            viewModel.submitTransfer(transferRequest)
             return
         }
 
         val request = TransactionRequest(
             amount = amountStr,
             type = type,
-            category_id = if (!isTransfer) categoriesList.getOrNull(selectedCategoryPos)?.id else null,
+            category_id = categoriesList[selectedCategoryPos].id,
             asset_id = assetsList[selectedAssetPos].id,
             description = descStr,
             date = dateStr,
-            is_transfer = isTransfer,
-            source_asset_id = if (isTransfer) assetsList[selectedAssetPos].id else null,
-            destination_asset_id = if (isTransfer && selectedDestAssetPos != -1) assetsList[selectedDestAssetPos].id else null,
+            is_transfer = false,
+            source_asset_id = null,
+            destination_asset_id = null,
             debt_id = if (selectedDebtPos > 0) debtsList[selectedDebtPos - 1].id else null,
             goal_id = if (selectedGoalPos > 0) goalsList[selectedGoalPos - 1].id else null,
             is_adjustment = isAdjustment
@@ -352,10 +369,10 @@ class AddTransactionActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: android.view.MenuItem): Boolean {
         if (item.itemId == R.id.action_delete) {
             androidx.appcompat.app.AlertDialog.Builder(this)
-                .setTitle("Hapus Transaksi")
-                .setMessage("Apakah Anda yakin ingin menghapus transaksi ini?")
-                .setPositiveButton("Hapus") { _, _ -> viewModel.deleteTransaction(editTransactionId) }
-                .setNegativeButton("Batal", null)
+                .setTitle(getString(R.string.title_delete_transaction))
+                .setMessage(getString(R.string.message_delete_confirm))
+                .setPositiveButton(getString(R.string.action_delete)) { _, _ -> viewModel.deleteTransaction(editTransactionId) }
+                .setNegativeButton(getString(R.string.action_cancel), null)
                 .show()
             return true
         }

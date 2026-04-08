@@ -35,7 +35,7 @@ class TransactionsFragment : Fragment() {
     private val viewModel: TransactionsViewModel by viewModels {
         val apiService = ApiClient.getApiService(requireContext())
         val repository = TransactionRepository(apiService)
-        TransactionViewModelFactory(repository)
+        TransactionViewModelFactory(requireActivity().application, repository)
     }
     private lateinit var transactionAdapter: TransactionAdapter
     private lateinit var tokenManager: TokenManager

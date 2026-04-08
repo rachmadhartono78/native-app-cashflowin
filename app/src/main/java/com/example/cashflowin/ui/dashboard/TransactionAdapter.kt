@@ -119,7 +119,14 @@ class TransactionAdapter(
         fun bind(transaction: TransactionItem) {
             val context = binding.root.context
             
-            binding.tvCategoryName.text = transaction.category?.name ?: "Lainnya"
+            val isTransfer = transaction.is_transfer ?: false
+            
+            if (isTransfer) {
+                binding.tvCategoryName.text = if (transaction.type == "income") "Mutasi Masuk" else "Mutasi Keluar"
+            } else {
+                binding.tvCategoryName.text = transaction.category?.name ?: "Lainnya"
+            }
+            
             if (!transaction.description.isNullOrEmpty()) {
                 binding.tvDescription.text = transaction.description
                 binding.tvDescription.visibility = View.VISIBLE
@@ -149,7 +156,24 @@ class TransactionAdapter(
             val categoryColor = transaction.category?.color
             val categoryIcon = transaction.category?.icon
             
-            if (!categoryColor.isNullOrEmpty()) {
+            if (isTransfer) {
+                // Mutasi icon and colors (Cyan/Blue theme)
+                val color = Color.parseColor("#06b6d4") // Cyan
+                binding.cardIcon.setCardBackgroundColor(Color.parseColor("#cffafe")) // Light Cyan
+                binding.ivCategoryIcon.imageTintList = ColorStateList.valueOf(color)
+                
+                try {
+                    // Try to use a sync/transfer icon
+                    val resId = context.resources.getIdentifier("ic_transfer", "drawable", context.packageName)
+                    if (resId != 0) {
+                        binding.ivCategoryIcon.setImageResource(resId)
+                    } else {
+                        binding.ivCategoryIcon.setImageResource(android.R.drawable.ic_popup_sync)
+                    }
+                } catch (e: Exception) {
+                    binding.ivCategoryIcon.setImageResource(android.R.drawable.ic_menu_rotate)
+                }
+            } else if (!categoryColor.isNullOrEmpty()) {
                 try {
                     val color = Color.parseColor(categoryColor)
                     binding.cardIcon.setCardBackgroundColor(color)
@@ -158,15 +182,15 @@ class TransactionAdapter(
                 } catch (e: Exception) {
                     setDefaultStyle(transaction)
                 }
+                
+                if (!categoryIcon.isNullOrEmpty()) {
+                    val resId = context.resources.getIdentifier(categoryIcon, "drawable", context.packageName)
+                    if (resId != 0) {
+                        binding.ivCategoryIcon.setImageResource(resId)
+                    }
+                }
             } else {
                 setDefaultStyle(transaction)
-            }
-
-            if (!categoryIcon.isNullOrEmpty()) {
-                val resId = context.resources.getIdentifier(categoryIcon, "drawable", context.packageName)
-                if (resId != 0) {
-                    binding.ivCategoryIcon.setImageResource(resId)
-                }
             }
 
             if (transaction.type == "income") {

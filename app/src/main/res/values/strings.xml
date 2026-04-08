@@ -47,6 +47,42 @@
     <string name="error_logout_failed">Logout Failed: %1$s</string>
     <string name="success_logout">Logged out successfully</string>
 
+    <string name="error_failed_load_categories">Failed to load categories: %1$d</string>
+    <string name="error_failed_load_assets">Failed to load assets: %1$d</string>
+    <string name="error_failed_load_debts">Failed to load debts</string>
+    <string name="error_failed_load_goals">Failed to load goals</string>
+    <string name="error_network_with_message">Network error: %1$s</string>
+    <string name="error_parse_generic">An error occurred: %1$d</string>
+    <string name="error_failed_delete_transaction">Failed to delete transaction: %1$d</string>
+    <string name="error_with_code">Error: %1$d</string>
+    <string name="error_failed_save_pdf">Failed to save PDF: %1$s</string>
+    <string name="error_failed_save_csv">Failed to save CSV: %1$s</string>
+    <string name="error_enter_amount">Masukkan nominal</string>
+    <string name="error_select_category">Pilih kategori</string>
+    <string name="error_select_asset">Pilih dompet/aset</string>
+    <string name="error_select_dest_asset">Pilih dompet/aset tujuan</string>
+    <string name="error_same_asset">Aset sumber dan tujuan tidak boleh sama</string>
+    <string name="error_fetch_transactions">Failed to fetch transactions</string>
+
+    <!-- Add/Edit Transaction -->
+    <string name="title_edit_transaction">Edit Transaksi</string>
+    <string name="btn_update_transaction">Update Transaksi</string>
+    <string name="label_no_relation">Tidak Ada Hubungan</string>
+    <string name="message_save_success">Berhasil disimpan!</string>
+    <string name="title_delete_transaction">Hapus Transaksi</string>
+    <string name="message_delete_confirm">Apakah Anda yakin ingin menghapus transaksi ini?</string>
+    <string name="action_delete">Hapus</string>
+    <string name="action_cancel">Batal</string>
+
+    <!-- Transaction List -->
+    <string name="title_select_date_range">Select date range</string>
+    <string name="label_showing_date_range">Showing: %1$s to %2$s</string>
+    <string name="label_showing_all_dates">Showing: All dates</string>
+    <string name="title_no_results">Hasil Tidak Ditemukan</string>
+    <string name="message_no_results">Coba gunakan kata kunci lain atau hapus filter pencarian.</string>
+    <string name="title_no_transactions">Belum Ada Transaksi</string>
+    <string name="message_no_transactions">Mulai catat pengeluaran dan pemasukanmu hari ini agar keuanganmu lebih terpantau.</string>
+
     <string name="fab_content_description">Floating Action Button</string>
 
     <!-- Transaction Type Arrays -->

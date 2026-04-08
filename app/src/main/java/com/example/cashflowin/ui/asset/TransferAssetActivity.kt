@@ -87,7 +87,8 @@ class TransferAssetActivity : AppCompatActivity() {
             val amountFormatted = binding.etTransferAmount.text.toString().trim()
             val amount = CurrencyTextWatcher.getUnformattedValue(amountFormatted).toString()
             val date = binding.etTransferDate.text.toString().trim()
-            val description = binding.etTransferDescription.text.toString().trim()
+            val descInput = binding.etTransferDescription.text.toString().trim()
+            val description = descInput.ifEmpty { "Transfer" } // Give a placeholder so backend can append/it won't be empty
 
             if (selectedSourceId == -1 || selectedDestId == -1) {
                 Toast.makeText(this, "Please select source and destination assets", Toast.LENGTH_SHORT).show()

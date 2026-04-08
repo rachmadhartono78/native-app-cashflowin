@@ -41,8 +41,21 @@ class AssetAdapter(private val onAssetClick: (AssetInfo) -> Unit) :
             binding.tvAssetAmount.text = format.format(asset.balance)
 
             // Visual Polish: Icon and Color
-            val colorStr = asset.color ?: "#00AA5B"
-            val iconName = asset.icon ?: "ic_menu_gallery"
+            val colorStr = asset.color?.takeIf { it.isNotEmpty() && it != "null" } ?: when (asset.type) {
+                "Bank" -> "#6366f1" // Indigo
+                "Cash" -> "#10b981" // Emerald
+                "E-Wallet" -> "#a855f7" // Purple
+                "Investasi", "Investment" -> "#f59e0b" // Amber
+                else -> "#64748b" // Slate
+            }
+            
+            val iconName = asset.icon?.takeIf { it.isNotEmpty() && it != "null" } ?: when (asset.type) {
+                "Bank" -> "ic_menu_myplaces"
+                "Cash" -> "ic_menu_gallery"
+                "E-Wallet" -> "ic_menu_send"
+                "Investasi", "Investment" -> "ic_menu_sort_by_size"
+                else -> "ic_menu_manage"
+            }
 
             try {
                 val color = Color.parseColor(colorStr)

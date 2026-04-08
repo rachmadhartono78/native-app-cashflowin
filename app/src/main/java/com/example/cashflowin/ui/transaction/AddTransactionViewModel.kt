@@ -1,9 +1,11 @@
 package com.example.cashflowin.ui.transaction
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.cashflowin.R
 import com.example.cashflowin.api.TransactionRepository
 import com.example.cashflowin.api.model.ApiErrorResponse
 import com.example.cashflowin.api.model.AssetInfo
@@ -30,7 +32,10 @@ sealed class SubmitState {
     data class Error(val message: String) : SubmitState()
 }
 
-class AddTransactionViewModel(private val repository: TransactionRepository) : ViewModel() {
+class AddTransactionViewModel(
+    application: Application,
+    private val repository: TransactionRepository
+) : AndroidViewModel(application) {
 
     private val _categoriesState = MutableLiveData<DropdownState<CategoryInfo>>()
     val categoriesState: LiveData<DropdownState<CategoryInfo>> = _categoriesState
@@ -56,10 +61,14 @@ class AddTransactionViewModel(private val repository: TransactionRepository) : V
                 if (response.isSuccessful && response.body() != null) {
                     _categoriesState.value = DropdownState.Success(response.body()!!.data)
                 } else {
-                    _categoriesState.value = DropdownState.Error("Failed to load categories: ${response.code()}")
+                    _categoriesState.value = DropdownState.Error(
+                        getApplication<Application>().getString(R.string.error_failed_load_categories, response.code())
+                    )
                 }
             } catch (e: Exception) {
-                _categoriesState.value = DropdownState.Error("Network error: ${e.message}")
+                _categoriesState.value = DropdownState.Error(
+                    getApplication<Application>().getString(R.string.error_network_with_message, e.message ?: "")
+                )
             }
         }
 
@@ -71,10 +80,14 @@ class AddTransactionViewModel(private val repository: TransactionRepository) : V
                 if (response.isSuccessful && response.body() != null) {
                     _assetsState.value = DropdownState.Success(response.body()!!.data)
                 } else {
-                    _assetsState.value = DropdownState.Error("Failed to load assets: ${response.code()}")
+                    _assetsState.value = DropdownState.Error(
+                        getApplication<Application>().getString(R.string.error_failed_load_assets, response.code())
+                    )
                 }
             } catch (e: Exception) {
-                _assetsState.value = DropdownState.Error("Network error: ${e.message}")
+                _assetsState.value = DropdownState.Error(
+                    getApplication<Application>().getString(R.string.error_network_with_message, e.message ?: "")
+                )
             }
         }
 
@@ -86,10 +99,12 @@ class AddTransactionViewModel(private val repository: TransactionRepository) : V
                 if (response.isSuccessful && response.body() != null) {
                     _debtsState.value = DropdownState.Success(response.body()!!.data.debts)
                 } else {
-                    _debtsState.value = DropdownState.Error("Failed to load debts")
+                    _debtsState.value = DropdownState.Error(getApplication<Application>().getString(R.string.error_failed_load_debts))
                 }
             } catch (e: Exception) {
-                _debtsState.value = DropdownState.Error("Network error: ${e.message}")
+                _debtsState.value = DropdownState.Error(
+                    getApplication<Application>().getString(R.string.error_network_with_message, e.message ?: "")
+                )
             }
         }
 
@@ -101,10 +116,12 @@ class AddTransactionViewModel(private val repository: TransactionRepository) : V
                 if (response.isSuccessful && response.body() != null) {
                     _goalsState.value = DropdownState.Success(response.body()!!.data)
                 } else {
-                    _goalsState.value = DropdownState.Error("Failed to load goals")
+                    _goalsState.value = DropdownState.Error(getApplication<Application>().getString(R.string.error_failed_load_goals))
                 }
             } catch (e: Exception) {
-                _goalsState.value = DropdownState.Error("Network error: ${e.message}")
+                _goalsState.value = DropdownState.Error(
+                    getApplication<Application>().getString(R.string.error_network_with_message, e.message ?: "")
+                )
             }
         }
     }
@@ -121,7 +138,28 @@ class AddTransactionViewModel(private val repository: TransactionRepository) : V
                     _submitState.value = SubmitState.Error(errorMsg)
                 }
             } catch (e: Exception) {
-                _submitState.value = SubmitState.Error(e.message ?: "Network error")
+                _submitState.value = SubmitState.Error(
+                    e.message ?: getApplication<Application>().getString(R.string.error_network)
+                )
+            }
+        }
+    }
+
+    fun submitTransfer(request: com.example.cashflowin.api.model.TransferAssetRequest) {
+        _submitState.value = SubmitState.Loading
+        viewModelScope.launch {
+            try {
+                val response = repository.transferAsset(request)
+                if (response.isSuccessful) {
+                    _submitState.value = SubmitState.Success
+                } else {
+                    val errorMsg = parseError(response)
+                    _submitState.value = SubmitState.Error(errorMsg)
+                }
+            } catch (e: Exception) {
+                _submitState.value = SubmitState.Error(
+                    e.message ?: getApplication<Application>().getString(R.string.error_network)
+                )
             }
         }
     }
@@ -138,7 +176,9 @@ class AddTransactionViewModel(private val repository: TransactionRepository) : V
                     _submitState.value = SubmitState.Error(errorMsg)
                 }
             } catch (e: Exception) {
-                _submitState.value = SubmitState.Error(e.message ?: "Network error")
+                _submitState.value = SubmitState.Error(
+                    e.message ?: getApplication<Application>().getString(R.string.error_network)
+                )
             }
         }
     }
@@ -148,12 +188,12 @@ class AddTransactionViewModel(private val repository: TransactionRepository) : V
             val errorBody = response.errorBody()?.string()
             if (errorBody != null) {
                 val errorResponse = Gson().fromJson(errorBody, ApiErrorResponse::class.java)
-                errorResponse.message ?: "Error: ${response.code()}"
+                errorResponse.message ?: getApplication<Application>().getString(R.string.error_with_code, response.code())
             } else {
-                "Error: ${response.code()}"
+                getApplication<Application>().getString(R.string.error_with_code, response.code())
             }
         } catch (e: Exception) {
-            "An error occurred: ${response.code()}"
+            getApplication<Application>().getString(R.string.error_parse_generic, response.code())
         }
     }
 
@@ -165,10 +205,14 @@ class AddTransactionViewModel(private val repository: TransactionRepository) : V
                 if (response.isSuccessful) {
                     _submitState.value = SubmitState.DeleteSuccess
                 } else {
-                    _submitState.value = SubmitState.Error("Failed to delete transaction: ${response.code()}")
+                    _submitState.value = SubmitState.Error(
+                        getApplication<Application>().getString(R.string.error_failed_delete_transaction, response.code())
+                    )
                 }
             } catch (e: Exception) {
-                _submitState.value = SubmitState.Error(e.message ?: "Network error")
+                _submitState.value = SubmitState.Error(
+                    e.message ?: getApplication<Application>().getString(R.string.error_network)
+                )
             }
         }
     }

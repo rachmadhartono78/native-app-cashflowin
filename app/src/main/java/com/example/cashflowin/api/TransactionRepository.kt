@@ -63,6 +63,10 @@ class TransactionRepository(private val apiService: ApiService) {
         return apiService.getGoals()
     }
 
+    suspend fun transferAsset(request: com.example.cashflowin.api.model.TransferAssetRequest): Response<com.google.gson.JsonObject> {
+        return apiService.transferAsset(request)
+    }
+
     suspend fun exportPdf(month: String, year: String): Response<okhttp3.ResponseBody> {
         return apiService.exportPdf(month, year)
     }
