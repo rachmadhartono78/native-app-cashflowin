@@ -89,6 +89,13 @@
                 android:paddingBottom="80dp"
                 tools:listitem="@layout/item_transaction" />
 
+            <include
+                android:id="@+id/emptyState"
+                layout="@layout/layout_empty_state"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true" />
+
             <TextView
                 android:id="@+id/tvEmptyState"
                 android:layout_width="wrap_content"

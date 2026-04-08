@@ -92,7 +92,6 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Type Selection (Modern Toggle) -->
             <RadioGroup
                 android:id="@+id/rgType"
                 android:layout_width="match_parent"
@@ -126,7 +125,30 @@
                     android:textColor="@color/rb_selector_text"
                     android:background="@drawable/bg_rb_selector"
                     android:fontFamily="sans-serif-medium" />
+
+                <RadioButton
+                    android:id="@+id/rbTransfer"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="Mutasi"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:textColor="@color/rb_selector_text"
+                    android:background="@drawable/bg_rb_selector"
+                    android:fontFamily="sans-serif-medium" />
             </RadioGroup>
+
+            <!-- Mode Selection (Additional Handle) -->
+            <CheckBox
+                android:id="@+id/cbIsAdjustment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Penyesuaian Saldo Sistem"
+                android:textSize="14sp"
+                android:textColor="@color/text_secondary"
+                android:buttonTint="@color/primary_green" />
 
             <!-- Form Details -->
             <com.google.android.material.card.MaterialCardView
@@ -189,6 +211,97 @@
                         android:layout_height="1dp"
                         android:background="@color/border_light"
                         android:layout_marginVertical="8dp" />
+
+                    <!-- Destination Asset (For Transfer) -->
+                    <LinearLayout
+                        android:id="@+id/layoutDestAsset"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Ke Aset / Dompet Tujuan"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp"
+                            android:fontFamily="sans-serif-medium" />
+
+                        <Spinner
+                            android:id="@+id/spinnerDestAsset"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:layout_marginTop="4dp"
+                            android:background="@null"
+                            android:spinnerMode="dropdown" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/border_light"
+                            android:layout_marginVertical="8dp" />
+                    </LinearLayout>
+
+                    <!-- Link to Debt -->
+                    <LinearLayout
+                        android:id="@+id/layoutLinkDebt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Hubungkan dengan Hutang (Opsional)"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp"
+                            android:fontFamily="sans-serif-medium" />
+
+                        <Spinner
+                            android:id="@+id/spinnerDebt"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:layout_marginTop="4dp"
+                            android:background="@null"
+                            android:spinnerMode="dropdown" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/border_light"
+                            android:layout_marginVertical="8dp" />
+                    </LinearLayout>
+
+                    <!-- Link to Goal -->
+                    <LinearLayout
+                        android:id="@+id/layoutLinkGoal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Simpan untuk Tabungan/Goal (Opsional)"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp"
+                            android:fontFamily="sans-serif-medium" />
+
+                        <Spinner
+                            android:id="@+id/spinnerGoal"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:layout_marginTop="4dp"
+                            android:background="@null"
+                            android:spinnerMode="dropdown" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/border_light"
+                            android:layout_marginVertical="8dp" />
+                    </LinearLayout>
 
                     <!-- Date -->
                     <TextView

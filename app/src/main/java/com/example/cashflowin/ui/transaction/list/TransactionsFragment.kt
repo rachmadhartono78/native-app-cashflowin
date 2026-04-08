@@ -182,6 +182,7 @@ class TransactionsFragment : Fragment() {
                 is TransactionsState.Loading -> {
                     binding.progressBar.visibility = View.VISIBLE
                     binding.pbLoadMore.visibility = View.GONE
+                    binding.emptyState.layoutEmptyState.visibility = View.GONE
                     binding.tvEmptyState.visibility = View.GONE
                 }
                 is TransactionsState.LoadingMore -> {
@@ -193,9 +194,17 @@ class TransactionsFragment : Fragment() {
                     
                     val list = state.transactions
                     if (list.isEmpty()) {
-                        binding.tvEmptyState.visibility = View.VISIBLE
+                        binding.emptyState.layoutEmptyState.visibility = View.VISIBLE
+                        // Update message based on whether user is searching or indeed has no data
+                        if (currentSearch != null) {
+                            binding.emptyState.tvEmptyTitle.text = "Hasil Tidak Ditemukan"
+                            binding.emptyState.tvEmptyMessage.text = "Coba gunakan kata kunci lain atau hapus filter pencarian."
+                        } else {
+                            binding.emptyState.tvEmptyTitle.text = "Belum Ada Transaksi"
+                            binding.emptyState.tvEmptyMessage.text = "Mulai catat pengeluaran dan pemasukanmu hari ini agar keuanganmu lebih terpantau."
+                        }
                     } else {
-                        binding.tvEmptyState.visibility = View.GONE
+                        binding.emptyState.layoutEmptyState.visibility = View.GONE
                     }
                     transactionAdapter.submitList(list)
                 }

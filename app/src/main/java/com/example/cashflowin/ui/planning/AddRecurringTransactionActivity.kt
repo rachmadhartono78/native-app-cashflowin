@@ -5,16 +5,23 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.cashflowin.api.ApiClient
+import com.example.cashflowin.api.model.AssetInfo
+import com.example.cashflowin.api.model.CategoryInfo
 import com.example.cashflowin.api.model.RecurringTransactionRequest
 import com.example.cashflowin.databinding.ActivityAddRecurringTransactionBinding
+import com.example.cashflowin.api.model.ApiErrorResponse
 import com.example.cashflowin.utils.CurrencyTextWatcher
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.example.cashflowin.api.TransactionRepository
+import com.google.gson.Gson
 import kotlinx.coroutines.launch
+import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
+import android.widget.ArrayAdapter
 
 class AddRecurringTransactionActivity : AppCompatActivity() {
 
@@ -24,6 +31,12 @@ class AddRecurringTransactionActivity : AppCompatActivity() {
     
     private var isEdit = false
     private var transactionId = -1
+    
+    private var assetsList: List<AssetInfo> = emptyList()
+    private var categoriesList: List<CategoryInfo> = emptyList()
+    
+    private var initialAssetId: Int? = null
+    private var initialCategoryId: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +56,43 @@ class AddRecurringTransactionActivity : AppCompatActivity() {
             fetchTransactionDetails()
         }
 
+        loadLookupData()
         setupListeners()
+    }
+
+    private fun loadLookupData() {
+        lifecycleScope.launch {
+            try {
+                val apiService = ApiClient.getApiService(this@AddRecurringTransactionActivity)
+                val repo = TransactionRepository(apiService)
+                
+                // Load Assets
+                val assetResp = repo.getAssets()
+                if (assetResp.isSuccessful && assetResp.body() != null) {
+                    assetsList = assetResp.body()!!.data
+                    val adapter = ArrayAdapter(this@AddRecurringTransactionActivity, android.R.layout.simple_spinner_dropdown_item, assetsList.map { it.name })
+                    binding.spAsset.adapter = adapter
+                    initialAssetId?.let { id ->
+                        val idx = assetsList.indexOfFirst { it.id == id }
+                        if (idx != -1) binding.spAsset.setSelection(idx)
+                    }
+                }
+
+                // Load Categories
+                val categoryResp = repo.getCategories()
+                if (categoryResp.isSuccessful && categoryResp.body() != null) {
+                    categoriesList = categoryResp.body()!!.data
+                    val adapter = ArrayAdapter(this@AddRecurringTransactionActivity, android.R.layout.simple_spinner_dropdown_item, categoriesList.map { it.name })
+                    binding.spCategory.adapter = adapter
+                    initialCategoryId?.let { id ->
+                        val idx = categoriesList.indexOfFirst { it.id == id }
+                        if (idx != -1) binding.spCategory.setSelection(idx)
+                    }
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this@AddRecurringTransactionActivity, "Gagal meload referensi", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun fetchTransactionDetails() {
@@ -89,6 +138,19 @@ class AddRecurringTransactionActivity : AppCompatActivity() {
         }
 
         binding.cbAutoExecute.isChecked = transaction.auto_execute
+        
+        initialAssetId = transaction.asset_id
+        initialCategoryId = transaction.category_id
+        
+        // Try selecting in spinners if they are already loaded
+        if (assetsList.isNotEmpty()) {
+            val idx = assetsList.indexOfFirst { it.id == transaction.asset_id }
+            if (idx != -1) binding.spAsset.setSelection(idx)
+        }
+        if (categoriesList.isNotEmpty()) {
+            val idx = categoriesList.indexOfFirst { it.id == transaction.category_id }
+            if (idx != -1) binding.spCategory.setSelection(idx)
+        }
 
         try {
             val sDateParsed = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).parse(transaction.start_date.replace("T"," ").replace("Z",""))
@@ -186,11 +248,19 @@ class AddRecurringTransactionActivity : AppCompatActivity() {
             return
         }
 
+        val selectedAssetPos = binding.spAsset.selectedItemPosition
+        val selectedCategoryPos = binding.spCategory.selectedItemPosition
+        
+        if (selectedAssetPos == -1 || selectedCategoryPos == -1) {
+            Toast.makeText(this, "Pilih dompet dan kategori", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val request = RecurringTransactionRequest(
             description = finalDescription,
             amount = amountStr.toDoubleOrNull() ?: 0.0,
-            category_id = 1, // Placeholder
-            asset_id = 1,    // Placeholder
+            category_id = categoriesList[selectedCategoryPos].id,
+            asset_id = assetsList[selectedAssetPos].id,
             type = type,
             frequency = frequency,
             frequency_interval = 1,
@@ -213,11 +283,26 @@ class AddRecurringTransactionActivity : AppCompatActivity() {
                     Toast.makeText(this@AddRecurringTransactionActivity, msg, Toast.LENGTH_SHORT).show()
                     finish()
                 } else {
-                    Toast.makeText(this@AddRecurringTransactionActivity, "Gagal: ${response.code()}", Toast.LENGTH_SHORT).show()
+                    val errorMsg = parseError(response)
+                    Toast.makeText(this@AddRecurringTransactionActivity, errorMsg, Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 Toast.makeText(this@AddRecurringTransactionActivity, "Kesalahan: ${e.message}", Toast.LENGTH_SHORT).show()
             }
+        }
+    }
+
+    private fun parseError(response: Response<*>): String {
+        return try {
+            val errorBody = response.errorBody()?.string()
+            if (errorBody != null) {
+                val errorResponse = Gson().fromJson(errorBody, ApiErrorResponse::class.java)
+                errorResponse.message ?: "Error: ${response.code()}"
+            } else {
+                "Error: ${response.code()}"
+            }
+        } catch (e: Exception) {
+            "Gagal memproses error: ${response.code()}"
         }
     }
 }

@@ -2,6 +2,8 @@ package com.example.cashflowin.api
 
 import com.example.cashflowin.api.model.AssetResponse
 import com.example.cashflowin.api.model.CategoryResponse
+import com.example.cashflowin.api.model.DebtListResponse
+import com.example.cashflowin.api.model.GoalListResponse
 import com.example.cashflowin.api.model.TransactionListResponse
 import com.example.cashflowin.api.model.TransactionRequest
 import com.google.gson.JsonObject
@@ -51,5 +53,13 @@ class TransactionRepository(private val apiService: ApiService) {
 
     suspend fun resetMonthlyTransactions(request: com.example.cashflowin.api.model.ResetMonthlyTransactionRequest): Response<com.example.cashflowin.api.model.ResetMonthlyTransactionResponse> {
         return apiService.resetMonthlyTransactions(request)
+    }
+
+    suspend fun getDebts(): Response<DebtListResponse> {
+        return apiService.getDebts()
+    }
+
+    suspend fun getGoals(): Response<GoalListResponse> {
+        return apiService.getGoals()
     }
 }

@@ -14,6 +14,8 @@ import com.example.cashflowin.api.ApiClient
 import com.example.cashflowin.api.TransactionRepository
 import com.example.cashflowin.api.model.AssetInfo
 import com.example.cashflowin.api.model.CategoryInfo
+import com.example.cashflowin.api.model.Debt
+import com.example.cashflowin.api.model.Goal
 import com.example.cashflowin.api.model.TransactionRequest
 import com.example.cashflowin.databinding.ActivityAddTransactionBinding
 import com.example.cashflowin.utils.CurrencyTextWatcher
@@ -36,6 +38,8 @@ class AddTransactionActivity : AppCompatActivity() {
 
     private var categoriesList: List<CategoryInfo> = emptyList()
     private var assetsList: List<AssetInfo> = emptyList()
+    private var debtsList: List<Debt> = emptyList()
+    private var goalsList: List<Goal> = emptyList()
 
     private val calendar = Calendar.getInstance()
 
@@ -203,7 +207,28 @@ class AddTransactionActivity : AppCompatActivity() {
                 assetsList = state.data
                 val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, assetsList.map { it.name })
                 binding.spinnerAsset.adapter = adapter
+                binding.spinnerDestAsset.adapter = adapter // Reuse same list for destination
                 populateSpinnersIfEditing()
+            }
+        }
+
+        viewModel.debtsState.observe(this) { state ->
+            if (state is DropdownState.Success) {
+                debtsList = state.data
+                val names = mutableListOf("Tidak Ada Hubungan")
+                names.addAll(debtsList.map { "${it.person_name} (${it.type})" })
+                val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, names)
+                binding.spinnerDebt.adapter = adapter
+            }
+        }
+
+        viewModel.goalsState.observe(this) { state ->
+            if (state is DropdownState.Success) {
+                goalsList = state.data
+                val names = mutableListOf("Tidak Ada Hubungan")
+                names.addAll(goalsList.map { it.name })
+                val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, names)
+                binding.spinnerGoal.adapter = adapter
             }
         }
 
@@ -243,10 +268,15 @@ class AddTransactionActivity : AppCompatActivity() {
     }
 
     private fun updateTypeUi() {
-        val color = if (binding.rbIncome.isChecked) {
-            ContextCompat.getColor(this, R.color.income)
-        } else {
-            ContextCompat.getColor(this, R.color.expense)
+        val isTransfer = binding.rbTransfer.isChecked
+        
+        binding.layoutDestAsset.visibility = if (isTransfer) View.VISIBLE else View.GONE
+        binding.spinnerCategory.isEnabled = !isTransfer // Categories usually not needed for internal transfers
+        
+        val color = when {
+            binding.rbIncome.isChecked -> ContextCompat.getColor(this, R.color.income)
+            binding.rbTransfer.isChecked -> ContextCompat.getColor(this, R.color.text_main)
+            else -> ContextCompat.getColor(this, R.color.expense)
         }
         binding.etAmount.setTextColor(color)
     }
@@ -255,7 +285,15 @@ class AddTransactionActivity : AppCompatActivity() {
         val amountFormatted = binding.etAmount.text.toString().trim()
         val amountStr = CurrencyTextWatcher.getUnformattedValue(amountFormatted).toString()
         val descStr = binding.etDescription.text.toString().trim()
-        val type = if (binding.rbIncome.isChecked) "income" else "expense"
+        
+        val isTransfer = binding.rbTransfer.isChecked
+        val isAdjustment = binding.cbIsAdjustment.isChecked
+        
+        val type = when {
+            binding.rbIncome.isChecked -> "income"
+            isTransfer -> "expense" // Transfer outgoing
+            else -> "expense"
+        }
         
         // Use API format for date string
         val apiFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
@@ -263,12 +301,15 @@ class AddTransactionActivity : AppCompatActivity() {
         
         val selectedCategoryPos = binding.spinnerCategory.selectedItemPosition
         val selectedAssetPos = binding.spinnerAsset.selectedItemPosition
+        val selectedDestAssetPos = binding.spinnerDestAsset.selectedItemPosition
+        val selectedDebtPos = binding.spinnerDebt.selectedItemPosition
+        val selectedGoalPos = binding.spinnerGoal.selectedItemPosition
 
         if (amountFormatted.isEmpty() || amountStr == "0") {
             binding.etAmount.error = "Masukkan nominal"
             return
         }
-        if (selectedCategoryPos == -1) {
+        if (!isTransfer && selectedCategoryPos == -1) {
             Toast.makeText(this, "Pilih kategori", Toast.LENGTH_SHORT).show()
             return
         }
@@ -276,14 +317,24 @@ class AddTransactionActivity : AppCompatActivity() {
             Toast.makeText(this, "Pilih dompet/aset", Toast.LENGTH_SHORT).show()
             return
         }
+        if (isTransfer && selectedDestAssetPos != -1 && selectedAssetPos == selectedDestAssetPos) {
+            Toast.makeText(this, "Aset sumber dan tujuan tidak boleh sama", Toast.LENGTH_SHORT).show()
+            return
+        }
 
         val request = TransactionRequest(
             amount = amountStr,
             type = type,
-            category_id = categoriesList[selectedCategoryPos].id,
+            category_id = if (!isTransfer) categoriesList.getOrNull(selectedCategoryPos)?.id else null,
             asset_id = assetsList[selectedAssetPos].id,
             description = descStr,
-            date = dateStr
+            date = dateStr,
+            is_transfer = isTransfer,
+            source_asset_id = if (isTransfer) assetsList[selectedAssetPos].id else null,
+            destination_asset_id = if (isTransfer && selectedDestAssetPos != -1) assetsList[selectedDestAssetPos].id else null,
+            debt_id = if (selectedDebtPos > 0) debtsList[selectedDebtPos - 1].id else null,
+            goal_id = if (selectedGoalPos > 0) goalsList[selectedGoalPos - 1].id else null,
+            is_adjustment = isAdjustment
         )
 
         if (isEditMode) {

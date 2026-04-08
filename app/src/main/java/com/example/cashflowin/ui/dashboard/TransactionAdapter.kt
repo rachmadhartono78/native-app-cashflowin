@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cashflowin.R
 import com.example.cashflowin.api.model.TransactionItem
@@ -39,14 +40,16 @@ class TransactionAdapter(
         timeZone = TimeZone.getDefault()
     }
 
+    data class HeaderItem(val title: String)
+
     companion object {
         private const val TYPE_HEADER = 0
         private const val TYPE_TRANSACTION = 1
     }
 
-    fun submitList(list: List<TransactionItem>) {
+    fun submitList(newList: List<TransactionItem>) {
         val groupedItems = mutableListOf<Any>()
-        val groupedByDate = list.groupBy { it.date }
+        val groupedByDate = newList.groupBy { it.date }
         
         val today = Calendar.getInstance()
         val yesterday = Calendar.getInstance().apply { add(Calendar.DATE, -1) }
@@ -56,6 +59,8 @@ class TransactionAdapter(
         val yesterdayStr = dateOnlyFormat.format(yesterday.time)
 
         groupedByDate.keys.sortedDescending().forEach { date ->
+            val transactions = groupedByDate[date] ?: emptyList()
+            
             val headerTitle = when (date) {
                 todayStr -> "Hari Ini"
                 yesterdayStr -> "Kemarin"
@@ -68,16 +73,20 @@ class TransactionAdapter(
                     }
                 }
             }
-            groupedItems.add(headerTitle)
-            groupedByDate[date]?.let { groupedItems.addAll(it) }
+            
+            groupedItems.add(HeaderItem(headerTitle))
+            groupedItems.addAll(transactions)
         }
         
+        val diffCallback = TransactionDiffCallback(items, groupedItems)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+        
         items = groupedItems
-        notifyDataSetChanged()
+        diffResult.dispatchUpdatesTo(this)
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (items[position] is String) TYPE_HEADER else TYPE_TRANSACTION
+        return if (items[position] is HeaderItem) TYPE_HEADER else TYPE_TRANSACTION
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -92,7 +101,7 @@ class TransactionAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is HeaderViewHolder) {
-            holder.bind(items[position] as String)
+            holder.bind(items[position] as HeaderItem)
         } else if (holder is TransactionViewHolder) {
             holder.bind(items[position] as TransactionItem)
         }
@@ -101,8 +110,8 @@ class TransactionAdapter(
     override fun getItemCount(): Int = items.size
 
     inner class HeaderViewHolder(private val binding: ItemTransactionHeaderBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(title: String) {
-            binding.tvHeaderDate.text = title
+        fun bind(header: HeaderItem) {
+            binding.tvHeaderDate.text = header.title
         }
     }
 
@@ -182,6 +191,31 @@ class TransactionAdapter(
                 binding.cardIcon.setCardBackgroundColor(Color.parseColor("#F1F5F9"))
                 binding.ivCategoryIcon.imageTintList = ColorStateList.valueOf(Color.parseColor("#64748B"))
             }
+        }
+    }
+
+    class TransactionDiffCallback(
+        private val oldList: List<Any>,
+        private val newList: List<Any>
+    ) : DiffUtil.Callback() {
+        override fun getOldListSize(): Int = oldList.size
+        override fun getNewListSize(): Int = newList.size
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            val oldItem = oldList[oldItemPosition]
+            val newItem = newList[newItemPosition]
+            
+            return if (oldItem is TransactionItem && newItem is TransactionItem) {
+                oldItem.id == newItem.id
+            } else if (oldItem is HeaderItem && newItem is HeaderItem) {
+                oldItem.title == newItem.title
+            } else {
+                false
+            }
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition] == newList[newItemPosition]
         }
     }
 }

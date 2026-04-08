@@ -4,11 +4,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.cashflowin.api.TransactionRepository
+import com.example.cashflowin.api.model.ApiErrorResponse
 import com.example.cashflowin.api.model.AssetInfo
 import com.example.cashflowin.api.model.CategoryInfo
+import com.example.cashflowin.api.model.Debt
+import com.example.cashflowin.api.model.Goal
 import com.example.cashflowin.api.model.TransactionRequest
+import com.google.gson.Gson
 import kotlinx.coroutines.launch
+import retrofit2.Response
 
 sealed class DropdownState<out T> {
     object Loading : DropdownState<Nothing>()
@@ -32,6 +36,12 @@ class AddTransactionViewModel(private val repository: TransactionRepository) : V
 
     private val _assetsState = MutableLiveData<DropdownState<AssetInfo>>()
     val assetsState: LiveData<DropdownState<AssetInfo>> = _assetsState
+
+    private val _debtsState = MutableLiveData<DropdownState<Debt>>()
+    val debtsState: LiveData<DropdownState<Debt>> = _debtsState
+
+    private val _goalsState = MutableLiveData<DropdownState<Goal>>()
+    val goalsState: LiveData<DropdownState<Goal>> = _goalsState
 
     private val _submitState = MutableLiveData<SubmitState>(SubmitState.Idle)
     val submitState: LiveData<SubmitState> = _submitState
@@ -66,6 +76,38 @@ class AddTransactionViewModel(private val repository: TransactionRepository) : V
                 _assetsState.value = DropdownState.Error("Network error: ${e.message}")
             }
         }
+
+        // Load Debts
+        _debtsState.value = DropdownState.Loading
+        viewModelScope.launch {
+            try {
+                val apiService = com.example.cashflowin.api.ApiClient.getApiService(null) // Context will be handled by Repo usually, but here checking repository methods
+                // Actually TransactionRepository needs to support getDebts and getGoals too
+                val response = repository.getDebts()
+                if (response.isSuccessful && response.body() != null) {
+                    _debtsState.value = DropdownState.Success(response.body()!!.data.debts)
+                } else {
+                    _debtsState.value = DropdownState.Error("Failed to load debts")
+                }
+            } catch (e: Exception) {
+                _debtsState.value = DropdownState.Error("Network error: ${e.message}")
+            }
+        }
+
+        // Load Goals
+        _goalsState.value = DropdownState.Loading
+        viewModelScope.launch {
+            try {
+                val response = repository.getGoals()
+                if (response.isSuccessful && response.body() != null) {
+                    _goalsState.value = DropdownState.Success(response.body()!!.data)
+                } else {
+                    _goalsState.value = DropdownState.Error("Failed to load goals")
+                }
+            } catch (e: Exception) {
+                _goalsState.value = DropdownState.Error("Network error: ${e.message}")
+            }
+        }
     }
 
     fun submitTransaction(request: TransactionRequest) {
@@ -76,7 +118,8 @@ class AddTransactionViewModel(private val repository: TransactionRepository) : V
                 if (response.isSuccessful) {
                     _submitState.value = SubmitState.Success
                 } else {
-                    _submitState.value = SubmitState.Error("Failed to save transaction: ${response.code()}")
+                    val errorMsg = parseError(response)
+                    _submitState.value = SubmitState.Error(errorMsg)
                 }
             } catch (e: Exception) {
                 _submitState.value = SubmitState.Error(e.message ?: "Network error")
@@ -92,11 +135,26 @@ class AddTransactionViewModel(private val repository: TransactionRepository) : V
                 if (response.isSuccessful) {
                     _submitState.value = SubmitState.UpdateSuccess
                 } else {
-                    _submitState.value = SubmitState.Error("Failed to update transaction: ${response.code()}")
+                    val errorMsg = parseError(response)
+                    _submitState.value = SubmitState.Error(errorMsg)
                 }
             } catch (e: Exception) {
                 _submitState.value = SubmitState.Error(e.message ?: "Network error")
             }
+        }
+    }
+
+    private fun parseError(response: Response<*>): String {
+        return try {
+            val errorBody = response.errorBody()?.string()
+            if (errorBody != null) {
+                val errorResponse = Gson().fromJson(errorBody, ApiErrorResponse::class.java)
+                errorResponse.message ?: "Error: ${response.code()}"
+            } else {
+                "Error: ${response.code()}"
+            }
+        } catch (e: Exception) {
+            "An error occurred: ${response.code()}"
         }
     }
 
