@@ -59,12 +59,15 @@ class LoginActivity : AppCompatActivity() {
             try {
                 val account = task.getResult(ApiException::class.java)
                 account.idToken?.let { token ->
+                    android.util.Log.d("OAUTH_DEBUG", "Obtained ID Token: ${token.take(20)}...")
                     viewModel.loginWithGoogle(token)
                 } ?: run {
+                    android.util.Log.e("OAUTH_DEBUG", "Google ID Token is null!")
                     Toast.makeText(this, "Google ID Token not found", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: ApiException) {
-                Toast.makeText(this, "Google Sign-In failed: ${e.message}", Toast.LENGTH_SHORT).show()
+                android.util.Log.e("OAUTH_DEBUG", "Google Sign-In failed: Status Code ${e.statusCode}, Message: ${e.message}")
+                Toast.makeText(this, "Google Sign-In failed (Code ${e.statusCode})", Toast.LENGTH_SHORT).show()
             }
         }
     }
