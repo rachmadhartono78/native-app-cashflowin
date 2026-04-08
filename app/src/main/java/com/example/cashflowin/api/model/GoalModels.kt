@@ -34,6 +34,11 @@ data class GoalRequest(
     val color: String? = null
 )
 
+data class GoalWithdrawRequest(
+    val amount: Double,
+    val asset_id: Int
+)
+
 data class GoalTransactionRequest(
     val amount_change: Double,
     val asset_id: Int,

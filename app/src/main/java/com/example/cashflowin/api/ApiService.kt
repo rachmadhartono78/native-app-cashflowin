@@ -152,6 +152,9 @@ interface ApiService {
     @DELETE("goals/{id}")
     suspend fun deleteGoal(@Path("id") id: Int): Response<com.google.gson.JsonObject>
 
+    @POST("goals/{id}/withdraw")
+    suspend fun withdrawGoal(@Path("id") id: Int, @Body request: com.example.cashflowin.api.model.GoalWithdrawRequest): Response<com.google.gson.JsonObject>
+
     // Debts
     @GET("debts")
     suspend fun getDebts(): Response<com.example.cashflowin.api.model.DebtListResponse>
